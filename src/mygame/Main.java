@@ -1,5 +1,9 @@
 package mygame;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
+import com.jme3.animation.LoopMode;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
@@ -14,18 +18,27 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.terrain.geomipmap.TerrainQuad;
 
 /**
  * test
  * @author normenhansen
  */
-public class Main extends SimpleApplication {
+public class Main extends SimpleApplication implements AnimEventListener{
     
+    boolean isRunning;
+    int PULSEFACTOR = 3;
+    final int MOVEMENTSPEED = 5;
+    final int GRAVITY = 10;
+    final int JUMPFACTOR = 50;
+    
+    // Movement of Model
+    private AnimChannel channel;
+    private AnimControl control;
+    
+    // Figures and Textures
     Spatial figure;
-    Spatial figure2;
-    Spatial figure3; 
-    
-    int pulsefactor = 3;
+
     
     public static void main(String[] args) {
         Main app = new Main();
@@ -38,29 +51,31 @@ public class Main extends SimpleApplication {
      */
     @Override
     public void simpleInitApp() {
-        // Main Player
-        figure = assetManager.loadModel("Models/SpaceCraft/Rocket.mesh.xml");
+        isRunning = true;
         
-        // Bots
-        figure2 = assetManager.loadModel("Models/SpaceCraft/Rocket.mesh.xml");
-        figure3 = assetManager.loadModel("Models/SpaceCraft/Rocket.mesh.xml");
-        
+        // Load Model
+        figure = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
+        figure.rotate(0.0f, 3f,0.0f);
 
-        figure.scale(0.6f); // Set Size
-        DirectionalLight light = new DirectionalLight(); 
-        light.setDirection(new Vector3f(-1.0f,-1.0f,-1.0f));
+        control = figure.getControl(AnimControl.class);
+        control.addListener(this);
+        channel = control.createChannel();
+        channel.setAnim("stand");
         
-        // Gruppierung der Figures
+        
+        
+        DirectionalLight light = new DirectionalLight(); 
+        light.setDirection(new Vector3f(-0.1f,-1.0f,-1.0f));
+        
+        /* Gruppierung bei mehreren Figures
         Node bots = new Node();
         bots.scale(0.6f);
-        
-        // Wichtig: Center von transformationen ist bots!
-        //bots.attachChild(figure2);
         bots.attachChild(figure3);
-  
-        
-        //rootNode.attachChild(figure);
         rootNode.attachChild(bots);
+        */
+        for (String anim : control.getAnimationNames()) { System.out.println(anim); }
+        
+        rootNode.attachChild(figure);
         rootNode.addLight(light);
         initListeners();
     }
@@ -72,20 +87,8 @@ public class Main extends SimpleApplication {
      */
     @Override
     public void simpleUpdate(float tpf) {
-      figure3.rotate(0,2*tpf,0);
-       
-       
-       figure3.setLocalScale(figure3.getLocalScale().getX() + tpf*pulsefactor, figure3.getLocalScale().getY() + tpf*pulsefactor, figure3.getLocalScale().getZ() + tpf*pulsefactor);
-       if (figure3.getLocalScale().getX() > 5.0f){
-           pulsefactor = -3;
-       }
-       
-       if(figure3.getLocalScale().getX() <= 1.0f){
-           pulsefactor = 3;
-       }
-           
-       
-       
+    // Falls die Items pulsieren sollen: pulseElement(tpf);
+        setGravity(tpf);
     }
     /**
      * Rendering von Texturen / Modellen und co
@@ -103,25 +106,101 @@ public class Main extends SimpleApplication {
         inputManager.addMapping("Left", new KeyTrigger(keyInput.KEY_A));
         inputManager.addMapping("Back", new KeyTrigger(keyInput.KEY_S));
         inputManager.addMapping("Right", new KeyTrigger(keyInput.KEY_D));
+        inputManager.addMapping("Jump", new KeyTrigger(keyInput.KEY_SPACE));
+        inputManager.addMapping("Pause", new KeyTrigger(keyInput.KEY_P));
 
-        inputManager.addListener(actionListener, "Move");
-        inputManager.addListener(actionListener, "Left");
-        inputManager.addListener(actionListener, "Back");
-        inputManager.addListener(actionListener, "Right");
+        inputManager.addListener(analogListener, "Move");
+        inputManager.addListener(analogListener, "Left");
+        inputManager.addListener(analogListener, "Back");
+        inputManager.addListener(analogListener, "Right");
+        inputManager.addListener(analogListener, "Jump");
+
+        inputManager.addListener(actionListener, "Pause");
+
+
     }
     
     // Anonyme Klasse des AnalogListeners
-    private ActionListener actionListener = new ActionListener(){
-        public void onAction(String name, boolean isPressed, float tpf) {
-               if (name.equals("Move")){
+    private AnalogListener analogListener = new AnalogListener(){
+        public void onAnalog(String name, float value, float tpf) {
+                Vector3f vec = figure.getLocalTranslation();
+                
+               if (name.equals("Move") && isRunning == true){
+                 figure.setLocalTranslation(vec.x, vec.y, vec.z-tpf*MOVEMENTSPEED);   
+                
+                 // Animate Model
+                 if (!channel.getAnimationName().equals("Walk")){
+                    channel.setAnim("Walk", 0.50f);
+                    channel.setLoopMode(LoopMode.Cycle);
+                }
                }
-               if (name.equals("Left")){
+               if (name.equals("Left") && isRunning == true){
+                 figure.setLocalTranslation(vec.x-tpf*MOVEMENTSPEED, vec.y, vec.z);               
                }
-               if (name.equals("Back")){
+               if (name.equals("Back") && isRunning == true){
+                 figure.setLocalTranslation(vec.x, vec.y, vec.z+tpf*MOVEMENTSPEED);
                }
-               if (name.equals("Right")){
-               }        
+               if (name.equals("Right") && isRunning == true){
+                 figure.setLocalTranslation(vec.x+tpf*MOVEMENTSPEED, vec.y, vec.z);               
+               }  
+               if (name.equals("Jump") && isRunning == true){
+                 figure.setLocalTranslation(vec.x, vec.y+tpf*JUMPFACTOR, vec.z);  
+                    channel.setAnim("push", 0.50f);
+                    channel.setLoopMode(LoopMode.Cycle);
+                
+               }  
+             
+               
         }
         
     };
+    
+    private ActionListener actionListener = new ActionListener(){
+
+        public void onAction(String name, boolean isPressed, float tpf) {
+            if(name.equals("Pause") && !isPressed){
+                isRunning = !isRunning; // Continue or Pause game
+            }
+            
+        }
+        
+    };
+    
+    public void pulseElement(float tpf){
+        figure.setLocalScale(figure.getLocalScale().getX() + tpf*PULSEFACTOR, figure.getLocalScale().getY() + tpf*PULSEFACTOR, figure.getLocalScale().getZ() + tpf*PULSEFACTOR);
+       if (figure.getLocalScale().getX() > 5.0f){
+           PULSEFACTOR = -3;
+       }
+       
+       if(figure.getLocalScale().getX() <= 1.0f){
+           PULSEFACTOR = 3;
+       }
+    }
+    
+    public void setGravity(float tpf){
+       Vector3f vec = figure.getLocalTranslation();
+       if (vec.getY() > 0){
+       figure.setLocalTranslation(vec.x, vec.y-tpf*GRAVITY, vec.z); 
+       }
+
+    }
+
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        if (animName.equals("Walk") || animName.equals("push")) { // Sorgt momentan für den Ruckler.. vielleicht weg?
+            Vector3f vec = figure.getLocalTranslation();
+             if (vec.getY() > 0){ // Only stand on ground
+              channel.setAnim("stand", 0.50f);
+              channel.setLoopMode(LoopMode.DontLoop);
+              channel.setSpeed(1f);
+              } 
+            
+            
+            
+            }
+    }
+
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+
+    }
+
 }
