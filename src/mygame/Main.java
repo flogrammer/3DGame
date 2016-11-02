@@ -18,6 +18,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Sphere;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 
 /**
@@ -31,6 +32,7 @@ public class Main extends SimpleApplication implements AnimEventListener{
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
+    final int ITEMSET = 10;
     
     // Movement of Model
     private AnimChannel channel;
@@ -38,7 +40,7 @@ public class Main extends SimpleApplication implements AnimEventListener{
     
     // Figures and Textures
     Spatial figure;
-
+    Geometry [] items;
     
     public static void main(String[] args) {
         Main app = new Main();
@@ -52,7 +54,7 @@ public class Main extends SimpleApplication implements AnimEventListener{
     @Override
     public void simpleInitApp() {
         isRunning = true;
-        
+
         // Load Model
         figure = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
         figure.rotate(0.0f, 3f,0.0f);
@@ -62,7 +64,14 @@ public class Main extends SimpleApplication implements AnimEventListener{
         channel = control.createChannel();
         channel.setAnim("stand");
         
-        
+        // Init Geometries
+        items = new Geometry [ITEMSET];
+        Node itemNode = new Node();
+        for (Geometry item : items){
+            float random = (float) Math.random()*50;
+            item = makeCube("Box", random, 0f, 1f);
+            itemNode.attachChild(item);
+        }
         
         DirectionalLight light = new DirectionalLight(); 
         light.setDirection(new Vector3f(-0.1f,-1.0f,-1.0f));
@@ -73,9 +82,9 @@ public class Main extends SimpleApplication implements AnimEventListener{
         bots.attachChild(figure3);
         rootNode.attachChild(bots);
         */
-        for (String anim : control.getAnimationNames()) { System.out.println(anim); }
-        
+        rootNode.attachChild(itemNode);
         rootNode.attachChild(figure);
+        rootNode.attachChild(makeFloor());
         rootNode.addLight(light);
         initListeners();
     }
@@ -135,7 +144,8 @@ public class Main extends SimpleApplication implements AnimEventListener{
                 }
                }
                if (name.equals("Left") && isRunning == true){
-                 figure.setLocalTranslation(vec.x-tpf*MOVEMENTSPEED, vec.y, vec.z);               
+                 figure.setLocalTranslation(vec.x-tpf*MOVEMENTSPEED, vec.y, vec.z);                
+
                }
                if (name.equals("Back") && isRunning == true){
                  figure.setLocalTranslation(vec.x, vec.y, vec.z+tpf*MOVEMENTSPEED);
@@ -202,5 +212,27 @@ public class Main extends SimpleApplication implements AnimEventListener{
     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
 
     }
-
+    
+ 
+    protected Geometry makeFloor() {
+    Box box = new Box(256, .2f, 256);
+    Geometry floor = new Geometry("the Floor", box);
+    floor.setLocalTranslation(0, -5, 0);
+    Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+    mat1.setColor("Color", ColorRGBA.Gray);
+    floor.setMaterial(mat1);
+    return floor;
+  }
+    
+    protected Geometry makeCube(String name, float x, float y, float z) {
+    Box box = new Box(1, 1, 1);
+    Geometry cube = new Geometry(name, box);
+    cube.setLocalTranslation(x, y, z);
+    Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+    mat1.setColor("Color", ColorRGBA.randomColor());
+    cube.setMaterial(mat1);
+    return cube;
+  }
+        
+    
 }
