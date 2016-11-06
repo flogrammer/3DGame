@@ -219,7 +219,7 @@ public class Main extends SimpleApplication implements AnimEventListener{
     Geometry floor = new Geometry("the Floor", box);
     floor.setLocalTranslation(0, -5, 0);
     Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mat1.setColor("Color", ColorRGBA.Gray);
+    mat1.setColor("Color", ColorRGBA.Yellow);
     floor.setMaterial(mat1);
     return floor;
   }
