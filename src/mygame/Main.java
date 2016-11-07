@@ -5,6 +5,7 @@ import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
 import com.jme3.app.SimpleApplication;
+import com.jme3.audio.AudioNode;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -25,7 +26,7 @@ import com.jme3.terrain.geomipmap.TerrainQuad;
  * test
  * @author normenhansen
  */
-public class Main extends SimpleApplication implements AnimEventListener{
+public class Main extends SimpleApplication{
     
     boolean isRunning;
     int PULSEFACTOR = 3;
@@ -39,8 +40,11 @@ public class Main extends SimpleApplication implements AnimEventListener{
     private AnimControl control;
     
     // Figures and Textures
-    Spatial figure;
     Geometry [] items;
+    
+    // Sounds and Audio
+    private AudioNode audio_theme;
+    private AudioNode audio_foodsteps;
     
     public static void main(String[] args) {
         Main app = new Main();
@@ -55,14 +59,6 @@ public class Main extends SimpleApplication implements AnimEventListener{
     public void simpleInitApp() {
         isRunning = true;
 
-        // Load Model
-        figure = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
-        figure.rotate(0.0f, 3f,0.0f);
-
-        control = figure.getControl(AnimControl.class);
-        control.addListener(this);
-        channel = control.createChannel();
-        channel.setAnim("stand");
         
         // Init Geometries
         items = new Geometry [ITEMSET];
@@ -83,10 +79,10 @@ public class Main extends SimpleApplication implements AnimEventListener{
         rootNode.attachChild(bots);
         */
         rootNode.attachChild(itemNode);
-        rootNode.attachChild(figure);
         rootNode.attachChild(makeFloor());
         rootNode.addLight(light);
         initListeners();
+        initAudio();
     }
     /**
      * Alle Elemente die sich verändern werden hier neu upgedated und an das Spiel angepasst
@@ -96,8 +92,7 @@ public class Main extends SimpleApplication implements AnimEventListener{
      */
     @Override
     public void simpleUpdate(float tpf) {
-    // Falls die Items pulsieren sollen: pulseElement(tpf);
-        setGravity(tpf);
+
     }
     /**
      * Rendering von Texturen / Modellen und co
@@ -129,35 +124,40 @@ public class Main extends SimpleApplication implements AnimEventListener{
 
     }
     
+    public void initAudio(){
+        // Background audio
+       audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
+       audio_theme.setPositional(false);
+       audio_theme.setLooping(false);
+       audio_theme.setVolume(1);
+       
+       rootNode.attachChild(audio_theme);
+       audio_theme.play();
+       
+       // Sound FX
+       
+       audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
+       audio_foodsteps.setPositional(false);
+       audio_foodsteps.setLooping(false);
+       audio_foodsteps.setVolume(2);
+       rootNode.attachChild(audio_foodsteps);
+       
+    }
+    
     // Anonyme Klasse des AnalogListeners
     private AnalogListener analogListener = new AnalogListener(){
         public void onAnalog(String name, float value, float tpf) {
-                Vector3f vec = figure.getLocalTranslation();
+
                 
                if (name.equals("Move") && isRunning == true){
-                 figure.setLocalTranslation(vec.x, vec.y, vec.z-tpf*MOVEMENTSPEED);   
-                
-                 // Animate Model
-                 if (!channel.getAnimationName().equals("Walk")){
-                    channel.setAnim("Walk", 0.50f);
-                    channel.setLoopMode(LoopMode.Cycle);
-                }
                }
-               if (name.equals("Left") && isRunning == true){
-                 figure.setLocalTranslation(vec.x-tpf*MOVEMENTSPEED, vec.y, vec.z);                
-
+               if (name.equals("Left") && isRunning == true){             
                }
                if (name.equals("Back") && isRunning == true){
-                 figure.setLocalTranslation(vec.x, vec.y, vec.z+tpf*MOVEMENTSPEED);
                }
                if (name.equals("Right") && isRunning == true){
-                 figure.setLocalTranslation(vec.x+tpf*MOVEMENTSPEED, vec.y, vec.z);               
                }  
-               if (name.equals("Jump") && isRunning == true){
-                 figure.setLocalTranslation(vec.x, vec.y+tpf*JUMPFACTOR, vec.z);  
-                    channel.setAnim("push", 0.50f);
-                    channel.setLoopMode(LoopMode.Cycle);
-                
+               if (name.equals("Jump") && isRunning == true){              
                }  
              
                
@@ -176,7 +176,7 @@ public class Main extends SimpleApplication implements AnimEventListener{
         
     };
     
-    public void pulseElement(float tpf){
+    public void pulseElement(float tpf, Geometry figure){
         figure.setLocalScale(figure.getLocalScale().getX() + tpf*PULSEFACTOR, figure.getLocalScale().getY() + tpf*PULSEFACTOR, figure.getLocalScale().getZ() + tpf*PULSEFACTOR);
        if (figure.getLocalScale().getX() > 5.0f){
            PULSEFACTOR = -3;
@@ -187,7 +187,7 @@ public class Main extends SimpleApplication implements AnimEventListener{
        }
     }
     
-    public void setGravity(float tpf){
+    public void setGravity(float tpf, Geometry figure){
        Vector3f vec = figure.getLocalTranslation();
        if (vec.getY() > 0){
        figure.setLocalTranslation(vec.x, vec.y-tpf*GRAVITY, vec.z); 
@@ -195,24 +195,7 @@ public class Main extends SimpleApplication implements AnimEventListener{
 
     }
 
-    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        if (animName.equals("Walk") || animName.equals("push")) { // Sorgt momentan für den Ruckler.. vielleicht weg?
-            Vector3f vec = figure.getLocalTranslation();
-             if (vec.getY() > 0){ // Only stand on ground
-              channel.setAnim("stand", 0.50f);
-              channel.setLoopMode(LoopMode.DontLoop);
-              channel.setSpeed(1f);
-              } 
-            
-            
-            
-            }
-    }
-
-    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
-
-    }
-    
+   
  
     protected Geometry makeFloor() {
     Box box = new Box(256, .2f, 256);
