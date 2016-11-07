@@ -29,11 +29,12 @@ import com.jme3.terrain.geomipmap.TerrainQuad;
 public class Main extends SimpleApplication{
     
     boolean isRunning;
-    int PULSEFACTOR = 3;
+    boolean anyKeyPressed;
+    int PULSEFACTOR = 2;
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
-    final int ITEMSET = 10;
+    final int ITEMSET = 5;
     
     // Movement of Model
     private AnimChannel channel;
@@ -53,31 +54,35 @@ public class Main extends SimpleApplication{
 
     /**
      * Die Methode simpleInitApp beeinhaltet alle Elemente die  
-     * anfangs geladen werden und sich nicht bewegen. (Modelle, Texturen, Bilder...)
+     * anfangs geladen werden sollen. (Modelle, Texturen, Bilder...)
      */
     @Override
     public void simpleInitApp() {
         isRunning = true;
-
+        anyKeyPressed = false;
         
         // Init Geometries
         items = new Geometry [ITEMSET];
         Node itemNode = new Node();
-        for (Geometry item : items){
+        
+        for (int i = 0; i < items.length; i++){
             float random = (float) Math.random()*50;
-            item = makeCube("Box", random, 0f, 1f);
-            itemNode.attachChild(item);
+            Box box = new Box(0.5f, 0.5f, 0.5f);
+            Geometry cube = new Geometry("box", box);
+            Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+            mat1.setColor("Color", ColorRGBA.randomColor());
+            cube.setMaterial(mat1);
+            
+            cube.setLocalTranslation(random, 0f, random);
+
+            items[i] = cube;
+            //item = makeCube("Box", random, 0f, 1f);
+            itemNode.attachChild(cube);
         }
         
         DirectionalLight light = new DirectionalLight(); 
         light.setDirection(new Vector3f(-0.1f,-1.0f,-1.0f));
-        
-        /* Gruppierung bei mehreren Figures
-        Node bots = new Node();
-        bots.scale(0.6f);
-        bots.attachChild(figure3);
-        rootNode.attachChild(bots);
-        */
+
         rootNode.attachChild(itemNode);
         rootNode.attachChild(makeFloor());
         rootNode.addLight(light);
@@ -92,7 +97,9 @@ public class Main extends SimpleApplication{
      */
     @Override
     public void simpleUpdate(float tpf) {
-
+        for (Geometry item : items){
+            pulseElement(tpf, item);
+        }
     }
     /**
      * Rendering von Texturen / Modellen und co
@@ -121,7 +128,6 @@ public class Main extends SimpleApplication{
 
         inputManager.addListener(actionListener, "Pause");
 
-
     }
     
     public void initAudio(){
@@ -146,11 +152,9 @@ public class Main extends SimpleApplication{
     
     // Anonyme Klasse des AnalogListeners
     private AnalogListener analogListener = new AnalogListener(){
-        public void onAnalog(String name, float value, float tpf) {
-
-                
+        public void onAnalog(String name, float value, float tpf) { 
                if (name.equals("Move") && isRunning == true){
-               }
+                   audio_foodsteps.play();           }
                if (name.equals("Left") && isRunning == true){             
                }
                if (name.equals("Back") && isRunning == true){
@@ -158,9 +162,8 @@ public class Main extends SimpleApplication{
                if (name.equals("Right") && isRunning == true){
                }  
                if (name.equals("Jump") && isRunning == true){              
-               }  
-             
-               
+               } 
+              
         }
         
     };
@@ -178,12 +181,12 @@ public class Main extends SimpleApplication{
     
     public void pulseElement(float tpf, Geometry figure){
         figure.setLocalScale(figure.getLocalScale().getX() + tpf*PULSEFACTOR, figure.getLocalScale().getY() + tpf*PULSEFACTOR, figure.getLocalScale().getZ() + tpf*PULSEFACTOR);
-       if (figure.getLocalScale().getX() > 5.0f){
-           PULSEFACTOR = -3;
+       if (figure.getLocalScale().getX() > 3.0f){
+           PULSEFACTOR = -PULSEFACTOR;
        }
        
        if(figure.getLocalScale().getX() <= 1.0f){
-           PULSEFACTOR = 3;
+           PULSEFACTOR = -PULSEFACTOR;
        }
     }
     
@@ -206,16 +209,7 @@ public class Main extends SimpleApplication{
     floor.setMaterial(mat1);
     return floor;
   }
-    
-    protected Geometry makeCube(String name, float x, float y, float z) {
-    Box box = new Box(1, 1, 1);
-    Geometry cube = new Geometry(name, box);
-    cube.setLocalTranslation(x, y, z);
-    Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mat1.setColor("Color", ColorRGBA.randomColor());
-    cube.setMaterial(mat1);
-    return cube;
-  }
+
         
     
 }
