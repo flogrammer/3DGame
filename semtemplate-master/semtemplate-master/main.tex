@@ -1,0 +1,104 @@
+% **************************************************************************************************************
+% A Classic Thesis Style
+% An Homage to The Elements of Typographic Style
+%
+% Copyright (C) 2015 André Miede http://www.miede.de
+%
+% If you like the style then I would appreciate a postcard. My address 
+% can be found in the file ClassicThesis.pdf. A collection of the 
+% postcards I received so far is available online at 
+% http://postcards.miede.de
+%
+% License:
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; see the file COPYING.  If not, write to
+% the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+% Boston, MA 02111-1307, USA.
+%
+% **************************************************************************************************************
+\RequirePackage{fix-cm} % fix some latex issues see: http://texdoc.net/texmf-dist/doc/latex/base/fixltx2e.pdf
+\documentclass[ oneside,openright,titlepage,numbers=noenddot,headinclude,%1headlines,% letterpaper a4paper
+                footinclude=true,cleardoublepage=empty,abstractoff, % <--- obsolete, remove (todo)
+                BCOR=5mm,paper=a4,fontsize=11pt,%11pt,a4paper,%
+                ngerman,american,%
+                ]{scrreprt}
+
+%********************************************************************
+% Note: Make all your adjustments in here
+%*******************************************************
+\input{classicthesis-config}
+
+%********************************************************************
+% Bibliographies
+%*******************************************************
+%\addbibresource{bibliography.bib}
+
+%********************************************************************
+% Hyphenation
+%*******************************************************
+%\hyphenation{put special hyphenation here}
+% ********************************************************************
+\begin{document}
+\frenchspacing
+\raggedbottom
+\def\english{en}
+\def\german{de}
+\ifx\myLanguage\german
+\selectlanguage{ngerman} 
+\else\ifx\myLanguage\english
+\selectlanguage{american} 
+\fi\fi
+%\renewcommand*{\bibname}{new name}
+%\setbibpreamble{}
+\pagenumbering{roman}
+\pagestyle{plain}
+%********************************************************************
+% Frontmatter
+%*******************************************************
+\include{frontmatter/titlepage}
+\cleardoublepage\include{frontmatter/abstract}
+%\cleardoublepage\include{frontmatter/acknowledgments}
+\pagestyle{scrheadings}
+\cleardoublepage\include{frontmatter/contents}
+%********************************************************************
+% Mainmatter
+%*******************************************************
+\cleardoublepage\pagenumbering{arabic}
+%\setcounter{page}{90}
+% use \cleardoublepage here to avoid problems with pdfbookmark
+\cleardoublepage
+\input{content}
+
+%********************************************************************
+% Other Stuff in the Back
+%*******************************************************
+%\cleardoublepage\include{backmatter/bibliography}
+%********************************************************************
+% Bibliography
+%*******************************************************
+% work-around to have small caps also here in the headline
+\manualmark
+\markboth{\spacedlowsmallcaps{\bibname}}{\spacedlowsmallcaps{\bibname}} % work-around to have small caps also
+%\phantomsection 
+\refstepcounter{dummy}
+\addtocontents{toc}{\protect\vspace{\beforebibskip}} % to have the bib a bit from the rest in the toc
+\addcontentsline{toc}{chapter}{\tocEntry{\bibname}}
+\label{app:bibliography}
+\bibliographystyle{lnig}
+%\bibliographystyle{itmabbrv}
+\bibliography{bibliography}
+\cleardoublepage\include{backmatter/declaration}
+% ********************************************************************
+%*******************************************************
+\end{document}
+% ********************************************************************
