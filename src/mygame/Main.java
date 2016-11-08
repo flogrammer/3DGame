@@ -71,6 +71,19 @@ public class Main extends SimpleApplication{
         position = camera.getLocation();
         
         // Init Geometries
+        Spatial [] tree = new Spatial[10];
+        for( int i = 0; i < 10; i++)
+        {
+            tree[i] = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
+            rootNode.attachChild(tree[i]);
+            tree[i].setLocalTranslation(i*5.0f,-2.5f,0.0f);
+        }
+        
+        
+        Spatial house = assetManager.loadModel("Models/Houses/Tree1.j3o");
+        house.setLocalTranslation(1.0f,12.5f,0.0f);
+        rootNode.attachChild(house);
+        
         items = new Geometry [ITEMSET];
         Node itemNode = new Node();
         
