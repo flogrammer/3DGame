@@ -6,6 +6,7 @@ import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
+import com.jme3.font.BitmapText;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
@@ -38,7 +39,8 @@ public class Main extends SimpleApplication{
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
     final int ITEMSET = 5;
-    
+    Camera camera;
+    Vector3f position;
    
     // Figures and Textures
     Geometry [] items;
@@ -47,6 +49,9 @@ public class Main extends SimpleApplication{
     private AudioNode audio_theme;
     private AudioNode audio_nature;
     private AudioNode audio_foodsteps;
+    
+    // Labels & Textfields
+    BitmapText textField;
     
     public static void main(String[] args) {
         Main app = new Main();
@@ -61,6 +66,8 @@ public class Main extends SimpleApplication{
     public void simpleInitApp() {
         isRunning = true;
         anyKeyPressed = false;
+        camera = viewPort.getCamera();
+        position = camera.getLocation();
         
         // Init Geometries
         items = new Geometry [ITEMSET];
@@ -73,22 +80,32 @@ public class Main extends SimpleApplication{
             Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
             mat1.setColor("Color", ColorRGBA.randomColor());
             cube.setMaterial(mat1);
-            
             cube.setLocalTranslation(random, 0f, random);
-
             items[i] = cube;
             //item = makeCube("Box", random, 0f, 1f);
             itemNode.attachChild(cube);
         }
+        // Textfield
+        textField = new BitmapText(guiFont, false);
+        textField.setSize(0.5f);      
+        textField.setColor(ColorRGBA.White);                            
+        textField.setText("Progman");    
+        textField.setLocalTranslation(position.x,camera.getViewPortTop()-camera.getViewPortBottom(),position.z+5); 
         
+        
+        //Light
         DirectionalLight light = new DirectionalLight(); 
         light.setDirection(new Vector3f(-0.1f,-1.0f,-1.0f));
-
+           
+        // Attach to game
+        rootNode.attachChild(textField);
         rootNode.attachChild(itemNode);
         rootNode.attachChild(makeFloor());
         rootNode.addLight(light);
         initListeners();
         initAudio();
+        setDisplayStatView(false);
+        
     }
     
     /**
@@ -99,11 +116,14 @@ public class Main extends SimpleApplication{
      */
     @Override
     public void simpleUpdate(float tpf) {
-        System.out.println(viewPort.getCamera().getDirection());
-
+        
         for (Geometry item : items){
             pulseElement(tpf, item);
         }
+        
+        //Set position of text label
+        textField.setText(""+tpf);
+        textField.setLocalTranslation(position.x,camera.getViewPortTop()-camera.getViewPortBottom(),3); 
         
        
     }
@@ -114,7 +134,6 @@ public class Main extends SimpleApplication{
      */
     @Override
     public void simpleRender(RenderManager rm) {
-        //TODO: add render code
     }
     
     // Listeners für Movement und co
@@ -160,7 +179,6 @@ public class Main extends SimpleApplication{
     private AnalogListener analogListener = new AnalogListener(){
         public void onAnalog(String name, float value, float tpf) {
 
-                Camera camera = viewPort.getCamera();
                if (name.equals("Move") && isRunning == true){
                    audio_foodsteps.play();
                    camera.setLocation(new Vector3f(camera.getLocation().x + (MOVEMENTSPEED*tpf)/camera.getDirection().x,camera.getLocation().y,camera.getLocation().z + MOVEMENTSPEED*tpf*camera.getDirection().z)); 
@@ -223,7 +241,7 @@ public class Main extends SimpleApplication{
     Geometry floor = new Geometry("the Floor", box);
     floor.setLocalTranslation(0, -5, 0);
     Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mat1.setColor("Color", ColorRGBA.Yellow);
+    mat1.setColor("Color", ColorRGBA.Brown);
     floor.setMaterial(mat1);
     return floor;
   }
