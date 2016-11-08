@@ -6,14 +6,17 @@ import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
+import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -36,15 +39,13 @@ public class Main extends SimpleApplication{
     final int JUMPFACTOR = 50;
     final int ITEMSET = 5;
     
-    // Movement of Model
-    private AnimChannel channel;
-    private AnimControl control;
-    
+   
     // Figures and Textures
     Geometry [] items;
     
     // Sounds and Audio
     private AudioNode audio_theme;
+    private AudioNode audio_nature;
     private AudioNode audio_foodsteps;
     
     public static void main(String[] args) {
@@ -89,6 +90,7 @@ public class Main extends SimpleApplication{
         initListeners();
         initAudio();
     }
+    
     /**
      * Alle Elemente die sich verändern werden hier neu upgedated und an das Spiel angepasst
      * @param tpf ist die time per frame 
@@ -97,9 +99,13 @@ public class Main extends SimpleApplication{
      */
     @Override
     public void simpleUpdate(float tpf) {
+        System.out.println(viewPort.getCamera().getDirection());
+
         for (Geometry item : items){
             pulseElement(tpf, item);
         }
+        
+       
     }
     /**
      * Rendering von Texturen / Modellen und co
@@ -135,13 +141,13 @@ public class Main extends SimpleApplication{
        audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
        audio_theme.setPositional(false);
        audio_theme.setLooping(false);
-       audio_theme.setVolume(1);
+       audio_theme.setVolume(0.5f);
        
        rootNode.attachChild(audio_theme);
        audio_theme.play();
        
        // Sound FX
-       
+          
        audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
        audio_foodsteps.setPositional(false);
        audio_foodsteps.setLooping(false);
@@ -152,18 +158,28 @@ public class Main extends SimpleApplication{
     
     // Anonyme Klasse des AnalogListeners
     private AnalogListener analogListener = new AnalogListener(){
-        public void onAnalog(String name, float value, float tpf) { 
+        public void onAnalog(String name, float value, float tpf) {
+
+                Camera camera = viewPort.getCamera();
                if (name.equals("Move") && isRunning == true){
-                   audio_foodsteps.play();           }
-               if (name.equals("Left") && isRunning == true){             
+                   audio_foodsteps.play();
+                   camera.setLocation(new Vector3f(camera.getLocation().x + (MOVEMENTSPEED*tpf)/camera.getDirection().x,camera.getLocation().y,camera.getLocation().z + MOVEMENTSPEED*tpf*camera.getDirection().z)); 
+               }
+               if (name.equals("Left") && isRunning == true){  
+                  camera.setLocation(new Vector3f(camera.getLocation().x + MOVEMENTSPEED*tpf*camera.getDirection().x,camera.getLocation().y,camera.getLocation().z + MOVEMENTSPEED*tpf*camera.getDirection().z)); 
+
                }
                if (name.equals("Back") && isRunning == true){
+                   camera.setLocation(new Vector3f(camera.getLocation().x - MOVEMENTSPEED*tpf*camera.getDirection().x,camera.getLocation().y,camera.getLocation().z - MOVEMENTSPEED*tpf*camera.getDirection().z)); 
+
                }
                if (name.equals("Right") && isRunning == true){
+                  camera.setLocation(new Vector3f(camera.getLocation().x + MOVEMENTSPEED*tpf*camera.getDirection().x,camera.getLocation().y,camera.getLocation().z + MOVEMENTSPEED*tpf*camera.getDirection().z)); 
+
                }  
                if (name.equals("Jump") && isRunning == true){              
                } 
-              
+               // TODO: Mapping für Z und Q entfernen!
         }
         
     };
@@ -188,6 +204,8 @@ public class Main extends SimpleApplication{
        if(figure.getLocalScale().getX() <= 1.0f){
            PULSEFACTOR = -PULSEFACTOR;
        }
+       
+       //Fix: Falls Werte ungeschickt, bleiben figures stehen
     }
     
     public void setGravity(float tpf, Geometry figure){
