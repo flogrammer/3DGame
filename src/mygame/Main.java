@@ -31,6 +31,7 @@ import com.jme3.terrain.geomipmap.TerrainQuad;
  * @author normenhansen
  */
 public class Main extends SimpleApplication{
+    boolean isWalking;
     
     boolean isRunning;
     boolean anyKeyPressed;
@@ -41,7 +42,7 @@ public class Main extends SimpleApplication{
     final int ITEMSET = 5;
     Camera camera;
     Vector3f position;
-   
+    
     // Figures and Textures
     Geometry [] items;
     
@@ -105,6 +106,7 @@ public class Main extends SimpleApplication{
         initListeners();
         initAudio();
         setDisplayStatView(false);
+        flyCam.setMoveSpeed(MOVEMENTSPEED);
         
     }
     
@@ -116,11 +118,8 @@ public class Main extends SimpleApplication{
      */
     @Override
     public void simpleUpdate(float tpf) {
-        
-        for (Geometry item : items){
-            pulseElement(tpf, item);
-        }
-        
+        // no jumps allowed
+        camera.setLocation(new Vector3f(position.x, 0, position.z));
         //Set position of text label
         textField.setText(""+tpf);
         textField.setLocalTranslation(position.x,camera.getViewPortTop()-camera.getViewPortBottom(),3); 
@@ -181,18 +180,17 @@ public class Main extends SimpleApplication{
 
                if (name.equals("Move") && isRunning == true){
                    audio_foodsteps.play();
-                   camera.setLocation(new Vector3f(camera.getLocation().x + (MOVEMENTSPEED*tpf)/camera.getDirection().x,camera.getLocation().y,camera.getLocation().z + MOVEMENTSPEED*tpf*camera.getDirection().z)); 
                }
                if (name.equals("Left") && isRunning == true){  
-                  camera.setLocation(new Vector3f(camera.getLocation().x + MOVEMENTSPEED*tpf*camera.getDirection().x,camera.getLocation().y,camera.getLocation().z + MOVEMENTSPEED*tpf*camera.getDirection().z)); 
+                   audio_foodsteps.play();
 
                }
                if (name.equals("Back") && isRunning == true){
-                   camera.setLocation(new Vector3f(camera.getLocation().x - MOVEMENTSPEED*tpf*camera.getDirection().x,camera.getLocation().y,camera.getLocation().z - MOVEMENTSPEED*tpf*camera.getDirection().z)); 
+                   audio_foodsteps.play();
 
                }
                if (name.equals("Right") && isRunning == true){
-                  camera.setLocation(new Vector3f(camera.getLocation().x + MOVEMENTSPEED*tpf*camera.getDirection().x,camera.getLocation().y,camera.getLocation().z + MOVEMENTSPEED*tpf*camera.getDirection().z)); 
+                    audio_foodsteps.play();
 
                }  
                if (name.equals("Jump") && isRunning == true){              
@@ -246,6 +244,7 @@ public class Main extends SimpleApplication{
     return floor;
   }
 
+    
         
     
 }
