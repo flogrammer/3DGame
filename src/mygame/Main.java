@@ -124,7 +124,7 @@ public class Main extends SimpleApplication{
         //Set position of text label
         textField.setText(""+tpf);
         textField.setLocalTranslation(position.x,camera.getViewPortTop()-camera.getViewPortBottom(),3); 
-        
+        System.out.println(position.x);
        
     }
     /**
