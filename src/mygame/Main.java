@@ -25,6 +25,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.terrain.geomipmap.TerrainQuad;
+import com.jme3.util.SkyFactory;
 
 /**
  * test
@@ -63,6 +64,27 @@ public class Main extends SimpleApplication{
      * Die Methode simpleInitApp beeinhaltet alle Elemente die  
      * anfangs geladen werden sollen. (Modelle, Texturen, Bilder...)
      */
+    public void initForest()
+    {
+        Spatial [] tree = new Spatial[10];
+        for( int i = 0; i < 10; i++)
+        {
+            tree[i] = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
+            rootNode.attachChild(tree[i]);
+            tree[i].setLocalTranslation(i*5.0f,-2.5f,0.0f);
+        }
+    }
+    public void initSky()
+    {
+        rootNode.attachChild(SkyFactory.createSky(
+            assetManager, "Textures/Sky/Bright/BrightSky.dds", false));
+    }
+    public void initHouses()
+    {
+        Spatial house = assetManager.loadModel("Models/Houses/Tree1.j3o");
+        house.setLocalTranslation(0,0,0.0f);
+        rootNode.attachChild(house);
+    }
     @Override
     public void simpleInitApp() {
         isRunning = true;
@@ -71,18 +93,12 @@ public class Main extends SimpleApplication{
         position = camera.getLocation();
         
         // Init Geometries
-        Spatial [] tree = new Spatial[10];
-        for( int i = 0; i < 10; i++)
-        {
-            tree[i] = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
-            rootNode.attachChild(tree[i]);
-            tree[i].setLocalTranslation(i*5.0f,-2.5f,0.0f);
-        }
+        initForest();
+        initSky();
+        initHouses();
         
         
-        Spatial house = assetManager.loadModel("Models/Houses/Tree1.j3o");
-        house.setLocalTranslation(1.0f,12.5f,0.0f);
-        rootNode.attachChild(house);
+        
         
         items = new Geometry [ITEMSET];
         Node itemNode = new Node();
