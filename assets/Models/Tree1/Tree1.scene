@@ -1,0 +1,40 @@
+<scene export_time="1478627605.790827" exported_by="Julian" formatVersion="1.0.1" previous_export_time="0" >
+  <nodes >
+    <node name="Lamp" >
+      <position x="-9.916709" z="15.543468" y="16.908878" />
+      <rotation qw="0.861580" qz="0.270555" qx="0.417559" qy="0.100623" />
+      <scale x="1.000000" z="1.000000" y="1.000000" />
+      <user_data value='&lt;bpy id prop: owner="OBLamp", name="cycles_visibility", address=0x1180846b8&gt;' type="IDPropertyGroup" name="cycles_visibility" />
+      <game >
+        <sensors />
+        <actuators />
+      </game>
+      <light shadow="true" powerScale="1.0" type="directional" name="Lamp" >
+        <position x="-9.916709" z="15.543468" y="16.908878" />
+        <lightAttenuation quadratic="0.0" constant="1.0" linear="0.03333335240683057" range="5000" />
+        <direction x="-0.55" z="0.665" y="-0.505" />
+        <colourDiffuse b="1.0" g="1.0" r="1.0" />
+        <colourSpecular b="1.0" g="1.0" r="1.0" />
+        <colourShadow b="1.0" g="1.0" r="1.0" />
+      </light>
+    </node>
+    <node name="Camera" >
+      <position x="-42.841843" z="0.799318" y="9.079142" />
+      <rotation qw="0.503207" qz="0.496762" qx="0.496215" qy="-0.503767" />
+      <scale x="1.000000" z="1.000000" y="1.000000" />
+      <game >
+        <sensors />
+        <actuators />
+      </game>
+      <camera projectionType="perspective" fov="0.5033799435163735" name="Camera" >
+        <clipping near="0.10000000149011612" far="100.0" nearPlaneDist="0.10000000149011612" farPlaneDist="100.0" />
+      </camera>
+    </node>
+  </nodes>
+  <externals />
+  <environment >
+    <colourAmbient b="0.0" g="0.0" r="0.0" />
+    <colourDiffuse b="0.05087608844041824" g="0.05087608844041824" r="0.05087608844041824" />
+    <colourBackground b="0.05087608844041824" g="0.05087608844041824" r="0.05087608844041824" />
+  </environment>
+</scene>
