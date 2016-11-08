@@ -1,37 +1,35 @@
-<scene export_time="1478627605.790827" exported_by="Julian" formatVersion="1.0.1" previous_export_time="0" >
+<scene export_time="1478635926.157046" exported_by="Julian" formatVersion="1.0.1" previous_export_time="1478635635.195705" >
   <nodes >
-    <node name="Lamp" >
-      <position x="-9.916709" z="15.543468" y="16.908878" />
-      <rotation qw="0.861580" qz="0.270555" qx="0.417559" qy="0.100623" />
-      <scale x="1.000000" z="1.000000" y="1.000000" />
-      <user_data value='&lt;bpy id prop: owner="OBLamp", name="cycles_visibility", address=0x1180846b8&gt;' type="IDPropertyGroup" name="cycles_visibility" />
+    <node name="tree" >
+      <position x="0.000000" z="-0.000000" y="0.000000" />
+      <rotation qw="1.000000" qz="-0.000000" qx="0.000000" qy="0.000000" />
+      <scale x="1.000000" z="1.000000" y="1.410000" />
+      <user_data value='&lt;bpy id prop: owner="OBtree", name="cycles_visibility", address=0x1181a6f38&gt;' type="IDPropertyGroup" name="cycles_visibility" />
       <game >
         <sensors />
         <actuators />
       </game>
-      <light shadow="true" powerScale="1.0" type="directional" name="Lamp" >
-        <position x="-9.916709" z="15.543468" y="16.908878" />
-        <lightAttenuation quadratic="0.0" constant="1.0" linear="0.03333335240683057" range="5000" />
-        <direction x="-0.55" z="0.665" y="-0.505" />
-        <colourDiffuse b="1.0" g="1.0" r="1.0" />
-        <colourSpecular b="1.0" g="1.0" r="1.0" />
-        <colourShadow b="1.0" g="1.0" r="1.0" />
-      </light>
-    </node>
-    <node name="Camera" >
-      <position x="-42.841843" z="0.799318" y="9.079142" />
-      <rotation qw="0.503207" qz="0.496762" qx="0.496215" qy="-0.503767" />
-      <scale x="1.000000" z="1.000000" y="1.000000" />
-      <game >
-        <sensors />
-        <actuators />
-      </game>
-      <camera projectionType="perspective" fov="0.5033799435163735" name="Camera" >
-        <clipping near="0.10000000149011612" far="100.0" nearPlaneDist="0.10000000149011612" farPlaneDist="100.0" />
-      </camera>
+      <entity mass_radius="1.0" friction_x="1.0" actor="False" mass="1.0" friction_z="1.0" physics_type="STATIC" velocity_min="0.0" anisotropic_friction="False" lock_rot_z="False" meshFile="Mesh.003.mesh" velocity_max="0.0" inertia_tensor="0.4000000059604645" lock_trans_x="False" damping_trans="0.03999999910593033" ghost="False" name="Mesh.003" lock_rot_x="False" lock_trans_y="False" lock_trans_z="False" lock_rot_y="False" friction_y="1.0" damping_rot="0.10000000149011612" />
+      <node name="leaves" >
+        <position x="0.000000" z="-0.000000" y="0.000000" />
+        <rotation qw="1.000000" qz="-0.000000" qx="0.000000" qy="0.000000" />
+        <scale x="1.000000" z="1.000000" y="1.000000" />
+        <user_data value='&lt;bpy id prop: owner="OBleaves", name="cycles_visibility", address=0x1094b49a8&gt;' type="IDPropertyGroup" name="cycles_visibility" />
+        <game >
+          <sensors />
+          <actuators />
+        </game>
+        <entity mass_radius="1.0" friction_x="1.0" actor="False" mass="1.0" friction_z="1.0" physics_type="STATIC" velocity_min="0.0" anisotropic_friction="False" lock_rot_z="False" meshFile="leaves.002.mesh" velocity_max="0.0" inertia_tensor="0.4000000059604645" lock_trans_x="False" damping_trans="0.03999999910593033" ghost="False" name="leaves.002" lock_rot_x="False" lock_trans_y="False" lock_trans_z="False" lock_rot_y="False" friction_y="1.0" damping_rot="0.10000000149011612" >
+          <user_data value='&lt;bpy id prop: owner="MEleaves.002", name="cycles", address=0x1181764e8&gt;' type="IDPropertyGroup" name="cycles" />
+        </entity>
+      </node>
     </node>
   </nodes>
-  <externals />
+  <externals >
+    <item type="material" >
+      <file name="/Users/Julian/git/3DGame/assets/Models/Tree1/Tree1.material" />
+    </item>
+  </externals>
   <environment >
     <colourAmbient b="0.0" g="0.0" r="0.0" />
     <colourDiffuse b="0.05087608844041824" g="0.05087608844041824" r="0.05087608844041824" />

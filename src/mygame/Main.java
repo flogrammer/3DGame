@@ -66,23 +66,29 @@ public class Main extends SimpleApplication{
      */
     public void initForest()
     {
-        Spatial [] tree = new Spatial[10];
-        for( int i = 0; i < 10; i++)
+        final int anzahlBaueme = 50;
+        Spatial [][] tree = new Spatial[anzahlBaueme][anzahlBaueme];
+        for( int i = 0; i < tree.length; i++)
         {
-            tree[i] = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
-            rootNode.attachChild(tree[i]);
-            tree[i].setLocalTranslation(i*5.0f,-2.5f,0.0f);
+            for(int j = 0; j < tree[i].length; j++)
+            {
+                tree[i][j] = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
+                rootNode.attachChild(tree[i][j]);
+                tree[i][j].setLocalTranslation(i*5.0f,-2.5f,j*5.0f);
+            }
         }
     }
     public void initSky()
     {
-        rootNode.attachChild(SkyFactory.createSky(
-            assetManager, "Textures/Sky/Bright/BrightSky.dds", false));
+        Spatial sky = SkyFactory.createSky(
+                assetManager,"Textures/Sky/Bright/BrightSky.dds",false);
+        rootNode.attachChild(sky);
+        
     }
     public void initHouses()
     {
         Spatial house = assetManager.loadModel("Models/Houses/Tree1.j3o");
-        house.setLocalTranslation(0,0,0.0f);
+        house.setLocalTranslation(0,-2.5f,0.0f);
         rootNode.attachChild(house);
     }
     @Override
