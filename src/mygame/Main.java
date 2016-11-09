@@ -67,6 +67,8 @@ public class Main extends SimpleApplication{
     public void initForest()
     {
         final int anzahlBaueme = 50;
+        final float max_x_random = 2.0f;
+        final float max_z_random = 2.0f;
         Spatial [][] tree = new Spatial[anzahlBaueme][anzahlBaueme];
         for( int i = 0; i < tree.length; i++)
         {
@@ -74,7 +76,9 @@ public class Main extends SimpleApplication{
             {
                 tree[i][j] = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
                 rootNode.attachChild(tree[i][j]);
-                tree[i][j].setLocalTranslation(i*5.0f,-2.5f,j*5.0f);
+                float xrandom = (float)(Math.random()-0.5)*2.0f*max_x_random;
+                float zrandom = (float)(Math.random()-0.5)*2.0f*max_z_random;
+                tree[i][j].setLocalTranslation(i*5.0f + xrandom,-2.5f,j*5.0f+zrandom);
             }
         }
     }
