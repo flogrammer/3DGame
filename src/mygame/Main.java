@@ -88,7 +88,7 @@ public class Main extends SimpleApplication{
     public void initSky()
     {
         Spatial sky = SkyFactory.createSky(
-        assetManager,"Textures/Sky/Bright/BrightSky.dds",false);
+        assetManager,"Textures/Sky/Bright/FullskiesBlueClear03.dds",false);
         rootNode.attachChild(sky);
         
     }
@@ -135,8 +135,8 @@ public class Main extends SimpleApplication{
         textField.setSize(0.3f);      
         textField.setColor(ColorRGBA.White);                            
         textField.setText("Progman");    
-        textField.setLocalTranslation(textField.getLineWidth(), textField.getLineHeight(),textField.getLineWidth()); 
-        //guiNode.setQueueBucket(Bucket.Gui);
+        textField.setLocalTranslation(settings.getWidth(), settings.getHeight(), 0.1f);
+        guiNode.setQueueBucket(Bucket.Gui);
         guiNode.attachChild(textField);
         
         
@@ -167,9 +167,7 @@ public class Main extends SimpleApplication{
         // no jumps allowed
         camera.setLocation(new Vector3f(position.x, 0, position.z));
         //Set position of text label
-        textField.setText("Seite 1 / 8 gefunden!");
-        textField.setLocalTranslation(position.x,camera.getViewPortTop()-camera.getViewPortBottom(),3); 
-       
+        textField.setText("Seite 1 / 8 gefunden!");       
         //
         System.out.println(""+isWalking);
         foodstepsCheck();
