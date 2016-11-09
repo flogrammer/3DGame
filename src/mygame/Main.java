@@ -19,6 +19,7 @@ import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -33,9 +34,9 @@ import com.jme3.util.SkyFactory;
  */
 public class Main extends SimpleApplication{
     boolean isWalking;
-    
     boolean isRunning;
     boolean anyKeyPressed;
+    
     int PULSEFACTOR = 2;
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
@@ -51,6 +52,8 @@ public class Main extends SimpleApplication{
     private AudioNode audio_theme;
     private AudioNode audio_nature;
     private AudioNode audio_foodsteps;
+    private AudioNode audio_foodsteps_end;
+
     
     // Labels & Textfields
     BitmapText textField;
@@ -85,7 +88,7 @@ public class Main extends SimpleApplication{
     public void initSky()
     {
         Spatial sky = SkyFactory.createSky(
-                assetManager,"Textures/Sky/Bright/BrightSky.dds",false);
+        assetManager,"Textures/Sky/Bright/BrightSky.dds",false);
         rootNode.attachChild(sky);
         
     }
@@ -98,6 +101,7 @@ public class Main extends SimpleApplication{
     @Override
     public void simpleInitApp() {
         isRunning = true;
+        isWalking = false;
         anyKeyPressed = false;
         camera = viewPort.getCamera();
         position = camera.getLocation();
@@ -126,11 +130,14 @@ public class Main extends SimpleApplication{
             itemNode.attachChild(cube);
         }
         // Textfield
+        
         textField = new BitmapText(guiFont, false);
-        textField.setSize(0.5f);      
+        textField.setSize(0.3f);      
         textField.setColor(ColorRGBA.White);                            
         textField.setText("Progman");    
-        textField.setLocalTranslation(position.x,camera.getViewPortTop()-camera.getViewPortBottom(),position.z+5); 
+        textField.setLocalTranslation(textField.getLineWidth(), textField.getLineHeight(),textField.getLineWidth()); 
+        //guiNode.setQueueBucket(Bucket.Gui);
+        guiNode.attachChild(textField);
         
         
         //Light
@@ -160,10 +167,13 @@ public class Main extends SimpleApplication{
         // no jumps allowed
         camera.setLocation(new Vector3f(position.x, 0, position.z));
         //Set position of text label
-        textField.setText(""+tpf);
+        textField.setText("Seite 1 / 8 gefunden!");
         textField.setLocalTranslation(position.x,camera.getViewPortTop()-camera.getViewPortBottom(),3); 
-        System.out.println(position.x);
        
+        //
+        System.out.println(""+isWalking);
+        foodstepsCheck();
+        isWalking = false; // Muss jede runde neu gesetzt werden sonst wird nicht gelaufen.
     }
     /**
      * Rendering von Texturen / Modellen und co
@@ -180,16 +190,18 @@ public class Main extends SimpleApplication{
         inputManager.addMapping("Left", new KeyTrigger(keyInput.KEY_A));
         inputManager.addMapping("Back", new KeyTrigger(keyInput.KEY_S));
         inputManager.addMapping("Right", new KeyTrigger(keyInput.KEY_D));
-        inputManager.addMapping("Jump", new KeyTrigger(keyInput.KEY_SPACE));
         inputManager.addMapping("Pause", new KeyTrigger(keyInput.KEY_P));
 
         inputManager.addListener(analogListener, "Move");
         inputManager.addListener(analogListener, "Left");
         inputManager.addListener(analogListener, "Back");
         inputManager.addListener(analogListener, "Right");
-        inputManager.addListener(analogListener, "Jump");
 
         inputManager.addListener(actionListener, "Pause");
+        inputManager.addListener(actionListener, "Move");
+        inputManager.addListener(actionListener, "Left");
+        inputManager.addListener(actionListener, "Back");
+        inputManager.addListener(actionListener, "Right");
 
     }
     
@@ -204,10 +216,15 @@ public class Main extends SimpleApplication{
        audio_theme.play();
        
        // Sound FX
-          
+       audio_foodsteps_end = new AudioNode(assetManager, "Sounds/foodsteps_end.wav", false);
+       audio_foodsteps_end.setPositional(false);
+       audio_foodsteps_end.setLooping(false);
+       audio_foodsteps_end.setVolume(2);
+       rootNode.attachChild(audio_foodsteps_end);
+       
        audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
        audio_foodsteps.setPositional(false);
-       audio_foodsteps.setLooping(false);
+       audio_foodsteps.setLooping(true);
        audio_foodsteps.setVolume(2);
        rootNode.attachChild(audio_foodsteps);
        
@@ -218,23 +235,25 @@ public class Main extends SimpleApplication{
         public void onAnalog(String name, float value, float tpf) {
 
                if (name.equals("Move") && isRunning == true){
+                   isWalking = true;
                    audio_foodsteps.play();
                }
-               if (name.equals("Left") && isRunning == true){  
+               if (name.equals("Left") && isRunning == true){ 
+                   isWalking = true;
                    audio_foodsteps.play();
 
                }
                if (name.equals("Back") && isRunning == true){
+                   isWalking = true;
                    audio_foodsteps.play();
 
                }
                if (name.equals("Right") && isRunning == true){
+                    isWalking = true;
                     audio_foodsteps.play();
 
                }  
-               if (name.equals("Jump") && isRunning == true){              
-               } 
-               // TODO: Mapping für Z und Q entfernen!
+            
         }
         
     };
@@ -244,6 +263,9 @@ public class Main extends SimpleApplication{
         public void onAction(String name, boolean isPressed, float tpf) {
             if(name.equals("Pause") && !isPressed){
                 isRunning = !isRunning; // Continue or Pause game
+            }
+            if(name.equals("Move") && isPressed == false){
+                audio_foodsteps.stop();
             }
             
         }
@@ -282,6 +304,13 @@ public class Main extends SimpleApplication{
     floor.setMaterial(mat1);
     return floor;
   }
+    
+    public void foodstepsCheck(){
+        if (isWalking == false){
+            audio_foodsteps.stop();
+        }
+        
+    }
 
     
         
