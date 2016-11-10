@@ -1,21 +1,14 @@
 package mygame;
 
-import com.jme3.animation.AnimChannel;
-import com.jme3.animation.AnimControl;
-import com.jme3.animation.AnimEventListener;
-import com.jme3.animation.LoopMode;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
 import com.jme3.font.BitmapText;
-import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
@@ -24,9 +17,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Sphere;
-import com.jme3.system.Timer;
-import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.util.SkyFactory;
 
 /**
@@ -38,18 +28,23 @@ public class Main extends SimpleApplication{
     boolean isRunning;
     boolean anyKeyPressed;
     
-    final long FADETIME = 5000;
-    int PULSEFACTOR = 2;
     long startTime;
     int itemsCollected;
-    final int itemNumber = 8; // Anzahl Prog Themen
+    int pulsefactor = 2;
+
+    final long FADETIME = 5000;
+    final int ITEMNUMBER = 8; // Anzahl Prog Themen
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
     final int ITEMSET = 5;
+    
+    
     Camera camera;
     Vector3f position;
     ColorRGBA color;
+    
+    
     // Figures and Textures
     Geometry [] items;
     
@@ -58,7 +53,6 @@ public class Main extends SimpleApplication{
     private AudioNode audio_nature;
     private AudioNode audio_foodsteps;
     private AudioNode audio_foodsteps_end;
-
     
     // Labels & Textfields
     BitmapText textField;
@@ -69,41 +63,7 @@ public class Main extends SimpleApplication{
         app.start();
     }
 
-    /**
-     * Die Methode simpleInitApp beeinhaltet alle Elemente die  
-     * anfangs geladen werden sollen. (Modelle, Texturen, Bilder...)
-     */
-    public void initForest()
-    {
-        final int anzahlBaueme = 50;
-        final float max_x_random = 2.0f;
-        final float max_z_random = 2.0f;
-        Spatial [][] tree = new Spatial[anzahlBaueme][anzahlBaueme];
-        for( int i = 0; i < tree.length; i++)
-        {
-            for(int j = 0; j < tree[i].length; j++)
-            {
-                tree[i][j] = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
-                rootNode.attachChild(tree[i][j]);
-                float xrandom = (float)(Math.random()-0.5)*2.0f*max_x_random;
-                float zrandom = (float)(Math.random()-0.5)*2.0f*max_z_random;
-                tree[i][j].setLocalTranslation(i*5.0f + xrandom,-2.5f,j*5.0f+zrandom);
-            }
-        }
-    }
-    public void initSky()
-    {
-        Spatial sky = SkyFactory.createSky(
-        assetManager,"Textures/Sky/Bright/BrightSky.dds",false);
-        rootNode.attachChild(sky);
         
-    }
-    public void initHouses()
-    {
-        Spatial house = assetManager.loadModel("Models/Houses/Tree1.j3o");
-        house.setLocalTranslation(0,-2.5f,0.0f);
-        rootNode.attachChild(house);
-    }
     @Override
     public void simpleInitApp() {
         isRunning = true;
@@ -113,16 +73,16 @@ public class Main extends SimpleApplication{
         position = camera.getLocation();
         itemsCollected = 0;
         startTime = 0;
+         
         
-        
+        // Init functionalities
+        initListeners();
+        initAudio();
         
         // Init Geometries
         initForest();
         initSky();
         initHouses();
-        
-        
-        
         
         items = new Geometry [ITEMSET];
         Node itemNode = new Node();
@@ -141,17 +101,12 @@ public class Main extends SimpleApplication{
         }
         // Textfield
         guiNode.setQueueBucket(Bucket.Gui);
-        
-    
-        
         textField = new BitmapText(guiFont, false);          
         textField.setSize(guiFont.getCharSet().getRenderedSize()); 
         color = new ColorRGBA(ColorRGBA.White);
         textField.setColor(color);                             // font color
         textField.setText("");             // the text
         textField.setLocalTranslation(settings.getWidth()/2 - 100, settings.getHeight()/2, 0); // position
-        
-        
         
         //Light
         DirectionalLight light = new DirectionalLight(); 
@@ -161,19 +116,11 @@ public class Main extends SimpleApplication{
         rootNode.attachChild(itemNode);
         rootNode.attachChild(makeFloor());
         rootNode.addLight(light);
-        initListeners();
-        initAudio();
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         
     }
     
-    /**
-     * Alle Elemente die sich verändern werden hier neu upgedated und an das Spiel angepasst
-     * @param tpf ist die time per frame 
-     * Damit das Spiel überall gleich schnell abläuft wird diese Größe benötigt
-     * Update ist ein Loop und wiederholt sich!
-     */
     @Override
     public void simpleUpdate(float tpf) {
         // no jumps allowed
@@ -184,16 +131,160 @@ public class Main extends SimpleApplication{
         isWalking = false; // Muss jede runde neu gesetzt werden sonst wird nicht gelaufen.
         fadeHUD(tpf);
     }
-    /**
-     * Rendering von Texturen / Modellen und co
-     * Wird automatisch nach simpleUpdate ausgeführt!
-     * @param rm 
-     */
+   
     @Override
     public void simpleRender(RenderManager rm) {
+        // wird automatisch nach simple Update ausgeführt
+    }
+     
+    // Anonyme Klasse des AnalogListeners
+    private AnalogListener analogListener = new AnalogListener(){
+        public void onAnalog(String name, float value, float tpf) {
+               if (name.equals("Move") && isRunning == true){
+                   isWalking = true;
+                   audio_foodsteps.play();
+               }
+               if (name.equals("Left") && isRunning == true){ 
+                   isWalking = true;
+                   audio_foodsteps.play();
+               }
+               if (name.equals("Back") && isRunning == true){
+                   isWalking = true;
+                   audio_foodsteps.play();
+               }
+               if (name.equals("Right") && isRunning == true){
+                    isWalking = true;
+                    audio_foodsteps.play();
+               }   
+        }   
+    };
+    
+    private ActionListener actionListener = new ActionListener(){
+        public void onAction(String name, boolean isPressed, float tpf) {
+            if(name.equals("Pause") && !isPressed){
+                isRunning = !isRunning; // Continue or Pause game
+               showHUD(tpf);
+            }
+            
+            if(name.equals("Move") && isPressed == false){
+                audio_foodsteps.stop();
+            } 
+        }
+        
+    };
+    
+    
+    
+    // Functional methods
+    public void pulseElement(float tpf, Geometry figure){
+        figure.setLocalScale(figure.getLocalScale().getX() + tpf*pulsefactor, figure.getLocalScale().getY() + tpf*pulsefactor, figure.getLocalScale().getZ() + tpf*pulsefactor);
+       if (figure.getLocalScale().getX() > 3.0f){
+           pulsefactor = -pulsefactor;
+       }
+       if(figure.getLocalScale().getX() <= 1.0f){
+           pulsefactor = -pulsefactor;
+       }
     }
     
-    // Listeners für Movement und co
+    public void setGravity(float tpf, Geometry figure){
+       Vector3f vec = figure.getLocalTranslation();
+       if (vec.getY() > 0){
+       figure.setLocalTranslation(vec.x, vec.y-tpf*GRAVITY, vec.z); 
+       }
+    }
+
+ 
+    protected Geometry makeFloor() {
+    Box box = new Box(256, .2f, 256);
+    Geometry floor = new Geometry("the Floor", box);
+    floor.setLocalTranslation(0, -5, 0);
+    Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+    mat1.setColor("Color", ColorRGBA.Brown);
+    floor.setMaterial(mat1);
+    return floor;
+  }
+    
+    public void foodstepsCheck(){
+        if (isWalking == false){
+            audio_foodsteps.stop();
+        }   
+    }
+
+    public void showHUD(float tpf){
+        startTime = System.currentTimeMillis();
+        textField.setText("You have collected " + itemsCollected + "/" + ITEMNUMBER + " items.");
+        guiNode.attachChild(textField);
+    }
+    
+     public void fadeHUD(float tpf){
+         if (startTime == 0)
+             return;
+         long time = System.currentTimeMillis();
+         float t = ((float) (time - startTime))/FADETIME;
+         System.out.println(t);
+         if(t > 1){
+             startTime = 0;
+             return;
+         }
+         float colorValue = 1-t;
+         color.a = colorValue;
+         textField.setColor(color);
+     }         
+
+       
+     // INIT METHODS
+     
+      public void initAudio(){
+        // Background audio
+       audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
+       audio_theme.setPositional(false);
+       audio_theme.setLooping(false);
+       audio_theme.setVolume(0.5f);
+       
+       rootNode.attachChild(audio_theme);
+       audio_theme.play();
+       
+       // Sound FX  
+       audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
+       audio_foodsteps.setPositional(false);
+       audio_foodsteps.setLooping(true);
+       audio_foodsteps.setVolume(2);
+       rootNode.attachChild(audio_foodsteps);
+       
+    }
+      
+     public void initSky(){
+        Spatial sky = SkyFactory.createSky(
+        assetManager,"Textures/Sky/Bright/BrightSky.dds",false);
+        rootNode.attachChild(sky);  
+    }
+     
+    public void initHouses(){
+        Spatial house = assetManager.loadModel("Models/Houses/Tree1.j3o");
+        house.setLocalTranslation(0,-2.5f,0.0f);
+        rootNode.attachChild(house);
+    }
+     
+    public void initForest()
+    {
+        final int anzahlBaueme = 10;
+        final float max_x_random = 2.0f;
+        final float max_z_random = 2.0f;
+        Spatial [][] tree = new Spatial[anzahlBaueme][anzahlBaueme];
+        for( int i = 0; i < tree.length; i++)
+        {
+            for(int j = 0; j < tree[i].length; j++)
+            {
+                tree[i][j] = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
+                rootNode.attachChild(tree[i][j]);
+                float xrandom = (float)(Math.random()-0.5)*2.0f*max_x_random;
+                float zrandom = (float)(Math.random()-0.5)*2.0f*max_z_random;
+                tree[i][j].setLocalTranslation(i*5.0f + xrandom,-2.5f,j*5.0f+zrandom);
+            }
+        }
+    }
+    
+    
     public void initListeners(){
         inputManager.addMapping("Move", new KeyTrigger(keyInput.KEY_W));
         inputManager.addMapping("Left", new KeyTrigger(keyInput.KEY_A));
@@ -213,138 +304,5 @@ public class Main extends SimpleApplication{
         inputManager.addListener(actionListener, "Right");
 
     }
-    
-    public void initAudio(){
-        // Background audio
-       audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
-       audio_theme.setPositional(false);
-       audio_theme.setLooping(false);
-       audio_theme.setVolume(0.5f);
-       
-       rootNode.attachChild(audio_theme);
-       audio_theme.play();
-       
-       // Sound FX
-       audio_foodsteps_end = new AudioNode(assetManager, "Sounds/foodsteps_end.wav", false);
-       audio_foodsteps_end.setPositional(false);
-       audio_foodsteps_end.setLooping(false);
-       audio_foodsteps_end.setVolume(2);
-       rootNode.attachChild(audio_foodsteps_end);
-       
-       audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
-       audio_foodsteps.setPositional(false);
-       audio_foodsteps.setLooping(true);
-       audio_foodsteps.setVolume(2);
-       rootNode.attachChild(audio_foodsteps);
-       
-    }
-    
-    // Anonyme Klasse des AnalogListeners
-    private AnalogListener analogListener = new AnalogListener(){
-        public void onAnalog(String name, float value, float tpf) {
-
-               if (name.equals("Move") && isRunning == true){
-                   isWalking = true;
-                   audio_foodsteps.play();
-
-               }
-               if (name.equals("Left") && isRunning == true){ 
-                   isWalking = true;
-                   audio_foodsteps.play();
-
-               }
-               if (name.equals("Back") && isRunning == true){
-                   isWalking = true;
-                   audio_foodsteps.play();
-
-               }
-               if (name.equals("Right") && isRunning == true){
-                    isWalking = true;
-                    audio_foodsteps.play();
-
-               }  
-            
-        }
-        
-    };
-    
-    private ActionListener actionListener = new ActionListener(){
-
-        public void onAction(String name, boolean isPressed, float tpf) {
-            if(name.equals("Pause") && !isPressed){
-                isRunning = !isRunning; // Continue or Pause game
-               showHUD(tpf);
-
-            }
-            if(name.equals("Move") && isPressed == false){
-                audio_foodsteps.stop();
-
-            }
-            
-        }
-        
-    };
-    
-    public void pulseElement(float tpf, Geometry figure){
-        figure.setLocalScale(figure.getLocalScale().getX() + tpf*PULSEFACTOR, figure.getLocalScale().getY() + tpf*PULSEFACTOR, figure.getLocalScale().getZ() + tpf*PULSEFACTOR);
-       if (figure.getLocalScale().getX() > 3.0f){
-           PULSEFACTOR = -PULSEFACTOR;
-       }
-       
-       if(figure.getLocalScale().getX() <= 1.0f){
-           PULSEFACTOR = -PULSEFACTOR;
-       }
-       
-       //Fix: Falls Werte ungeschickt, bleiben figures stehen
-    }
-    
-    public void setGravity(float tpf, Geometry figure){
-       Vector3f vec = figure.getLocalTranslation();
-       if (vec.getY() > 0){
-       figure.setLocalTranslation(vec.x, vec.y-tpf*GRAVITY, vec.z); 
-       }
-
-    }
-
-   
  
-    protected Geometry makeFloor() {
-    Box box = new Box(256, .2f, 256);
-    Geometry floor = new Geometry("the Floor", box);
-    floor.setLocalTranslation(0, -5, 0);
-    Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mat1.setColor("Color", ColorRGBA.Brown);
-    floor.setMaterial(mat1);
-    return floor;
-  }
-    
-    public void foodstepsCheck(){
-        if (isWalking == false){
-            audio_foodsteps.stop();
-        }
-        
-    }
-
-    public void showHUD(float tpf){
-        startTime = System.currentTimeMillis();
-        textField.setText("You have collected " + itemsCollected + "/" + itemNumber + " items.");
-        guiNode.attachChild(textField);
-    }
-    
-     public void fadeHUD(float tpf){
-         if (startTime == 0)
-             return;
-         long time = System.currentTimeMillis();
-         float t = ((float) (time - startTime))/FADETIME;
-         System.out.println(t);
-         if(t > 1){
-             startTime = 0;
-             return;
-         }
-         float colorValue = 1-t;
-         color.a = colorValue;
-         textField.setColor(color);
-     }         
-       
-    
 }
