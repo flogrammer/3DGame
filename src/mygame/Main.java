@@ -2,6 +2,12 @@ package mygame;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.font.BitmapText;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
@@ -43,7 +49,9 @@ public class Main extends SimpleApplication{
     Camera camera;
     Vector3f position;
     ColorRGBA color;
-    
+    BulletAppState bulletAppState;
+    CharacterControl player;
+    RigidBodyControl physicsNode;
     
     // Figures and Textures
     Geometry [] items;
@@ -73,12 +81,19 @@ public class Main extends SimpleApplication{
         position = camera.getLocation();
         itemsCollected = 0;
         startTime = 0;
+        
+        // Physics and Collision
+        bulletAppState = new BulletAppState();
+        stateManager.attach(bulletAppState);
+        
          
         
         // Init functionalities
         initListeners();
         initAudio();
-        
+        initPlayerPhysics();
+        bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+
         // Init Geometries
         initForest();
         initSky();
@@ -96,13 +111,16 @@ public class Main extends SimpleApplication{
             cube.setMaterial(mat1);
             cube.setLocalTranslation(random, 0f, random);
             items[i] = cube;
+                       
             //item = makeCube("Box", random, 0f, 1f);
             itemNode.attachChild(cube);
+            
+            
         }
         // Textfield
         guiNode.setQueueBucket(Bucket.Gui);
         textField = new BitmapText(guiFont, false);          
-        textField.setSize(guiFont.getCharSet().getRenderedSize()); 
+        textField.setSize(2*guiFont.getCharSet().getRenderedSize()); 
         color = new ColorRGBA(ColorRGBA.White);
         textField.setColor(color);                             // font color
         textField.setText("");             // the text
@@ -123,12 +141,13 @@ public class Main extends SimpleApplication{
     
     @Override
     public void simpleUpdate(float tpf) {
+        
         // no jumps allowed
-        camera.setLocation(new Vector3f(position.x, 0, position.z));
+        camera.setLocation(new Vector3f(position.x, 0f, position.y));
         
         //Set position of text label           
         foodstepsCheck();
-        isWalking = false; // Muss jede runde neu gesetzt werden sonst wird nicht gelaufen.
+        isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf);
     }
    
@@ -161,13 +180,17 @@ public class Main extends SimpleApplication{
     
     private ActionListener actionListener = new ActionListener(){
         public void onAction(String name, boolean isPressed, float tpf) {
-            if(name.equals("Pause") && !isPressed){
+            if(name.equals("Pause") && isPressed){
                 isRunning = !isRunning; // Continue or Pause game
                showHUD(tpf);
             }
             
             if(name.equals("Move") && isPressed == false){
                 audio_foodsteps.stop();
+            } 
+            if(name.equals("Jump") && isPressed == true){
+                audio_foodsteps.stop();
+                player.jump();
             } 
         }
         
@@ -185,14 +208,7 @@ public class Main extends SimpleApplication{
            pulsefactor = -pulsefactor;
        }
     }
-    
-    public void setGravity(float tpf, Geometry figure){
-       Vector3f vec = figure.getLocalTranslation();
-       if (vec.getY() > 0){
-       figure.setLocalTranslation(vec.x, vec.y-tpf*GRAVITY, vec.z); 
-       }
-    }
-
+   
  
     protected Geometry makeFloor() {
     Box box = new Box(256, .2f, 256);
@@ -260,9 +276,16 @@ public class Main extends SimpleApplication{
     }
      
     public void initHouses(){
-        Spatial house = assetManager.loadModel("Models/Houses/Tree1.j3o");
-        house.setLocalTranslation(0,-2.5f,0.0f);
-        rootNode.attachChild(house);
+       Spatial house = assetManager.loadModel("Models/Houses/Tree1.j3o");
+        
+       CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
+       physicsNode = new RigidBodyControl(houseShape, 0);
+       house.addControl(physicsNode);
+       bulletAppState.getPhysicsSpace().add(house);
+       physicsNode.setPhysicsLocation(new Vector3f(0, -2.5f, 0));
+
+       rootNode.attachChild(house);
+
     }
      
     public void initForest()
@@ -290,6 +313,7 @@ public class Main extends SimpleApplication{
         inputManager.addMapping("Left", new KeyTrigger(keyInput.KEY_A));
         inputManager.addMapping("Back", new KeyTrigger(keyInput.KEY_S));
         inputManager.addMapping("Right", new KeyTrigger(keyInput.KEY_D));
+        inputManager.addMapping("Jump", new KeyTrigger(keyInput.KEY_D));
         inputManager.addMapping("Pause", new KeyTrigger(keyInput.KEY_P));
 
         inputManager.addListener(analogListener, "Move");
@@ -302,7 +326,18 @@ public class Main extends SimpleApplication{
         inputManager.addListener(actionListener, "Left");
         inputManager.addListener(actionListener, "Back");
         inputManager.addListener(actionListener, "Right");
+        inputManager.addListener(actionListener, "Jump");
 
+
+    }
+    
+    public void initPlayerPhysics(){
+        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1.5f, 6f, 1);
+        player = new CharacterControl(capsuleShape, 0.05f);
+        player.setPhysicsLocation(new Vector3f(0, -2.5f, 0));
+        bulletAppState.getPhysicsSpace().add(player);
+        player.setGravity(30);
+        player.setJumpSpeed(20);
     }
  
 }
