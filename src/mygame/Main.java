@@ -38,6 +38,8 @@ public class Main extends SimpleApplication{
     boolean anyKeyPressed;
     
     int PULSEFACTOR = 2;
+    int itemsCollected;
+    final int itemNumber = 8; // Anzahl Prog Themen
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
@@ -57,7 +59,8 @@ public class Main extends SimpleApplication{
     
     // Labels & Textfields
     BitmapText textField;
-    
+            
+            
     public static void main(String[] args) {
         Main app = new Main();
         app.start();
@@ -88,7 +91,7 @@ public class Main extends SimpleApplication{
     public void initSky()
     {
         Spatial sky = SkyFactory.createSky(
-        assetManager,"Textures/Sky/Bright/FullskiesBlueClear03.dds",false);
+        assetManager,"Textures/Sky/Bright/BrightSky.dds",false);
         rootNode.attachChild(sky);
         
     }
@@ -105,6 +108,7 @@ public class Main extends SimpleApplication{
         anyKeyPressed = false;
         camera = viewPort.getCamera();
         position = camera.getLocation();
+        itemsCollected = 0;
         
         // Init Geometries
         initForest();
@@ -130,14 +134,16 @@ public class Main extends SimpleApplication{
             itemNode.attachChild(cube);
         }
         // Textfield
-        
-        textField = new BitmapText(guiFont, false);
-        textField.setSize(0.3f);      
-        textField.setColor(ColorRGBA.White);                            
-        textField.setText("Progman");    
-        textField.setLocalTranslation(settings.getWidth(), settings.getHeight(), 0.1f);
         guiNode.setQueueBucket(Bucket.Gui);
-        guiNode.attachChild(textField);
+        
+    
+        
+        textField = new BitmapText(guiFont, false);          
+        textField.setSize(guiFont.getCharSet().getRenderedSize());      // font size
+        textField.setColor(ColorRGBA.White);                             // font color
+        textField.setText("");             // the text
+        textField.setLocalTranslation(settings.getWidth()/2 - textField.getLineWidth(), settings.getHeight()/2, 0); // position
+        
         
         
         //Light
@@ -145,7 +151,6 @@ public class Main extends SimpleApplication{
         light.setDirection(new Vector3f(-0.1f,-1.0f,-1.0f));
            
         // Attach to game
-        rootNode.attachChild(textField);
         rootNode.attachChild(itemNode);
         rootNode.attachChild(makeFloor());
         rootNode.addLight(light);
@@ -166,9 +171,7 @@ public class Main extends SimpleApplication{
     public void simpleUpdate(float tpf) {
         // no jumps allowed
         camera.setLocation(new Vector3f(position.x, 0, position.z));
-        //Set position of text label
-        textField.setText("Seite 1 / 8 gefunden!");       
-        //
+        //Set position of text label           
         System.out.println(""+isWalking);
         foodstepsCheck();
         isWalking = false; // Muss jede runde neu gesetzt werden sonst wird nicht gelaufen.
@@ -239,6 +242,7 @@ public class Main extends SimpleApplication{
                if (name.equals("Left") && isRunning == true){ 
                    isWalking = true;
                    audio_foodsteps.play();
+                   showHUD();
 
                }
                if (name.equals("Back") && isRunning == true){
@@ -310,6 +314,10 @@ public class Main extends SimpleApplication{
         
     }
 
+    public void showHUD(){
+        textField.setText("You have collected " + itemsCollected + "/" + itemNumber + " items.");
+        guiNode.attachChild(textField);
+    }
     
         
     
