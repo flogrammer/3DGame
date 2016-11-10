@@ -49,9 +49,7 @@ public class Main extends SimpleApplication{
     Camera camera;
     Vector3f position;
     ColorRGBA color;
-    BulletAppState bulletAppState;
-    CharacterControl player;
-    RigidBodyControl physicsNode;
+    
     
     // Figures and Textures
     Geometry [] items;
@@ -65,6 +63,16 @@ public class Main extends SimpleApplication{
     // Labels & Textfields
     BitmapText textField;
             
+    
+    // Stuff for Collision detection
+    private Vector3f camDir = new Vector3f();
+    private Vector3f walkDirection = new Vector3f(0,0,0);
+    private Vector3f camLeft = new Vector3f();
+    private boolean left = false, right = false, move = false, back = false;
+    
+    BulletAppState bulletAppState;
+    CharacterControl player;
+    RigidBodyControl physicsNode;
             
     public static void main(String[] args) {
         Main app = new Main();
@@ -78,7 +86,6 @@ public class Main extends SimpleApplication{
         isWalking = false;
         anyKeyPressed = false;
         camera = viewPort.getCamera();
-        position = camera.getLocation();
         itemsCollected = 0;
         startTime = 0;
         
@@ -143,12 +150,36 @@ public class Main extends SimpleApplication{
     public void simpleUpdate(float tpf) {
         
         // no jumps allowed
-        camera.setLocation(new Vector3f(position.x, 0f, position.y));
         
         //Set position of text label           
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf);
+        
+        // Collision detection
+        camDir.set(cam.getDirection()).multLocal(0.6f);
+        camLeft.set(cam.getLeft()).multLocal(0.4f);
+        
+        walkDirection.set(0, 0, 0);
+        
+        if (left) {
+            walkDirection.addLocal(camLeft);
+        }
+        if (right) {
+            walkDirection.addLocal(camLeft.negate());
+        }
+        if (move) {
+            walkDirection.addLocal(camDir);
+        }
+        if (back) {
+            walkDirection.addLocal(camDir.negate());
+        }
+        player.setWalkDirection(walkDirection);
+        cam.setLocation(player.getPhysicsLocation());
+        
+        System.out.println("pos: " + position);
+    
+      checkPosition();  
     }
    
     @Override
@@ -184,13 +215,24 @@ public class Main extends SimpleApplication{
                 isRunning = !isRunning; // Continue or Pause game
                showHUD(tpf);
             }
-            
             if(name.equals("Move") && isPressed == false){
                 audio_foodsteps.stop();
             } 
             if(name.equals("Jump") && isPressed == true){
+                showHUD(tpf, "Don't jump! You will never return...");
                 audio_foodsteps.stop();
                 player.jump();
+            } 
+            
+            // Collision detection
+             if (name.equals("Left")) {
+              left = isPressed;
+            } else if (name.equals("Right")) {
+              right= isPressed;
+            } else if (name.equals("Move")) {
+              move = isPressed;
+            } else if (name.equals("Back")) {
+              back = isPressed;
             } 
         }
         
@@ -231,6 +273,11 @@ public class Main extends SimpleApplication{
         textField.setText("You have collected " + itemsCollected + "/" + ITEMNUMBER + " items.");
         guiNode.attachChild(textField);
     }
+    public void showHUD(float tpf, String text){
+        startTime = System.currentTimeMillis();
+        textField.setText("" + text);
+        guiNode.attachChild(textField);
+    }
     
      public void fadeHUD(float tpf){
          if (startTime == 0)
@@ -246,7 +293,13 @@ public class Main extends SimpleApplication{
          color.a = colorValue;
          textField.setColor(color);
      }         
-
+     
+     public void checkPosition(){
+         if (position.y < 0){
+             player.setPhysicsLocation(new Vector3f (position.x, 0f, position.y));
+             player.setGravity(0);
+         }
+     }
        
      // INIT METHODS
      
@@ -313,7 +366,7 @@ public class Main extends SimpleApplication{
         inputManager.addMapping("Left", new KeyTrigger(keyInput.KEY_A));
         inputManager.addMapping("Back", new KeyTrigger(keyInput.KEY_S));
         inputManager.addMapping("Right", new KeyTrigger(keyInput.KEY_D));
-        inputManager.addMapping("Jump", new KeyTrigger(keyInput.KEY_D));
+        inputManager.addMapping("Jump", new KeyTrigger(keyInput.KEY_SPACE));
         inputManager.addMapping("Pause", new KeyTrigger(keyInput.KEY_P));
 
         inputManager.addListener(analogListener, "Move");
@@ -334,10 +387,11 @@ public class Main extends SimpleApplication{
     public void initPlayerPhysics(){
         CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1.5f, 6f, 1);
         player = new CharacterControl(capsuleShape, 0.05f);
-        player.setPhysicsLocation(new Vector3f(0, -2.5f, 0));
+        player.setPhysicsLocation(new Vector3f(20, 0, 0));
         bulletAppState.getPhysicsSpace().add(player);
-        player.setGravity(30);
-        player.setJumpSpeed(20);
+        player.setGravity(0);
+        position = player.getPhysicsLocation();
+
     }
  
 }
