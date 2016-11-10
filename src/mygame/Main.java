@@ -25,6 +25,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
+import com.jme3.system.Timer;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.util.SkyFactory;
 
@@ -37,7 +38,9 @@ public class Main extends SimpleApplication{
     boolean isRunning;
     boolean anyKeyPressed;
     
+    final long FADETIME = 5000;
     int PULSEFACTOR = 2;
+    long startTime;
     int itemsCollected;
     final int itemNumber = 8; // Anzahl Prog Themen
     final int MOVEMENTSPEED = 5;
@@ -46,7 +49,7 @@ public class Main extends SimpleApplication{
     final int ITEMSET = 5;
     Camera camera;
     Vector3f position;
-    
+    ColorRGBA color;
     // Figures and Textures
     Geometry [] items;
     
@@ -109,6 +112,9 @@ public class Main extends SimpleApplication{
         camera = viewPort.getCamera();
         position = camera.getLocation();
         itemsCollected = 0;
+        startTime = 0;
+        
+        
         
         // Init Geometries
         initForest();
@@ -139,10 +145,11 @@ public class Main extends SimpleApplication{
     
         
         textField = new BitmapText(guiFont, false);          
-        textField.setSize(guiFont.getCharSet().getRenderedSize());      // font size
-        textField.setColor(ColorRGBA.White);                             // font color
+        textField.setSize(guiFont.getCharSet().getRenderedSize()); 
+        color = new ColorRGBA(ColorRGBA.White);
+        textField.setColor(color);                             // font color
         textField.setText("");             // the text
-        textField.setLocalTranslation(settings.getWidth()/2 - textField.getLineWidth(), settings.getHeight()/2, 0); // position
+        textField.setLocalTranslation(settings.getWidth()/2 - 100, settings.getHeight()/2, 0); // position
         
         
         
@@ -171,10 +178,11 @@ public class Main extends SimpleApplication{
     public void simpleUpdate(float tpf) {
         // no jumps allowed
         camera.setLocation(new Vector3f(position.x, 0, position.z));
+        
         //Set position of text label           
-        System.out.println(""+isWalking);
         foodstepsCheck();
         isWalking = false; // Muss jede runde neu gesetzt werden sonst wird nicht gelaufen.
+        fadeHUD(tpf);
     }
     /**
      * Rendering von Texturen / Modellen und co
@@ -238,11 +246,11 @@ public class Main extends SimpleApplication{
                if (name.equals("Move") && isRunning == true){
                    isWalking = true;
                    audio_foodsteps.play();
+
                }
                if (name.equals("Left") && isRunning == true){ 
                    isWalking = true;
                    audio_foodsteps.play();
-                   showHUD();
 
                }
                if (name.equals("Back") && isRunning == true){
@@ -265,9 +273,12 @@ public class Main extends SimpleApplication{
         public void onAction(String name, boolean isPressed, float tpf) {
             if(name.equals("Pause") && !isPressed){
                 isRunning = !isRunning; // Continue or Pause game
+               showHUD(tpf);
+
             }
             if(name.equals("Move") && isPressed == false){
                 audio_foodsteps.stop();
+
             }
             
         }
@@ -314,11 +325,26 @@ public class Main extends SimpleApplication{
         
     }
 
-    public void showHUD(){
+    public void showHUD(float tpf){
+        startTime = System.currentTimeMillis();
         textField.setText("You have collected " + itemsCollected + "/" + itemNumber + " items.");
         guiNode.attachChild(textField);
     }
     
-        
+     public void fadeHUD(float tpf){
+         if (startTime == 0)
+             return;
+         long time = System.currentTimeMillis();
+         float t = ((float) (time - startTime))/FADETIME;
+         System.out.println(t);
+         if(t > 1){
+             startTime = 0;
+             return;
+         }
+         float colorValue = 1-t;
+         color.a = colorValue;
+         textField.setColor(color);
+     }         
+       
     
 }
