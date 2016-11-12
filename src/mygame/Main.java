@@ -45,15 +45,21 @@ public class Main extends SimpleApplication{
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
     final int ITEMSET = 5;
+    final float PROGMAN_X = -10.0f;
+    final float PROGMAN_Y = 0;
+    final float PROGMAN_Z = -10.0f;
+    final float PROGMAN_MAX_SPEED = 1.0f;
     
     
     Camera camera;
     Vector3f position;
+    Vector3f progman_pos;
     ColorRGBA color;
     
     
     // Figures and Textures
     Geometry [] items;
+    Geometry progman;
     
     // Sounds and Audio
     private AudioNode audio_theme;
@@ -106,6 +112,7 @@ public class Main extends SimpleApplication{
         initForest();
         initSky();
         initHouses();
+        initProgman();
         
         items = new Geometry [ITEMSET];
         Node itemNode = new Node();
@@ -146,10 +153,20 @@ public class Main extends SimpleApplication{
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         
     }
-    
+    public void updateProgman()
+    {
+        Vector3f direction = new Vector3f(position.x-progman_pos.x, 0f, position.z-progman_pos.z);
+        //System.out.println("pos "+position + " progman: " + progman_pos + " moving to " + direction);
+        if(direction.length() > PROGMAN_MAX_SPEED)
+            direction = direction.divide(direction.length()*10.0f);
+        //System.out.println("2pos "+position + " progman: " + progman_pos + " moving to " + direction);
+        progman_pos = progman_pos.add(direction);
+        progman.setLocalTranslation(progman_pos);
+    }
     @Override
     public void simpleUpdate(float tpf) {
         
+        updateProgman();
         // no jumps allowed
         
         //Set position of text label           
@@ -178,7 +195,7 @@ public class Main extends SimpleApplication{
         player.setWalkDirection(walkDirection);
         cam.setLocation(player.getPhysicsLocation());
         
-        System.out.println("pos: " + position);
+        //System.out.println("pos: " + position);
     
       checkPosition();  
     }
@@ -367,6 +384,17 @@ public class Main extends SimpleApplication{
                 trees[i][j].setLocalTranslation(i*5.0f + xrandom,-2.5f,j*5.0f+zrandom);
             }
         }
+    }
+    public void initProgman()
+    {
+        Box box = new Box(0.5f, 0.5f, 0.5f);
+        progman = new Geometry("box", box);
+        Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat1.setColor("Color", ColorRGBA.White);
+        progman.setMaterial(mat1);
+        progman_pos = new Vector3f(PROGMAN_X,PROGMAN_Y,PROGMAN_Z);
+        progman.setLocalTranslation(progman_pos);
+        rootNode.attachChild(progman);
     }
     
     
