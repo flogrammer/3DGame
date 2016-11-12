@@ -24,6 +24,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.util.SkyFactory;
+import com.jme3.texture.Texture;
 
 /**
  * test
@@ -323,8 +324,14 @@ public class Main extends SimpleApplication{
     }
       
      public void initSky(){
-        Spatial sky = SkyFactory.createSky(
-        assetManager,"Textures/Sky/Bright/BrightSky.dds",false);
+        Texture west = assetManager.loadTexture("Models/sky/purplenebula_bk.jpg");
+        Texture east = assetManager.loadTexture("Models/sky/purplenebula_dn.jpg");
+        Texture north = assetManager.loadTexture("Models/sky/purplenebula_ft.jpg");
+        Texture south = assetManager.loadTexture("Models/sky/purplenebula_lf.jpg");
+        Texture up = assetManager.loadTexture("Models/sky/purplenebula_rt.jpg");
+        Texture down = assetManager.loadTexture("Models/sky/purplenebula_up.jpg");
+
+        Spatial sky = SkyFactory.createSky(assetManager, west, east, north, south, up, down);
         rootNode.attachChild(sky);  
     }
      
