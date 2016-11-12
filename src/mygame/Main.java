@@ -350,19 +350,21 @@ public class Main extends SimpleApplication{
      
     public void initForest()
     {
-        final int anzahlBaueme = 10;
+        final int anzahlBaueme = 50;
         final float max_x_random = 2.0f;
         final float max_z_random = 2.0f;
-        Spatial [][] tree = new Spatial[anzahlBaueme][anzahlBaueme];
-        for( int i = 0; i < tree.length; i++)
+        Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
+        Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
+        tree.scale(1.0f, 5.0f, 1.0f);
+        for( int i = 0; i < trees.length; i++)
         {
-            for(int j = 0; j < tree[i].length; j++)
+            for(int j = 0; j < trees[i].length; j++)
             {
-                tree[i][j] = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
-                rootNode.attachChild(tree[i][j]);
+                trees[i][j] = tree.clone();
+                rootNode.attachChild(trees[i][j]);
                 float xrandom = (float)(Math.random()-0.5)*2.0f*max_x_random;
                 float zrandom = (float)(Math.random()-0.5)*2.0f*max_z_random;
-                tree[i][j].setLocalTranslation(i*5.0f + xrandom,-2.5f,j*5.0f+zrandom);
+                trees[i][j].setLocalTranslation(i*5.0f + xrandom,-2.5f,j*5.0f+zrandom);
             }
         }
     }
