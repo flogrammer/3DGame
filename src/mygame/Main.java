@@ -3,6 +3,7 @@ package mygame;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
@@ -124,7 +125,7 @@ public class Main extends SimpleApplication{
             Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
             mat1.setColor("Color", ColorRGBA.randomColor());
             cube.setMaterial(mat1);
-            cube.setLocalTranslation(random, 0f, random);
+            cube.setLocalTranslation(random, 5f, random);
             items[i] = cube;
                        
             //item = makeCube("Box", random, 0f, 1f);
@@ -151,7 +152,9 @@ public class Main extends SimpleApplication{
         rootNode.addLight(light);
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
+        camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
         
+                
     }
     public void updateProgman()
     {
@@ -273,7 +276,7 @@ public class Main extends SimpleApplication{
     protected Geometry makeFloor() {
     Box box = new Box(256, .2f, 256);
     Geometry floor = new Geometry("the Floor", box);
-    floor.setLocalTranslation(0, -5, 0);
+    floor.setLocalTranslation(0, 0, 0);
     Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
     mat1.setColor("Color", ColorRGBA.Brown);
     floor.setMaterial(mat1);
@@ -359,7 +362,7 @@ public class Main extends SimpleApplication{
        physicsNode = new RigidBodyControl(houseShape, 0);
        house.addControl(physicsNode);
        bulletAppState.getPhysicsSpace().add(house);
-       physicsNode.setPhysicsLocation(new Vector3f(0, -2.5f, 0));
+       physicsNode.setPhysicsLocation(new Vector3f(10, 0, 20));
 
        rootNode.attachChild(house);
 
@@ -373,15 +376,27 @@ public class Main extends SimpleApplication{
         Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
         Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
         tree.scale(1.0f, 5.0f, 1.0f);
+        
+        CollisionShape treeShape = new BoxCollisionShape(new Vector3f (0.3f, 10, 0.3f));
+
         for( int i = 0; i < trees.length; i++)
         {
             for(int j = 0; j < trees[i].length; j++)
             {
+                
+
+                
                 trees[i][j] = tree.clone();
                 rootNode.attachChild(trees[i][j]);
                 float xrandom = (float)(Math.random()-0.5)*2.0f*max_x_random;
                 float zrandom = (float)(Math.random()-0.5)*2.0f*max_z_random;
-                trees[i][j].setLocalTranslation(i*5.0f + xrandom,-2.5f,j*5.0f+zrandom);
+                trees[i][j].setLocalTranslation(i*5.0f + xrandom,0f,j*5.0f+zrandom);
+                
+                RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);
+                trees[i][j].addControl(treeNode);
+                bulletAppState.getPhysicsSpace().add(trees[i][j]);
+                treeNode.setPhysicsLocation(trees[i][j].getLocalTranslation()); 
+                
             }
         }
     }
@@ -422,9 +437,9 @@ public class Main extends SimpleApplication{
     }
     
     public void initPlayerPhysics(){
-        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1.5f, 6f, 1);
+        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1.5f, 3f, 1);
         player = new CharacterControl(capsuleShape, 0.05f);
-        player.setPhysicsLocation(new Vector3f(20, 0, 0));
+        player.setPhysicsLocation(new Vector3f(0, 2, 0));
         bulletAppState.getPhysicsSpace().add(player);
         player.setGravity(0);
         position = player.getPhysicsLocation();
