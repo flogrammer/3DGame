@@ -107,7 +107,7 @@ public class Main extends SimpleApplication{
         initListeners();
         initAudio();
         initPlayerPhysics();
-        bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+        //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
 
         // Init Geometries
         initForest();
@@ -180,8 +180,8 @@ public class Main extends SimpleApplication{
         fadeHUD(tpf);
         
         // Collision detection
-        camDir.set(cam.getDirection()).multLocal(0.6f);
-        camLeft.set(cam.getLeft()).multLocal(0.4f);
+        camDir.set(cam.getDirection()).multLocal(0.1f);
+        camLeft.set(cam.getLeft()).multLocal(0.1f);
         
         walkDirection.set(0, 0, 0);
         
@@ -202,7 +202,6 @@ public class Main extends SimpleApplication{
         
         //System.out.println("pos: " + position);
     
-      checkPosition();  
     }
    
     @Override
@@ -242,7 +241,7 @@ public class Main extends SimpleApplication{
                 audio_foodsteps.stop();
             } 
             if(name.equals("Jump") && isPressed == true){
-                showHUD(tpf, "Don't jump! You will never return...");
+                showHUD(tpf, "That was a jump right there!");
                 audio_foodsteps.stop();
                 player.jump();
             } 
@@ -278,6 +277,14 @@ public class Main extends SimpleApplication{
     protected Spatial makeFloor() {
         Spatial scenefile = assetManager.loadModel("Models/Scenes/newScene.j3o");
         rootNode.attachChild(scenefile);
+        
+        CollisionShape groundShape = CollisionShapeFactory.createMeshShape((Node) scenefile);
+        
+        RigidBodyControl groundControl = new RigidBodyControl(groundShape, 0);
+        bulletAppState.getPhysicsSpace().add(groundControl);
+     
+        
+        
    /* Box box = new Box(256, .2f, 256);
     Geometry floor = new Geometry("the Floor", box);
     floor.setLocalTranslation(0, 0, 0);
@@ -319,12 +326,7 @@ public class Main extends SimpleApplication{
          textField.setColor(color);
      }         
      
-     public void checkPosition(){
-         if (position.y < 0){
-             player.setPhysicsLocation(new Vector3f (position.x, 0f, position.y));
-             player.setGravity(0);
-         }
-     }
+ 
        
      // INIT METHODS
      
@@ -342,7 +344,7 @@ public class Main extends SimpleApplication{
        audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
        audio_foodsteps.setPositional(false);
        audio_foodsteps.setLooping(true);
-       audio_foodsteps.setVolume(2);
+       audio_foodsteps.setVolume(0.6f);
        rootNode.attachChild(audio_foodsteps);
        
     }
@@ -445,7 +447,7 @@ public class Main extends SimpleApplication{
         player = new CharacterControl(capsuleShape, 0.05f);
         player.setPhysicsLocation(new Vector3f(0, 2, 0));
         bulletAppState.getPhysicsSpace().add(player);
-        player.setGravity(0);
+        player.setGravity(20);
         position = player.getPhysicsLocation();
 
     }
