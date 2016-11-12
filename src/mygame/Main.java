@@ -148,6 +148,8 @@ public class Main extends SimpleApplication{
            
         // Attach to game
         rootNode.attachChild(itemNode);
+        
+        
         rootNode.attachChild(makeFloor());
         rootNode.addLight(light);
         setDisplayStatView(false);
@@ -273,14 +275,16 @@ public class Main extends SimpleApplication{
     }
    
  
-    protected Geometry makeFloor() {
-    Box box = new Box(256, .2f, 256);
+    protected Spatial makeFloor() {
+        Spatial scenefile = assetManager.loadModel("Models/Scenes/newScene.j3o");
+        rootNode.attachChild(scenefile);
+   /* Box box = new Box(256, .2f, 256);
     Geometry floor = new Geometry("the Floor", box);
     floor.setLocalTranslation(0, 0, 0);
     Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
     mat1.setColor("Color", ColorRGBA.Brown);
-    floor.setMaterial(mat1);
-    return floor;
+    floor.setMaterial(mat1);*/
+    return scenefile;
   }
     
     public void foodstepsCheck(){
