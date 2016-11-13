@@ -191,9 +191,9 @@ public class Main extends SimpleApplication{
 
         // Move it to the bottom right of the screen
         flash.move(cam.getDirection().mult(3));
-        flash.move(cam.getUp().mult(-1.2f));
-        flash.move(cam.getLeft().mult(-1f));
-        flash.rotate(3.4f, FastMath.PI, 0);
+        flash.move(cam.getUp().mult(-1.5f)); // y Achse
+        flash.move(cam.getLeft().mult(-1f)); // x Achse
+        flash.rotate(3.4f, FastMath.PI, 0); // Rotation
    
         
         //Set position of text label           
