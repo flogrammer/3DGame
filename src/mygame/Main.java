@@ -160,7 +160,7 @@ public class Main extends SimpleApplication{
     public void updateProgman()
     {
         Vector3f direction = new Vector3f(position.x-progman_pos.x, 0f, position.z-progman_pos.z);
-        //System.out.println("pos "+position + " progman: " + progman_pos + " moving to " + direction);
+       //System.out.println("pos "+position + " progman: " + progman_pos + " moving to " + direction);
         if(direction.length() > PROGMAN_MAX_SPEED)
             direction = direction.divide(direction.length()*10.0f);
         //System.out.println("2pos "+position + " progman: " + progman_pos + " moving to " + direction);
