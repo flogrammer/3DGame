@@ -55,9 +55,10 @@ public class Main extends SimpleApplication{
     final int JUMPFACTOR = 50;
     final int ITEMSET = 5;
     final float PROGMAN_X = -100.0f;
-    final float PROGMAN_Y = 0;
+    final float PROGMAN_Y = 2.5f;
     final float PROGMAN_Z = -10.0f;
-    final float PROGMAN_MAX_SPEED = 1.0f;
+    final float PROGMAN_MAX_SPEED = 0.1f;
+    final float WORLD_SIZE = 125.0f;
     
     
     Camera camera;
@@ -73,6 +74,7 @@ public class Main extends SimpleApplication{
     Spatial flash;
     PointLight light;
     SpotLight spot;
+    Spatial floor;
     
     // Sounds and Audio
     private AudioNode audio_theme;
@@ -160,8 +162,8 @@ public class Main extends SimpleApplication{
         // Attach to game
         rootNode.attachChild(itemNode);
         
-        
-        rootNode.attachChild(makeFloor());
+        floor = makeFloor();
+        rootNode.attachChild(floor);
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
@@ -170,9 +172,9 @@ public class Main extends SimpleApplication{
     public void updateProgman()
     {
         Vector3f direction = new Vector3f(position.x-progman_pos.x, 0f, position.z-progman_pos.z);
-        //System.out.println("pos "+position + " progman: " + progman_pos + " moving to " + direction);
+       //System.out.println("pos "+position + " progman: " + progman_pos + " moving to " + direction);
         if(direction.length() > PROGMAN_MAX_SPEED)
-            direction = direction.divide(direction.length()*10.0f);
+            direction = direction.divide(direction.length()).mult(PROGMAN_MAX_SPEED);
         //System.out.println("2pos "+position + " progman: " + progman_pos + " moving to " + direction);
         if (lightActivated){ // Only if light is acticated
         progman_pos = progman_pos.add(direction);
@@ -181,6 +183,7 @@ public class Main extends SimpleApplication{
     }
     @Override
     public void simpleUpdate(float tpf) {
+
         position = cam.getLocation();
         // Update position/rotation for flashlight
         Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(flash.getWorldTranslation()));
@@ -194,8 +197,11 @@ public class Main extends SimpleApplication{
         flash.move(cam.getUp().mult(-1.5f)); // y Achse
         flash.move(cam.getLeft().mult(-1f)); // x Achse
         flash.rotate(3.4f, FastMath.PI, 0); // Rotation
-   
+
         
+        updateProgman();
+        // no jumps allowed
+
         //Set position of text label           
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
@@ -225,8 +231,10 @@ public class Main extends SimpleApplication{
         player.setWalkDirection(walkDirection);
         cam.setLocation(player.getPhysicsLocation());
         // Update Flashlight
-          light.setPosition(player.getPhysicsLocation());
-          
+
+        light.setPosition(player.getPhysicsLocation());
+
+
     
     }
    
@@ -368,7 +376,7 @@ public class Main extends SimpleApplication{
         guiNode.attachChild(textField);
     }
     
-     public void fadeHUD(float tpf){
+    public void fadeHUD(float tpf){
          if (startTime == 0)
              return;
          long time = System.currentTimeMillis();
@@ -386,7 +394,7 @@ public class Main extends SimpleApplication{
        
      // INIT METHODS
      
-      public void initAudio(){
+    public void initAudio(){
         // Background audio
        audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
        audio_theme.setPositional(false);
@@ -405,7 +413,7 @@ public class Main extends SimpleApplication{
        
     }
       
-     public void initSky(){
+    public void initSky(){
         Texture west = assetManager.loadTexture("Models/sky/purplenebula_bk.jpg");
         Texture east = assetManager.loadTexture("Models/sky/purplenebula_dn.jpg");
         Texture north = assetManager.loadTexture("Models/sky/purplenebula_ft.jpg");
@@ -433,8 +441,8 @@ public class Main extends SimpleApplication{
     public void initForest()
     {
         final int anzahlBaueme = 50;
-        final float max_x_random = 2.0f;
-        final float max_z_random = 2.0f;
+        final float MAX_X_RANDOM = 2.0f;
+        final float MAX_Z_RANDOM = 2.0f;
         Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
         Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
         tree.scale(1.0f, 5.0f, 1.0f);
@@ -448,9 +456,10 @@ public class Main extends SimpleApplication{
             {
                 trees[i][j] = tree.clone();
                 rootNode.attachChild(trees[i][j]);
-                float xrandom = (float)(Math.random()-0.5)*2.0f*max_x_random;
-                float zrandom = (float)(Math.random()-0.5)*2.0f*max_z_random;
-                trees[i][j].setLocalTranslation(i*5.0f + xrandom,0f,j*5.0f+zrandom);
+                float xrandom = (float)(Math.random()-0.3)*2.0f*MAX_X_RANDOM;
+                
+                float zrandom = (float)(Math.random()-0.3)*2.0f*MAX_Z_RANDOM;
+                trees[i][j].setLocalTranslation((i-anzahlBaueme/2)*5.0f + xrandom,0f,(j-anzahlBaueme/2)*5.0f+zrandom);
                 
                 RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);
                 trees[i][j].addControl(treeNode);
