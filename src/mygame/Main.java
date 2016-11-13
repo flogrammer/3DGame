@@ -14,6 +14,7 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.DirectionalLight;
+import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
@@ -46,7 +47,7 @@ public class Main extends SimpleApplication{
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
     final int ITEMSET = 5;
-    final float PROGMAN_X = -10.0f;
+    final float PROGMAN_X = -100.0f;
     final float PROGMAN_Y = 0;
     final float PROGMAN_Z = -10.0f;
     final float PROGMAN_MAX_SPEED = 1.0f;
@@ -61,6 +62,8 @@ public class Main extends SimpleApplication{
     // Figures and Textures
     Geometry [] items;
     Geometry progman;
+    Spatial flash;
+    PointLight light;
     
     // Sounds and Audio
     private AudioNode audio_theme;
@@ -141,17 +144,13 @@ public class Main extends SimpleApplication{
         textField.setColor(color);                             // font color
         textField.setText("");             // the text
         textField.setLocalTranslation(settings.getWidth()/2 - 100, settings.getHeight()/2, 0); // position
-        
-        //Light
-        DirectionalLight light = new DirectionalLight(); 
-        light.setDirection(new Vector3f(-0.1f,-1.0f,-1.0f));
+ 
            
         // Attach to game
         rootNode.attachChild(itemNode);
         
         
         rootNode.attachChild(makeFloor());
-        rootNode.addLight(light);
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
@@ -199,8 +198,9 @@ public class Main extends SimpleApplication{
         }
         player.setWalkDirection(walkDirection);
         cam.setLocation(player.getPhysicsLocation());
-        
-        //System.out.println("pos: " + position);
+        // Update Flashlight
+          light.setPosition(player.getPhysicsLocation());
+
     
     }
    
@@ -344,7 +344,7 @@ public class Main extends SimpleApplication{
        audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
        audio_foodsteps.setPositional(false);
        audio_foodsteps.setLooping(true);
-       audio_foodsteps.setVolume(0.6f);
+       audio_foodsteps.setVolume(0.2f);
        rootNode.attachChild(audio_foodsteps);
        
     }
@@ -383,15 +383,13 @@ public class Main extends SimpleApplication{
         Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
         tree.scale(1.0f, 5.0f, 1.0f);
         
+        
         CollisionShape treeShape = new BoxCollisionShape(new Vector3f (0.3f, 10, 0.3f));
 
         for( int i = 0; i < trees.length; i++)
         {
             for(int j = 0; j < trees[i].length; j++)
             {
-                
-
-                
                 trees[i][j] = tree.clone();
                 rootNode.attachChild(trees[i][j]);
                 float xrandom = (float)(Math.random()-0.5)*2.0f*max_x_random;
@@ -401,8 +399,7 @@ public class Main extends SimpleApplication{
                 RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);
                 trees[i][j].addControl(treeNode);
                 bulletAppState.getPhysicsSpace().add(trees[i][j]);
-                treeNode.setPhysicsLocation(trees[i][j].getLocalTranslation()); 
-                
+                treeNode.setPhysicsLocation(trees[i][j].getLocalTranslation());  
             }
         }
     }
@@ -443,13 +440,54 @@ public class Main extends SimpleApplication{
     }
     
     public void initPlayerPhysics(){
-        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1.5f, 3f, 1);
+        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1.5f, 2f, 1);
         player = new CharacterControl(capsuleShape, 0.05f);
         player.setPhysicsLocation(new Vector3f(0, 2, 0));
         bulletAppState.getPhysicsSpace().add(player);
         player.setGravity(20);
         position = player.getPhysicsLocation();
+        
+        
+        light = new PointLight();
+        light.setPosition(player.getPhysicsLocation());
+        rootNode.addLight(light);
+        
+        flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
+        flash.scale(1.5f);
+        flash.setLocalTranslation(0f, 1.5f, 0f);
+        rootNode.attachChild(flash);
 
+    }
+    
+    public void createFog(){
+        // Verwendung von exponentiellem Verhalten:
+        // f = e^(-d*b) mit d = distance, b = attenuation
+        // final color = (1.0 -  f) * fogColor + f * light Color
+        // Rangebased technique -> Vertex to Camera
+        // Vertex -> Dreiecke, Fragment -> Pixelweise
+        // Vertexshader berechnet position und übergibt sie weiter an fragemnt shader
+        /*
+         * uniform -> User defined variables (global)
+         * attribute -> Per vertex variables (position e.g)
+         * varying -> Vertex shader to fragment shader variables
+         */
+        
+        
+        
+        ColorRGBA fogColor = new ColorRGBA(0.5f, 0.5f, 0.5f, 1f);
+        float d = 0; // Distance as range based calculation
+        float b_density = 0.05f; // fog density
+        float f = (float) Math.exp(-d * b_density);
+        
+        
+        ColorRGBA finalColor = new ColorRGBA();
+        float r = (float) (1.0 - f) * fogColor.r + f * light.getColor().r;
+        float g = (float) (1.0 - f) * fogColor.g + f * light.getColor().g;
+        float b = (float) (1.0 - f) * fogColor.b + f * light.getColor().b;
+
+        finalColor.r = r;
+        finalColor.g = g;
+        finalColor.b = b;
     }
  
 }
