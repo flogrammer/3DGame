@@ -81,6 +81,11 @@ public class Main extends SimpleApplication{
     private AudioNode audio_nature;
     private AudioNode audio_foodsteps;
     private AudioNode audio_foodsteps_end;
+    private AudioNode audio_breathing;
+    private AudioNode audio_fast_breathing;
+    private AudioNode audio_jump;
+    private AudioNode audio_flash_on;
+    private AudioNode audio_flash_off;
     
     // Labels & Textfields
     BitmapText textField;
@@ -255,6 +260,7 @@ public class Main extends SimpleApplication{
                    runFactor = 0.1f;
                    isWalking = true;
                    audio_foodsteps.play();
+                   audio_breathing.play();
                }
                if (name.equals("Left") && isRunning == true){ 
                    runFactor = 0.05f;
@@ -274,8 +280,15 @@ public class Main extends SimpleApplication{
                if (name.equals("Run") && isRunning == true){
                    runFactor = 0.2f; // Double the speed
                    isWalkingFast = true;
+                   
+                   audio_breathing.stop();
+                   audio_fast_breathing.play();
+                   
                    audio_foodsteps.setPitch(2.0f);
                    audio_foodsteps.setReverbEnabled(true);
+                   audio_foodsteps.play();
+
+                   
                } 
                
         }   
@@ -288,22 +301,28 @@ public class Main extends SimpleApplication{
                showHUD(tpf);
             }
             if(name.equals("Move") && isPressed == false){
+                audio_fast_breathing.stop();
                 audio_foodsteps.stop();
+                audio_breathing.stop();
             } 
             if(name.equals("Jump") && isPressed == true){
                 showHUD(tpf, "That was a jump right there!");
+                audio_fast_breathing.stop();
                 audio_foodsteps.stop();
+                audio_breathing.stop();
                 player.jump();
+                audio_jump.play();
             } 
             if(name.equals("Light") && isPressed == true){
-               // Todo: Flashlight sound
                 if(!lightActivated){
+                audio_flash_on.play();
                 rootNode.addLight(light);
                 rootNode.attachChild(flash);
                 lightActivated = true;
                 }
                 
                 else{
+                audio_flash_off.play();
                 rootNode.removeLight(light);
                 rootNode.detachChild(flash);
                 lightActivated = false;
@@ -410,6 +429,43 @@ public class Main extends SimpleApplication{
        audio_foodsteps.setLooping(true);
        audio_foodsteps.setVolume(0.2f);
        rootNode.attachChild(audio_foodsteps);
+       
+       audio_breathing = new AudioNode(assetManager, "Sounds/soundFX/breathing.wav", false);
+       audio_breathing.setPositional(false);
+       audio_breathing.setLooping(true);
+       audio_breathing.setVolume(0.3f);
+       rootNode.attachChild(audio_breathing);
+       
+       audio_fast_breathing = new AudioNode(assetManager, "Sounds/soundFX/fast_breath.wav", false);
+       audio_fast_breathing.setPositional(false);
+       audio_fast_breathing.setLooping(true);
+       audio_fast_breathing.setVolume(0.04f);
+       rootNode.attachChild(audio_fast_breathing);
+       
+       audio_jump = new AudioNode(assetManager, "Sounds/soundFX/sigh.wav", false);
+       audio_jump.setPositional(false);
+       audio_jump.setLooping(false);
+       audio_jump.setVolume(0.6f);
+       rootNode.attachChild(audio_jump);
+       
+       audio_flash_on = new AudioNode(assetManager, "Sounds/soundFX/flash_on.wav", false);
+       audio_flash_on.setPositional(false);
+       audio_flash_on.setLooping(false);
+       audio_flash_on.setVolume(0.2f);
+       rootNode.attachChild(audio_flash_on);
+       
+       audio_flash_off = new AudioNode(assetManager, "Sounds/soundFX/flash_off.wav", false);
+       audio_flash_off.setPositional(false);
+       audio_flash_off.setLooping(false);
+       audio_flash_off.setVolume(0.2f);
+       rootNode.attachChild(audio_flash_off);
+       
+       audio_nature = new AudioNode(assetManager, "Sounds/soundFX/thunder2.wav", false);
+       audio_nature.setPositional(false);
+       audio_nature.setLooping(true);
+       audio_nature.setVolume(0.1f);
+       rootNode.attachChild(audio_nature);
+       audio_nature.play();
        
     }
       
