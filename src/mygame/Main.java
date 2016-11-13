@@ -13,10 +13,14 @@ import com.jme3.font.BitmapText;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.PointLight;
+import com.jme3.light.SpotLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
@@ -35,11 +39,14 @@ import com.jme3.texture.Texture;
 public class Main extends SimpleApplication{
     boolean isWalking;
     boolean isRunning;
+    boolean isWalkingFast;
     boolean anyKeyPressed;
+    boolean lightActivated = false;
     
     long startTime;
     int itemsCollected;
     int pulsefactor = 2;
+    float runFactor = 0.1f;
 
     final long FADETIME = 5000;
     final int ITEMNUMBER = 8; // Anzahl Prog Themen
@@ -54,6 +61,7 @@ public class Main extends SimpleApplication{
     
     
     Camera camera;
+    Node cameraNode; // For the Flashlight
     Vector3f position;
     Vector3f progman_pos;
     ColorRGBA color;
@@ -64,6 +72,7 @@ public class Main extends SimpleApplication{
     Geometry progman;
     Spatial flash;
     PointLight light;
+    SpotLight spot;
     
     // Sounds and Audio
     private AudioNode audio_theme;
@@ -110,6 +119,8 @@ public class Main extends SimpleApplication{
         initListeners();
         initAudio();
         initPlayerPhysics();
+        initFlashlight();
+        initAmbientLight();
         //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
 
         // Init Geometries
@@ -155,7 +166,6 @@ public class Main extends SimpleApplication{
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
         
-                
     }
     public void updateProgman()
     {
@@ -164,23 +174,39 @@ public class Main extends SimpleApplication{
         if(direction.length() > PROGMAN_MAX_SPEED)
             direction = direction.divide(direction.length()*10.0f);
         //System.out.println("2pos "+position + " progman: " + progman_pos + " moving to " + direction);
+        if (lightActivated){ // Only if light is acticated
         progman_pos = progman_pos.add(direction);
         progman.setLocalTranslation(progman_pos);
+        }
     }
     @Override
     public void simpleUpdate(float tpf) {
-        
-        updateProgman();
-        // no jumps allowed
+        position = cam.getLocation();
+        // Update position/rotation for flashlight
+        Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(flash.getWorldTranslation()));
+        flash.setLocalTranslation(vectorDifference.addLocal(flash.getLocalTranslation()));
+
+        Quaternion worldDiff = new Quaternion(cam.getRotation().mult(flash.getWorldRotation().inverse()));
+        flash.setLocalRotation(worldDiff.multLocal(flash.getLocalRotation()));
+
+        // Move it to the bottom right of the screen
+        flash.move(cam.getDirection().mult(3));
+        flash.move(cam.getUp().mult(-1.2f));
+        flash.move(cam.getLeft().mult(-1f));
+        flash.rotate(3.4f, FastMath.PI, 0);
+   
         
         //Set position of text label           
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf);
         
+        // Progman
+        updateProgman();
+        
         // Collision detection
-        camDir.set(cam.getDirection()).multLocal(0.1f);
-        camLeft.set(cam.getLeft()).multLocal(0.1f);
+        camDir.set(cam.getDirection()).multLocal(runFactor);
+        camLeft.set(cam.getLeft()).multLocal(runFactor);
         
         walkDirection.set(0, 0, 0);
         
@@ -200,7 +226,7 @@ public class Main extends SimpleApplication{
         cam.setLocation(player.getPhysicsLocation());
         // Update Flashlight
           light.setPosition(player.getPhysicsLocation());
-
+          
     
     }
    
@@ -212,22 +238,38 @@ public class Main extends SimpleApplication{
     // Anonyme Klasse des AnalogListeners
     private AnalogListener analogListener = new AnalogListener(){
         public void onAnalog(String name, float value, float tpf) {
+            // Wird überschrieben falls er rennt
+                audio_foodsteps.setPitch(1f);
+                audio_foodsteps.setReverbEnabled(false);
+            
+            
                if (name.equals("Move") && isRunning == true){
+                   runFactor = 0.1f;
                    isWalking = true;
                    audio_foodsteps.play();
                }
                if (name.equals("Left") && isRunning == true){ 
+                   runFactor = 0.05f;
                    isWalking = true;
                    audio_foodsteps.play();
                }
                if (name.equals("Back") && isRunning == true){
+                   runFactor = 0.1f;
                    isWalking = true;
                    audio_foodsteps.play();
                }
                if (name.equals("Right") && isRunning == true){
-                    isWalking = true;
-                    audio_foodsteps.play();
-               }   
+                   runFactor = 0.05f;
+                   isWalking = true;
+                   audio_foodsteps.play();
+               } 
+               if (name.equals("Run") && isRunning == true){
+                   runFactor = 0.2f; // Double the speed
+                   isWalkingFast = true;
+                   audio_foodsteps.setPitch(2.0f);
+                   audio_foodsteps.setReverbEnabled(true);
+               } 
+               
         }   
     };
     
@@ -245,7 +287,22 @@ public class Main extends SimpleApplication{
                 audio_foodsteps.stop();
                 player.jump();
             } 
+            if(name.equals("Light") && isPressed == true){
+               // Todo: Flashlight sound
+                if(!lightActivated){
+                rootNode.addLight(light);
+                rootNode.attachChild(flash);
+                lightActivated = true;
+                }
+                
+                else{
+                rootNode.removeLight(light);
+                rootNode.detachChild(flash);
+                lightActivated = false;
+                }
+            } 
             
+
             // Collision detection
              if (name.equals("Left")) {
               left = isPressed;
@@ -316,7 +373,6 @@ public class Main extends SimpleApplication{
              return;
          long time = System.currentTimeMillis();
          float t = ((float) (time - startTime))/FADETIME;
-         System.out.println(t);
          if(t > 1){
              startTime = 0;
              return;
@@ -423,11 +479,16 @@ public class Main extends SimpleApplication{
         inputManager.addMapping("Right", new KeyTrigger(keyInput.KEY_D));
         inputManager.addMapping("Jump", new KeyTrigger(keyInput.KEY_SPACE));
         inputManager.addMapping("Pause", new KeyTrigger(keyInput.KEY_P));
+        inputManager.addMapping("Light", new KeyTrigger(keyInput.KEY_L));
+        inputManager.addMapping("Run", new KeyTrigger(keyInput.KEY_LSHIFT));
+
+
 
         inputManager.addListener(analogListener, "Move");
         inputManager.addListener(analogListener, "Left");
         inputManager.addListener(analogListener, "Back");
         inputManager.addListener(analogListener, "Right");
+        inputManager.addListener(analogListener, "Run");
 
         inputManager.addListener(actionListener, "Pause");
         inputManager.addListener(actionListener, "Move");
@@ -435,7 +496,8 @@ public class Main extends SimpleApplication{
         inputManager.addListener(actionListener, "Back");
         inputManager.addListener(actionListener, "Right");
         inputManager.addListener(actionListener, "Jump");
-
+        inputManager.addListener(actionListener, "Light");
+        
 
     }
     
@@ -445,18 +507,41 @@ public class Main extends SimpleApplication{
         player.setPhysicsLocation(new Vector3f(0, 2, 0));
         bulletAppState.getPhysicsSpace().add(player);
         player.setGravity(20);
-        position = player.getPhysicsLocation();
-        
-        
+
+    }
+    public void initFlashlight(){      
         light = new PointLight();
         light.setPosition(player.getPhysicsLocation());
-        rootNode.addLight(light);
+        light.setRadius(20f); // 20 Meter
         
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
-        flash.scale(1.5f);
-        flash.setLocalTranslation(0f, 1.5f, 0f);
-        rootNode.attachChild(flash);
-
+        flash.scale(2f);
+        
+        /*
+        spot = new SpotLight();
+        spot.setSpotRange(100f);                           // distance
+        spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
+        spot.setSpotOuterAngle(30f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
+        spot.setColor(ColorRGBA.Yellow.mult(1.3f));         // light color
+        spot.setPosition(cam.getLocation());               // shine from camera loc
+        spot.setDirection(cam.getDirection());             // shine forward from camera loc
+        rootNode.addLight(spot);// shine from camera loc
+        
+        in Update:
+         spot.setPosition(cam.getLocation());               
+          spot.setDirection(cam.getDirection());
+        
+        */
+        
+        
+        
+        
+    }
+    
+    public void initAmbientLight(){
+        AmbientLight al = new AmbientLight();
+        al.setColor(ColorRGBA.Blue.mult(1f));
+        rootNode.addLight(al);
     }
     
     public void createFog(){
@@ -471,9 +556,7 @@ public class Main extends SimpleApplication{
          * attribute -> Per vertex variables (position e.g)
          * varying -> Vertex shader to fragment shader variables
          */
-        
-        
-        
+      
         ColorRGBA fogColor = new ColorRGBA(0.5f, 0.5f, 0.5f, 1f);
         float d = 0; // Distance as range based calculation
         float b_density = 0.05f; // fog density
