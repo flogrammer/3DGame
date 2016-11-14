@@ -202,6 +202,9 @@ public class Main extends SimpleApplication{
         flash.move(cam.getUp().mult(-1.5f)); // y Achse
         flash.move(cam.getLeft().mult(-1f)); // x Achse
         flash.rotate(3.4f, FastMath.PI, 0); // Rotation
+        
+        spot.setPosition(cam.getLocation());               
+        spot.setDirection(cam.getDirection());
 
         
         updateProgman();
@@ -317,6 +320,7 @@ public class Main extends SimpleApplication{
                 if(!lightActivated){
                 audio_flash_on.play();
                 rootNode.addLight(light);
+                rootNode.addLight(spot);
                 rootNode.attachChild(flash);
                 lightActivated = true;
                 }
@@ -324,6 +328,7 @@ public class Main extends SimpleApplication{
                 else{
                 audio_flash_off.play();
                 rootNode.removeLight(light);
+                rootNode.removeLight(spot);
                 rootNode.detachChild(flash);
                 lightActivated = false;
                 }
@@ -582,23 +587,20 @@ public class Main extends SimpleApplication{
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
         flash.scale(2f);
         
-        /*
+        
+        
+        // Flash collision
+      
+       
+        // Cone Light
         spot = new SpotLight();
-        spot.setSpotRange(100f);                           // distance
+        spot.setSpotRange(50f);                           // distance
         spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
-        spot.setSpotOuterAngle(30f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
-        spot.setColor(ColorRGBA.Yellow.mult(1.3f));         // light color
+        spot.setSpotOuterAngle(50f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
+        spot.setColor(ColorRGBA.White.mult(0.6f));         // light color
         spot.setPosition(cam.getLocation());               // shine from camera loc
         spot.setDirection(cam.getDirection());             // shine forward from camera loc
-        rootNode.addLight(spot);// shine from camera loc
-        
-        in Update:
-         spot.setPosition(cam.getLocation());               
-          spot.setDirection(cam.getDirection());
-        
-        */
-        
-        
+               
         
         
     }
