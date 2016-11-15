@@ -55,9 +55,9 @@ public class Main extends SimpleApplication{
     final int JUMPFACTOR = 50;
     final int ITEMSET = 5;
     final float PROGMAN_X = -100.0f;
-    final float PROGMAN_Y = 2.5f;
+    final float PROGMAN_Y = 0.0f;
     final float PROGMAN_Z = -10.0f;
-    final float PROGMAN_MAX_SPEED = 0.1f;
+    final float PROGMAN_MAX_SPEED = 0.01f;
     final float WORLD_SIZE = 125.0f;
     
     
@@ -70,7 +70,7 @@ public class Main extends SimpleApplication{
     
     // Figures and Textures
     Geometry [] items;
-    Geometry progman;
+    Spatial progman;
     Spatial flash;
     PointLight light;
     SpotLight spot;
@@ -182,7 +182,8 @@ public class Main extends SimpleApplication{
             direction = direction.divide(direction.length()).mult(PROGMAN_MAX_SPEED);
         //System.out.println("2pos "+position + " progman: " + progman_pos + " moving to " + direction);
         if (lightActivated){ // Only if light is acticated
-        progman_pos = progman_pos.add(direction);
+            progman_pos = progman_pos.add(direction);
+        progman.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
         progman.setLocalTranslation(progman_pos);
         }
     }
@@ -531,13 +532,15 @@ public class Main extends SimpleApplication{
     }
     public void initProgman()
     {
-        Box box = new Box(0.5f, 0.5f, 0.5f);
+       /* Box box = new Box(0.5f, 0.5f, 0.5f);
         progman = new Geometry("box", box);
         Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat1.setColor("Color", ColorRGBA.White);
-        progman.setMaterial(mat1);
+        progman.setMaterial(mat1);*/
+        progman = assetManager.loadModel("Models/progman/progman.j3o");
         progman_pos = new Vector3f(PROGMAN_X,PROGMAN_Y,PROGMAN_Z);
         progman.setLocalTranslation(progman_pos);
+        progman.addLight(new DirectionalLight());
         rootNode.attachChild(progman);
     }
     
