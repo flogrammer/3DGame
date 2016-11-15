@@ -488,13 +488,16 @@ public class Main extends SimpleApplication{
     }
      
     public void initHouses(){
-       Spatial house = assetManager.loadModel("Models/Houses/Tree1.j3o");
+       Spatial house = assetManager.loadModel("Models/Houses/house.j3o");
         
-       CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
+     /*  CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
        physicsNode = new RigidBodyControl(houseShape, 0);
        house.addControl(physicsNode);
        bulletAppState.getPhysicsSpace().add(house);
-       physicsNode.setPhysicsLocation(new Vector3f(10, 0, 20));
+       physicsNode.setPhysicsLocation(new Vector3f(10, 0, 20));*/
+       house.scale(0.2f);
+        house.rotate(-(float)Math.PI/2f, 0,0);
+        house.setLocalTranslation(new Vector3f(10,-2.5f,10));
 
        rootNode.attachChild(house);
 
