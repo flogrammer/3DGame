@@ -54,8 +54,8 @@ public class Main extends SimpleApplication{
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
     final int ITEMSET = 5;
-    final float PROGMAN_X = -100.0f;
-    final float PROGMAN_Y = 0.0f;
+    final float PROGMAN_X = -10.0f;
+    final float PROGMAN_Y = 0f;
     final float PROGMAN_Z = -10.0f;
     final float PROGMAN_MAX_SPEED = 0.01f;
     final float WORLD_SIZE = 125.0f;
@@ -538,6 +538,7 @@ public class Main extends SimpleApplication{
         mat1.setColor("Color", ColorRGBA.White);
         progman.setMaterial(mat1);*/
         progman = assetManager.loadModel("Models/progman/progman.j3o");
+        progman.scale(0.8f);
         progman_pos = new Vector3f(PROGMAN_X,PROGMAN_Y,PROGMAN_Z);
         progman.setLocalTranslation(progman_pos);
         progman.addLight(new DirectionalLight());
