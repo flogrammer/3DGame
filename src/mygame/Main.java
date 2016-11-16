@@ -69,12 +69,12 @@ public class Main extends SimpleApplication{
     
     
     // Figures and Textures
-    Geometry [] items;
+    Spatial [] items;
+    Node itemNode;
     Spatial progman;
     Spatial flash;
     PointLight light;
     SpotLight spot;
-    Spatial floor;
     
     // Sounds and Audio
     private AudioNode audio_theme;
@@ -90,7 +90,6 @@ public class Main extends SimpleApplication{
     // Labels & Textfields
     BitmapText textField;
             
-    
     // Stuff for Collision detection
     private Vector3f camDir = new Vector3f();
     private Vector3f walkDirection = new Vector3f(0,0,0);
@@ -106,6 +105,10 @@ public class Main extends SimpleApplication{
         app.start();
     }
 
+    
+    
+    
+  
         
     @Override
     public void simpleInitApp() {
@@ -120,8 +123,6 @@ public class Main extends SimpleApplication{
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
         
-         
-        
         // Init functionalities
         initListeners();
         initAudio();
@@ -134,46 +135,45 @@ public class Main extends SimpleApplication{
         initForest();
         initSky();
         initHouses();
+        initItems();
         initProgman();
+        initHUD();
+        initGround();
         
-        items = new Geometry [ITEMSET];
-        Node itemNode = new Node();
-        
-        for (int i = 0; i < items.length; i++){
-            float random = (float) Math.random()*50;
-            Box box = new Box(0.5f, 0.5f, 0.5f);
-            Geometry cube = new Geometry("box", box);
-            Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-            mat1.setColor("Color", ColorRGBA.randomColor());
-            cube.setMaterial(mat1);
-            cube.setLocalTranslation(random, 5f, random);
-            items[i] = cube;
-                       
-            //item = makeCube("Box", random, 0f, 1f);
-            itemNode.attachChild(cube);
-            
-            
-        }
-        // Textfield
-        guiNode.setQueueBucket(Bucket.Gui);
-        textField = new BitmapText(guiFont, false);          
-        textField.setSize(2*guiFont.getCharSet().getRenderedSize()); 
-        color = new ColorRGBA(ColorRGBA.White);
-        textField.setColor(color);                             // font color
-        textField.setText("");             // the text
-        textField.setLocalTranslation(settings.getWidth()/2 - 100, settings.getHeight()/2, 0); // position
- 
-           
-        // Attach to game
-        rootNode.attachChild(itemNode);
-        
-        floor = makeFloor();
-        rootNode.attachChild(floor);
+
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
         
     }
+    
+    @Override
+    public void simpleUpdate(float tpf) {
+        position = cam.getLocation();
+      
+
+        // Updates
+        updateProgman();
+        updateFlashlight();
+        updateItems();
+        updatePhysics();
+        
+        
+        foodstepsCheck();
+        isWalking = false; // Muss jedes Frame neu gesetzt werden
+        fadeHUD(tpf);
+        light.setPosition(player.getPhysicsLocation());
+    }
+   
+    @Override
+    public void simpleRender(RenderManager rm) {
+        // wird automatisch nach simple Update ausgeführt
+    }
+    
+    
+     
+    // ________________________UPDATE METHODS_________________________
+    
     public void updateProgman()
     {
         Vector3f direction = new Vector3f(position.x-progman_pos.x, 0f, position.z-progman_pos.z);
@@ -187,39 +187,13 @@ public class Main extends SimpleApplication{
         progman.setLocalTranslation(progman_pos);
         }
     }
-    @Override
-    public void simpleUpdate(float tpf) {
+    
+    public void updateItems(){
+       items[1].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
 
-        position = cam.getLocation();
-        // Update position/rotation for flashlight
-        Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(flash.getWorldTranslation()));
-        flash.setLocalTranslation(vectorDifference.addLocal(flash.getLocalTranslation()));
-
-        Quaternion worldDiff = new Quaternion(cam.getRotation().mult(flash.getWorldRotation().inverse()));
-        flash.setLocalRotation(worldDiff.multLocal(flash.getLocalRotation()));
-
-        // Move it to the bottom right of the screen
-        flash.move(cam.getDirection().mult(3));
-        flash.move(cam.getUp().mult(-1.5f)); // y Achse
-        flash.move(cam.getLeft().mult(-1f)); // x Achse
-        flash.rotate(3.4f, FastMath.PI, 0); // Rotation
-        
-        spot.setPosition(cam.getLocation());               
-        spot.setDirection(cam.getDirection());
-
-        
-        updateProgman();
-        // no jumps allowed
-
-        //Set position of text label           
-        foodstepsCheck();
-        isWalking = false; // Muss jedes Frame neu gesetzt werden
-        fadeHUD(tpf);
-        
-        // Progman
-        updateProgman();
-        
-        // Collision detection
+    }
+    
+    public void updatePhysics(){
         camDir.set(cam.getDirection()).multLocal(runFactor);
         camLeft.set(cam.getLeft()).multLocal(runFactor);
         
@@ -239,26 +213,35 @@ public class Main extends SimpleApplication{
         }
         player.setWalkDirection(walkDirection);
         cam.setLocation(player.getPhysicsLocation());
-        // Update Flashlight
-
-        light.setPosition(player.getPhysicsLocation());
-
-
+    }
     
+    
+    public void updateFlashlight(){
+          Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(flash.getWorldTranslation()));
+        flash.setLocalTranslation(vectorDifference.addLocal(flash.getLocalTranslation()));
+
+        Quaternion worldDiff = new Quaternion(cam.getRotation().mult(flash.getWorldRotation().inverse()));
+        flash.setLocalRotation(worldDiff.multLocal(flash.getLocalRotation()));
+
+        // Move it to the bottom right of the screen
+        flash.move(cam.getDirection().mult(3));
+        flash.move(cam.getUp().mult(-1.5f)); // y Achse
+        flash.move(cam.getLeft().mult(-1f)); // x Achse
+        flash.rotate(3.4f, FastMath.PI, 0); // Rotation
+        
+        spot.setPosition(cam.getLocation());               
+        spot.setDirection(cam.getDirection());
     }
-   
-    @Override
-    public void simpleRender(RenderManager rm) {
-        // wird automatisch nach simple Update ausgeführt
-    }
-     
-    // Anonyme Klasse des AnalogListeners
+    
+    
+    
+    
+    // ___________________LISTENERS____________________
     private AnalogListener analogListener = new AnalogListener(){
         public void onAnalog(String name, float value, float tpf) {
             // Wird überschrieben falls er rennt
                 audio_foodsteps.setPitch(1f);
                 audio_foodsteps.setReverbEnabled(false);
-            
             
                if (name.equals("Move") && isRunning == true){
                    runFactor = 0.1f;
@@ -290,11 +273,8 @@ public class Main extends SimpleApplication{
                    
                    audio_foodsteps.setPitch(2.0f);
                    audio_foodsteps.setReverbEnabled(true);
-                   audio_foodsteps.play();
-
-                   
-               } 
-               
+                   audio_foodsteps.play();  
+               }      
         }   
     };
     
@@ -335,7 +315,6 @@ public class Main extends SimpleApplication{
                 }
             } 
             
-
             // Collision detection
              if (name.equals("Left")) {
               left = isPressed;
@@ -352,8 +331,8 @@ public class Main extends SimpleApplication{
     
     
     
-    // Functional methods
-    public void pulseElement(float tpf, Geometry figure){
+    // _____________ FUNCTIONAL METHODS ____________________
+    public void pulseElement(float tpf, Spatial figure){
         figure.setLocalScale(figure.getLocalScale().getX() + tpf*pulsefactor, figure.getLocalScale().getY() + tpf*pulsefactor, figure.getLocalScale().getZ() + tpf*pulsefactor);
        if (figure.getLocalScale().getX() > 3.0f){
            pulsefactor = -pulsefactor;
@@ -363,27 +342,6 @@ public class Main extends SimpleApplication{
        }
     }
    
- 
-    protected Spatial makeFloor() {
-        Spatial scenefile = assetManager.loadModel("Models/Scenes/newScene.j3o");
-        rootNode.attachChild(scenefile);
-        
-        CollisionShape groundShape = CollisionShapeFactory.createMeshShape((Node) scenefile);
-        
-        RigidBodyControl groundControl = new RigidBodyControl(groundShape, 0);
-        bulletAppState.getPhysicsSpace().add(groundControl);
-     
-        
-        
-   /* Box box = new Box(256, .2f, 256);
-    Geometry floor = new Geometry("the Floor", box);
-    floor.setLocalTranslation(0, 0, 0);
-    Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mat1.setColor("Color", ColorRGBA.Brown);
-    floor.setMaterial(mat1);*/
-    return scenefile;
-  }
-    
     public void foodstepsCheck(){
         if (isWalking == false){
             audio_foodsteps.stop();
@@ -417,8 +375,22 @@ public class Main extends SimpleApplication{
      
  
        
-     // INIT METHODS
-     
+     // _________________INIT METHODS_______________________
+    
+    
+    protected void initGround() {
+        Spatial scenefile = assetManager.loadModel("Models/Scenes/newScene.j3o");
+        rootNode.attachChild(scenefile);
+        
+        CollisionShape groundShape = CollisionShapeFactory.createMeshShape((Node) scenefile);
+        
+        RigidBodyControl groundControl = new RigidBodyControl(groundShape, 0);
+        bulletAppState.getPhysicsSpace().add(groundControl);
+    
+        rootNode.attachChild(scenefile);
+  }
+    
+    
     public void initAudio(){
         // Background audio
        audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
@@ -482,7 +454,7 @@ public class Main extends SimpleApplication{
         Texture south = assetManager.loadTexture("Models/sky/purplenebula_lf.jpg");
         Texture up = assetManager.loadTexture("Models/sky/purplenebula_rt.jpg");
         Texture down = assetManager.loadTexture("Models/sky/purplenebula_up.jpg");
-
+        
         Spatial sky = SkyFactory.createSky(assetManager, west, east, north, south, up, down);
         rootNode.attachChild(sky);  
     }
@@ -496,9 +468,8 @@ public class Main extends SimpleApplication{
        bulletAppState.getPhysicsSpace().add(house);
        physicsNode.setPhysicsLocation(new Vector3f(10, 0, 20));*/
        house.scale(0.2f);
-        house.rotate(-(float)Math.PI/2f, 0,0);
-        house.setLocalTranslation(new Vector3f(10,-2.5f,10));
-
+       house.rotate(-(float)Math.PI/2f, 0,0);
+       house.setLocalTranslation(new Vector3f(10,-2.5f,10));
        rootNode.attachChild(house);
 
     }
@@ -535,11 +506,6 @@ public class Main extends SimpleApplication{
     }
     public void initProgman()
     {
-       /* Box box = new Box(0.5f, 0.5f, 0.5f);
-        progman = new Geometry("box", box);
-        Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat1.setColor("Color", ColorRGBA.White);
-        progman.setMaterial(mat1);*/
         progman = assetManager.loadModel("Models/progman/progman.j3o");
         progman.scale(0.8f);
         progman_pos = new Vector3f(PROGMAN_X,PROGMAN_Y,PROGMAN_Z);
@@ -548,7 +514,30 @@ public class Main extends SimpleApplication{
         rootNode.attachChild(progman);
     }
     
+    public void initItems(){
+        itemNode = new Node();
+        items = new Spatial [ITEMSET];
+        
+        Spatial item1 = assetManager.loadModel("Models/Items/book/book.j3o");
+        items[1] = item1;
+        items[1].setLocalTranslation(0, 2, 0);
+        items[1].rotate(FastMath.PI/2, 0, 0);
+        items[1].scale(0.3f);
+        itemNode.attachChild(item1); 
+        
+        rootNode.attachChild(itemNode);
+    }
     
+    public void initHUD(){
+        guiNode.setQueueBucket(Bucket.Gui);
+        textField = new BitmapText(guiFont, false);          
+        textField.setSize(2*guiFont.getCharSet().getRenderedSize()); 
+        color = new ColorRGBA(ColorRGBA.White);
+        textField.setColor(color);                             // font color
+        textField.setText("");             // the text
+        textField.setLocalTranslation(settings.getWidth()/2 - 100, settings.getHeight()/2, 0); // position
+ 
+    }
     public void initListeners(){
         inputManager.addMapping("Move", new KeyTrigger(keyInput.KEY_W));
         inputManager.addMapping("Left", new KeyTrigger(keyInput.KEY_A));
@@ -594,8 +583,6 @@ public class Main extends SimpleApplication{
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
         flash.scale(2f);
         
-        
-        
         // Flash collision
       
        
@@ -607,8 +594,6 @@ public class Main extends SimpleApplication{
         spot.setColor(ColorRGBA.White.mult(0.6f));         // light color
         spot.setPosition(cam.getLocation());               // shine from camera loc
         spot.setDirection(cam.getDirection());             // shine forward from camera loc
-               
-        
         
     }
     
