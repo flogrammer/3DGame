@@ -524,10 +524,10 @@ public class Main extends SimpleApplication{
             {
                 trees[i][j] = tree.clone();
                 rootNode.attachChild(trees[i][j]);
-                float xrandom = (float)(Math.random()-0.3)*2.0f*MAX_X_RANDOM;
+                float xrandom = (float)(Math.random()-0.2)*2.0f*MAX_X_RANDOM;
                 
-                float zrandom = (float)(Math.random()-0.3)*2.0f*MAX_Z_RANDOM;
-                trees[i][j].setLocalTranslation((i-anzahlBaueme/2)*5.0f + xrandom,0f,(j-anzahlBaueme/2)*5.0f+zrandom);
+                float zrandom = (float)(Math.random()-0.2)*2.0f*MAX_Z_RANDOM;
+                trees[i][j].setLocalTranslation((i-anzahlBaueme/2)*5.5f + xrandom,0f,(j-anzahlBaueme/2)*5.5f+zrandom);
                 
                 RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);
                 trees[i][j].addControl(treeNode);
