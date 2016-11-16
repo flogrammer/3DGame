@@ -592,7 +592,11 @@ public class Main extends SimpleApplication{
         float random = (float) (10*Math.random());
         items[i].setLocalTranslation(random, 2, random);
         itemNode.attachChild(item); 
+        
+        
         }
+        
+        rootNode.attachChild(itemNode);
 
     }
     
