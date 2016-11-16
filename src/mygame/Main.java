@@ -151,7 +151,7 @@ public class Main extends SimpleApplication{
     @Override
     public void simpleUpdate(float tpf) {
         position = cam.getLocation();
-      
+        System.out.println(position);
 
         // Updates
         updateProgman();
@@ -190,7 +190,7 @@ public class Main extends SimpleApplication{
     }
     
     public void updateItems(){
-       items[1].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
+//       items[1].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
 
     }
     
@@ -236,13 +236,13 @@ public class Main extends SimpleApplication{
     
     public void updateItemCollision(float tpf){
         // FOR EACH
-        float distance = getDistance(items[1].getLocalTranslation(), position);
+/*        float distance = getDistance(items[1].getLocalTranslation(), position);
         distances[1] = distance;
         if (distance < 2){
             //showHUD(tpf, "Du hast ein Buch über " + items[1].getName() + " gefunden! Drücke B um es aufzunehmen.");
             showHUD(tpf, "Drücke B");
             // TODO: If item detached no more sign!
-        }
+        }*/
     }
     
     
@@ -490,16 +490,18 @@ public class Main extends SimpleApplication{
     }
      
     public void initHouses(){
-       Spatial house = assetManager.loadModel("Models/Houses/house.j3o");
+       //Spatial house = assetManager.loadModel("Models/Houses/house.j3o");
+       Spatial house = assetManager.loadModel("Models/Houses/small_house.j3o");
         
      /*  CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
        physicsNode = new RigidBodyControl(houseShape, 0);
        house.addControl(physicsNode);
        bulletAppState.getPhysicsSpace().add(house);
        physicsNode.setPhysicsLocation(new Vector3f(10, 0, 20));*/
-       house.scale(0.2f);
-       house.rotate(-(float)Math.PI/2f, 0,0);
-       house.setLocalTranslation(new Vector3f(10,-2.5f,10));
+       //house.scale(0.2f);
+       //house.rotate(-(float)Math.PI/2f, 0,0);
+       house.scale(7.0f);
+       house.setLocalTranslation(new Vector3f(10,0,10));
        rootNode.attachChild(house);
 
     }
@@ -549,14 +551,14 @@ public class Main extends SimpleApplication{
         items = new Spatial [ITEMSET];
         distances = new float [ITEMSET];
         
-        Spatial item1 = assetManager.loadModel("Models/Items/book/book.j3o");
+        /*Spatial item1 = assetManager.loadModel("Models/Items/book/book.j3o");
         items[1] = item1;
         items[1].setLocalTranslation(0, 2, 0);
         items[1].rotate(FastMath.PI/2, 0, 0);
         items[1].scale(0.3f);
         itemNode.attachChild(item1); 
         
-        rootNode.attachChild(itemNode);
+        rootNode.attachChild(itemNode);*/
     }
     
     public void initHUD(){
