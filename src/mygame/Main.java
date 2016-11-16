@@ -190,8 +190,9 @@ public class Main extends SimpleApplication{
     }
     
     public void updateItems(){
-       items[1].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
-
+       for (int i = 0; i < items.length; i++){
+       items[i].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
+       }
     }
     
     public void updatePhysics(){
@@ -235,13 +236,16 @@ public class Main extends SimpleApplication{
     }
     
     public void updateItemCollision(float tpf){
-        // FOR EACH
-        float distance = getDistance(items[1].getLocalTranslation(), position);
-        distances[1] = distance;
-        if (distance < 2){
+               
+        for (int i = 0; i < items.length; i++){
+        
+        float distance = getDistance(items[i].getLocalTranslation(), position);
+        distances[i] = distance;
+
+        if (distance < 2 && items[i].getUserData("status").equals(false)){
             //showHUD(tpf, "Du hast ein Buch über " + items[1].getName() + " gefunden! Drücke B um es aufzunehmen.");
             showHUD(tpf, "Drücke B");
-            // TODO: If item detached no more sign!
+        }
         }
     }
     
@@ -340,11 +344,17 @@ public class Main extends SimpleApplication{
              
              // Item collection
              
-             if (name.equals("Item") && !isPressed && distances[1] < 2) {
-                 System.out.println("item!");
-                 itemNode.detachChild(items[1]);
+             if (name.equals("Item") && !isPressed) {
+                 int index = getMinimalDistanceID();
+                 
+                 // Get current item ID
+                 // Hier soll dann nur das Item entfernt werden, bei dem man gerade ist (ID!)
+                 if (distances[index] < 2){
+                 itemNode.detachChild(items[index]);
                  itemsCollected++;
+                 items[1].setUserData("status", false);
                  showHUD(tpf);
+                 }
              }
         }
         
@@ -395,6 +405,17 @@ public class Main extends SimpleApplication{
          textField.setColor(color);
      }         
      
+    public int getMinimalDistanceID(){
+        int index = 0;
+        for (int i = 0; i < distances.length; i++){
+             if (distances[i] < distances[index]){
+                 index = i;
+             }
+            }
+    
+    return index;
+    }
+        
     
     public float getDistance(Vector3f item, Vector3f player){
         // Euklidsche Distanz
@@ -546,15 +567,23 @@ public class Main extends SimpleApplication{
     
     public void initItems(){
         itemNode = new Node();
+      
         items = new Spatial [ITEMSET];
         distances = new float [ITEMSET];
         
-        Spatial item1 = assetManager.loadModel("Models/Items/book/book.j3o");
-        items[1] = item1;
-        items[1].setLocalTranslation(0, 2, 0);
-        items[1].rotate(FastMath.PI/2, 0, 0);
-        items[1].scale(0.3f);
-        itemNode.attachChild(item1); 
+        
+        for (int i = 0; i<items.length; i++){
+        Spatial item = assetManager.loadModel("Models/Items/book/book.j3o");
+        items[i] = item;
+        //items[i].setUserData("name", name);
+        items[i].setUserData("status", false);
+        items[i].setUserData("id", i);
+        items[i].rotate(FastMath.PI/2, 0, 0);
+        items[i].scale(0.3f);
+        float random = (float) (10*Math.random());
+        items[i].setLocalTranslation(random, 2, random);
+        itemNode.attachChild(item); 
+        }
         
         rootNode.attachChild(itemNode);
     }
