@@ -70,6 +70,7 @@ public class Main extends SimpleApplication{
     
     // Figures and Textures
     Spatial [] items;
+    float [] distances;
     Node itemNode;
     Spatial progman;
     Spatial flash;
@@ -156,6 +157,7 @@ public class Main extends SimpleApplication{
         updateProgman();
         updateFlashlight();
         updateItems();
+        updateItemCollision(tpf);
         updatePhysics();
         
         
@@ -181,11 +183,10 @@ public class Main extends SimpleApplication{
         if(direction.length() > PROGMAN_MAX_SPEED)
             direction = direction.divide(direction.length()).mult(PROGMAN_MAX_SPEED);
         //System.out.println("2pos "+position + " progman: " + progman_pos + " moving to " + direction);
-        if (lightActivated){ // Only if light is acticated
-            progman_pos = progman_pos.add(direction);
+        progman_pos = progman_pos.add(direction);
         progman.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
         progman.setLocalTranslation(progman_pos);
-        }
+        
     }
     
     public void updateItems(){
@@ -233,6 +234,16 @@ public class Main extends SimpleApplication{
         spot.setDirection(cam.getDirection());
     }
     
+    public void updateItemCollision(float tpf){
+        // FOR EACH
+        float distance = getDistance(items[1].getLocalTranslation(), position);
+        distances[1] = distance;
+        if (distance < 2){
+            //showHUD(tpf, "Du hast ein Buch über " + items[1].getName() + " gefunden! Drücke B um es aufzunehmen.");
+            showHUD(tpf, "Drücke B");
+            // TODO: If item detached no more sign!
+        }
+    }
     
     
     
@@ -325,6 +336,16 @@ public class Main extends SimpleApplication{
             } else if (name.equals("Back")) {
               back = isPressed;
             } 
+             
+             
+             // Item collection
+             
+             if (name.equals("Item") && !isPressed && distances[1] < 2) {
+                 System.out.println("item!");
+                 itemNode.detachChild(items[1]);
+                 itemsCollected++;
+                 showHUD(tpf);
+             }
         }
         
     };
@@ -358,6 +379,7 @@ public class Main extends SimpleApplication{
         textField.setText("" + text);
         guiNode.attachChild(textField);
     }
+   
     
     public void fadeHUD(float tpf){
          if (startTime == 0)
@@ -373,6 +395,14 @@ public class Main extends SimpleApplication{
          textField.setColor(color);
      }         
      
+    
+    public float getDistance(Vector3f item, Vector3f player){
+        // Euklidsche Distanz
+        
+        float distance = 100;        
+        distance = (float) Math.sqrt(Math.pow(item.x-player.x, 2) + Math.pow(item.z-player.z, 2));
+        return distance;
+    }
  
        
      // _________________INIT METHODS_______________________
@@ -517,6 +547,7 @@ public class Main extends SimpleApplication{
     public void initItems(){
         itemNode = new Node();
         items = new Spatial [ITEMSET];
+        distances = new float [ITEMSET];
         
         Spatial item1 = assetManager.loadModel("Models/Items/book/book.j3o");
         items[1] = item1;
@@ -547,7 +578,7 @@ public class Main extends SimpleApplication{
         inputManager.addMapping("Pause", new KeyTrigger(keyInput.KEY_P));
         inputManager.addMapping("Light", new KeyTrigger(keyInput.KEY_L));
         inputManager.addMapping("Run", new KeyTrigger(keyInput.KEY_LSHIFT));
-
+        inputManager.addMapping("Item", new KeyTrigger(keyInput.KEY_B));
 
 
         inputManager.addListener(analogListener, "Move");
@@ -563,6 +594,7 @@ public class Main extends SimpleApplication{
         inputManager.addListener(actionListener, "Right");
         inputManager.addListener(actionListener, "Jump");
         inputManager.addListener(actionListener, "Light");
+        inputManager.addListener(actionListener, "Item");
         
 
     }
