@@ -190,14 +190,13 @@ public class Main extends SimpleApplication{
     }
     
     public void updateItems(){
-<<<<<<< HEAD
+
        for (int i = 0; i < items.length; i++){
        items[i].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
        }
-=======
+
 //       items[1].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
 
->>>>>>> 7a99e824408e02c340e278e1a71b7eb169039156
     }
     
     public void updatePhysics(){
@@ -241,7 +240,7 @@ public class Main extends SimpleApplication{
     }
     
     public void updateItemCollision(float tpf){
-<<<<<<< HEAD
+
                
         for (int i = 0; i < items.length; i++){
         
@@ -253,16 +252,7 @@ public class Main extends SimpleApplication{
             showHUD(tpf, "Drücke B");
         }
         }
-=======
-        // FOR EACH
-/*        float distance = getDistance(items[1].getLocalTranslation(), position);
-        distances[1] = distance;
-        if (distance < 2){
-            //showHUD(tpf, "Du hast ein Buch über " + items[1].getName() + " gefunden! Drücke B um es aufzunehmen.");
-            showHUD(tpf, "Drücke B");
-            // TODO: If item detached no more sign!
-        }*/
->>>>>>> 7a99e824408e02c340e278e1a71b7eb169039156
+
     }
     
     
@@ -589,7 +579,7 @@ public class Main extends SimpleApplication{
         items = new Spatial [ITEMSET];
         distances = new float [ITEMSET];
         
-<<<<<<< HEAD
+
         
         for (int i = 0; i<items.length; i++){
         Spatial item = assetManager.loadModel("Models/Items/book/book.j3o");
@@ -603,16 +593,7 @@ public class Main extends SimpleApplication{
         items[i].setLocalTranslation(random, 2, random);
         itemNode.attachChild(item); 
         }
-=======
-        /*Spatial item1 = assetManager.loadModel("Models/Items/book/book.j3o");
-        items[1] = item1;
-        items[1].setLocalTranslation(0, 2, 0);
-        items[1].rotate(FastMath.PI/2, 0, 0);
-        items[1].scale(0.3f);
-        itemNode.attachChild(item1); 
->>>>>>> 7a99e824408e02c340e278e1a71b7eb169039156
-        
-        rootNode.attachChild(itemNode);*/
+
     }
     
     public void initHUD(){
