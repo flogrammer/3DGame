@@ -14,9 +14,14 @@ import com.jme3.renderer.RenderManager;
  * @author Florian
  */
 public class PauseState implements AppState{
+    
+    
+    public PauseState(){
+        
+    }
 
     public void initialize(AppStateManager stateManager, Application app) {
-        
+       
     }
 
     public boolean isInitialized() {

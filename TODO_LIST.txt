@@ -15,3 +15,4 @@ Florian:
 () Slenderman collision
 () Regen
 () Game over und Pause - States
+() Flashlight collision

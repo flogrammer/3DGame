@@ -54,8 +54,8 @@ public class Main extends SimpleApplication{
     float batteryStatus = fullBattery;
     float flashRadius = 20f;
     float outerRange = 50f;
-
-    final long FADETIME = 5000;
+    long FADETIME = 5000;
+    
     final int ITEMNUMBER = 8; // Anzahl Prog Themen
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
@@ -168,6 +168,9 @@ public class Main extends SimpleApplication{
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
         
+        showHUD("Finde die 8 Bücher bevor deine Zeit abläuft...");
+        
+        
     }
     
     @Override
@@ -185,8 +188,11 @@ public class Main extends SimpleApplication{
         
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
-        fadeHUD(tpf);
+        fadeHUD(tpf, FADETIME);
         light.setPosition(player.getPhysicsLocation());
+        
+        
+
     }
    
     @Override
@@ -229,7 +235,6 @@ public class Main extends SimpleApplication{
           else{
               // Sound: Battery empty
           }
-          System.out.println(batteryStatus);
     }
     
     public void updatePhysics(){
@@ -292,7 +297,7 @@ public class Main extends SimpleApplication{
 
         if (distance < 2 && items[i].getUserData("status").equals(false)){
             //showHUD(tpf, "Du hast ein Buch über " + items[1].getName() + " gefunden! Drücke B um es aufzunehmen.");
-            showHUD(tpf, "Du hast ein Buch über " + itemNames[i] + " gefunden. " +
+            showHUD("Du hast ein Buch über " + itemNames[i] + " gefunden. " +
                     "Drücke B um es aufzunehmen.");
         }
         }
@@ -347,16 +352,16 @@ public class Main extends SimpleApplication{
     private ActionListener actionListener = new ActionListener(){
         public void onAction(String name, boolean isPressed, float tpf) {
             if(name.equals("Pause") && isPressed){
+              
                 isRunning = !isRunning; // Continue or Pause game
-               showHUD(tpf);
-            }
+                stateManager.attach(new PauseState());
+              }
             if(name.equals("Move") && isPressed == false){
                 audio_fast_breathing.stop();
                 audio_foodsteps.stop();
                 audio_breathing.stop();
             } 
             if(name.equals("Jump") && isPressed == true){
-                showHUD(tpf, "That was a jump right there!");
                 audio_fast_breathing.stop();
                 audio_foodsteps.stop();
                 audio_breathing.stop();
@@ -404,7 +409,7 @@ public class Main extends SimpleApplication{
                  itemNode.detachChild(items[index]);
                  itemsCollected++;
                  items[index].setUserData("status", true);
-                 showHUD(tpf);
+                 showHUD();
                  }
              }
         }
@@ -430,23 +435,23 @@ public class Main extends SimpleApplication{
         }   
     }
 
-    public void showHUD(float tpf){
+    public void showHUD(){
         startTime = System.currentTimeMillis();
         textField.setText("You have collected " + itemsCollected + "/" + ITEMNUMBER + " items.");
         guiNode.attachChild(textField);
     }
-    public void showHUD(float tpf, String text){
+    public void showHUD(String text){
         startTime = System.currentTimeMillis();
         textField.setText("" + text);
         guiNode.attachChild(textField);
     }
    
     
-    public void fadeHUD(float tpf){
+    public void fadeHUD(float tpf, float fadeTime){
          if (startTime == 0)
              return;
          long time = System.currentTimeMillis();
-         float t = ((float) (time - startTime))/FADETIME;
+         float t = ((float) (time - startTime))/fadeTime;
          if(t > 1){
              startTime = 0;
              return;
@@ -562,15 +567,14 @@ public class Main extends SimpleApplication{
     }
      
     public void initHouses(){
-       //Spatial house = assetManager.loadModel("Models/Houses/house.j3o");
        Spatial house = assetManager.loadModel("Models/Houses/small_house.j3o");
-        
+       /* 
        CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
        RigidBodyControl houseControl = new RigidBodyControl(houseShape, 0);
        house.addControl(houseControl);
        bulletAppState.getPhysicsSpace().add(house);
        houseControl.setPhysicsLocation(new Vector3f(10, 0, 10));
-     
+       */
        house.scale(7.0f);
        house.setLocalTranslation(new Vector3f(10,0,10));
        rootNode.attachChild(house);
