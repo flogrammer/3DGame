@@ -107,7 +107,7 @@ public class Main extends SimpleApplication{
     BulletAppState bulletAppState;
     CharacterControl player;
     RigidBodyControl physicsNode;
-    
+    RigidBodyControl progControl;
     
     // Item Names
     
@@ -208,6 +208,7 @@ public class Main extends SimpleApplication{
         progman_pos = progman_pos.add(direction);
         progman.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
         progman.setLocalTranslation(progman_pos);
+    
         
     }
     
@@ -564,13 +565,12 @@ public class Main extends SimpleApplication{
        //Spatial house = assetManager.loadModel("Models/Houses/house.j3o");
        Spatial house = assetManager.loadModel("Models/Houses/small_house.j3o");
         
-     /*  CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
-       physicsNode = new RigidBodyControl(houseShape, 0);
-       house.addControl(physicsNode);
+       CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
+       RigidBodyControl houseControl = new RigidBodyControl(houseShape, 0);
+       house.addControl(houseControl);
        bulletAppState.getPhysicsSpace().add(house);
-       physicsNode.setPhysicsLocation(new Vector3f(10, 0, 20));*/
-       //house.scale(0.2f);
-       //house.rotate(-(float)Math.PI/2f, 0,0);
+       houseControl.setPhysicsLocation(new Vector3f(10, 0, 10));
+     
        house.scale(7.0f);
        house.setLocalTranslation(new Vector3f(10,0,10));
        rootNode.attachChild(house);
@@ -615,6 +615,7 @@ public class Main extends SimpleApplication{
         progman.setLocalTranslation(progman_pos);
         progman.addLight(new DirectionalLight());
         rootNode.attachChild(progman);
+        
     }
     
     public void initItems(){
