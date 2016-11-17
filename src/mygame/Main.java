@@ -588,6 +588,12 @@ public class Main extends SimpleApplication{
         final float MAX_Z_RANDOM = 2.0f;
         Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
         Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
+        Node t = (Node)tree;
+        Geometry geom1 = (Geometry)t.getChild(0);
+        Geometry geom2 = (Geometry)t.getChild(1);
+        
+        geom1.setLodLevel(5);
+        geom2.setLodLevel(3);
         tree.scale(1.0f, 5.0f, 1.0f);
         
         
