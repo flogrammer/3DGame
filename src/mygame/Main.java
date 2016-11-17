@@ -54,17 +54,17 @@ public class Main extends SimpleApplication{
     float batteryStatus = fullBattery;
     float flashRadius = 20f;
     float outerRange = 50f;
-    long FADETIME = 5000;
+    long fadetime = 5000;
     
     final int ITEMNUMBER = 8; // Anzahl Prog Themen
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
     final int ITEMSET = 5;
-    final float PROGMAN_X = -10.0f;
+    final float PROGMAN_X = -20.0f;
     final float PROGMAN_Y = 0f;
     final float PROGMAN_Z = -10.0f;
-    final float PROGMAN_MAX_SPEED = 0.01f;
+    final float PROGMAN_MAX_SPEED = 0.1f;
     final float WORLD_SIZE = 125.0f;
     
     
@@ -88,12 +88,18 @@ public class Main extends SimpleApplication{
     private AudioNode audio_theme;
     private AudioNode audio_nature;
     private AudioNode audio_foodsteps;
-    private AudioNode audio_foodsteps_end;
     private AudioNode audio_breathing;
     private AudioNode audio_fast_breathing;
     private AudioNode audio_jump;
     private AudioNode audio_flash_on;
     private AudioNode audio_flash_off;
+    private AudioNode audio_flash_empty;
+    private AudioNode audio_item_collected;
+    private AudioNode audio_progman;
+    private AudioNode audio_progman2;
+
+
+
     
     // Labels & Textfields
     BitmapText textField;
@@ -108,6 +114,8 @@ public class Main extends SimpleApplication{
     CharacterControl player;
     RigidBodyControl physicsNode;
     RigidBodyControl progControl;
+    RigidBodyControl flashControl;
+
     
     // Item Names
     
@@ -188,7 +196,7 @@ public class Main extends SimpleApplication{
         
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
-        fadeHUD(tpf, FADETIME);
+        fadeHUD(tpf, fadetime);
         light.setPosition(player.getPhysicsLocation());
         
         
@@ -216,6 +224,23 @@ public class Main extends SimpleApplication{
         progman.setLocalTranslation(progman_pos);
     
         
+        float dist = getDistance(progman_pos, position);
+        
+        if (dist < 30){
+           audio_progman.setVolume(1.4f*(1-(dist/30)));
+           audio_progman.play();
+           if (dist < 15){
+           audio_progman2.setVolume(0.1f*(1-(dist/15)));
+           audio_progman2.play();
+           
+           }else{
+                audio_progman2.stop();
+           }
+        }else{
+            audio_progman.stop();
+        }
+        
+        
     }
     
     public void updateItems(){
@@ -233,7 +258,6 @@ public class Main extends SimpleApplication{
           if (batteryStatus > (0+tpf))
           batteryStatus = batteryStatus-tpf;
           else{
-              // Sound: Battery empty
           }
     }
     
@@ -370,11 +394,16 @@ public class Main extends SimpleApplication{
             } 
             if(name.equals("Light") && isPressed == true){
                 if(!lightActivated){
-                audio_flash_on.play();
-                rootNode.addLight(light);
-                rootNode.addLight(spot);
-                rootNode.attachChild(flash);
-                lightActivated = true;
+                    if(batteryStatus > 0){
+                        audio_flash_on.play();
+                        rootNode.addLight(light);
+                        rootNode.addLight(spot);
+                        rootNode.attachChild(flash);
+                        lightActivated = true;
+                    }else{
+                        audio_flash_empty.play();
+                    }
+                
                 }
                 
                 else{
@@ -409,6 +438,7 @@ public class Main extends SimpleApplication{
                  itemNode.detachChild(items[index]);
                  itemsCollected++;
                  items[index].setUserData("status", true);
+                 audio_item_collected.play();
                  showHUD();
                  }
              }
@@ -503,7 +533,7 @@ public class Main extends SimpleApplication{
        audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
        audio_theme.setPositional(false);
        audio_theme.setLooping(false);
-       audio_theme.setVolume(0.5f);
+       audio_theme.setVolume(0.2f);
        
        rootNode.attachChild(audio_theme);
        audio_theme.play();
@@ -530,7 +560,7 @@ public class Main extends SimpleApplication{
        audio_jump = new AudioNode(assetManager, "Sounds/soundFX/sigh.wav", false);
        audio_jump.setPositional(false);
        audio_jump.setLooping(false);
-       audio_jump.setVolume(0.6f);
+       audio_jump.setVolume(0.2f);
        rootNode.attachChild(audio_jump);
        
        audio_flash_on = new AudioNode(assetManager, "Sounds/soundFX/flash_on.wav", false);
@@ -548,10 +578,33 @@ public class Main extends SimpleApplication{
        audio_nature = new AudioNode(assetManager, "Sounds/soundFX/thunder2.wav", false);
        audio_nature.setPositional(false);
        audio_nature.setLooping(true);
-       audio_nature.setVolume(0.1f);
+       audio_nature.setVolume(0.06f);
        rootNode.attachChild(audio_nature);
        audio_nature.play();
        
+       audio_flash_empty = new AudioNode(assetManager, "Sounds/soundFX/flashEmpty.wav", false);
+       audio_flash_empty.setPositional(false);
+       audio_flash_empty.setLooping(false);
+       audio_flash_empty.setVolume(0.1f);
+       rootNode.attachChild(audio_flash_empty);
+       
+       audio_item_collected = new AudioNode(assetManager, "Sounds/soundFX/item_collected.wav", false);
+       audio_item_collected.setPositional(false);
+       audio_item_collected.setLooping(false);
+       audio_item_collected.setVolume(0.1f);
+       rootNode.attachChild(audio_item_collected);
+ 
+       audio_progman = new AudioNode(assetManager, "Sounds/soundFX/progman_sound.wav", false);
+       audio_progman.setPositional(false);
+       audio_progman.setLooping(true);
+       audio_progman.setVolume(0.1f);
+       rootNode.attachChild(audio_progman);
+       
+       audio_progman2 = new AudioNode(assetManager, "Sounds/soundFX/progman_sound2.wav", false);
+       audio_progman2.setPositional(false);
+       audio_progman2.setLooping(true);
+       audio_progman2.setVolume(0.1f);
+       rootNode.attachChild(audio_progman2);
     }
       
     public void initSky(){
@@ -629,8 +682,6 @@ public class Main extends SimpleApplication{
         distances = new float [ITEMSET];
         
 
-        
-        
         for (int i = 0; i<items.length; i++){
         Spatial item = assetManager.loadModel("Models/Items/book/book.j3o");
         items[i] = item;
@@ -642,7 +693,15 @@ public class Main extends SimpleApplication{
         items[i].scale(0.3f);
         float random = (float) (100*Math.random());
         items[i].setLocalTranslation(random, 2, random);
-        itemNode.attachChild(item); 
+        itemNode.attachChild(item);
+        
+        SpotLight itemShine = new SpotLight();
+        itemShine.setSpotRange(5f);
+        itemShine.setColor(ColorRGBA.Magenta.mult(1.2f));
+        itemShine.setPosition(items[i].getLocalTranslation());
+        itemShine.setSpotInnerAngle(0.5f);
+        itemShine.setSpotInnerAngle(3f);
+        rootNode.addLight(itemShine);
         
         }
         
@@ -707,8 +766,7 @@ public class Main extends SimpleApplication{
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
         flash.scale(2f);
         
-        // Flash collision
-      
+     
        
         // Cone Light
         spot = new SpotLight();
@@ -723,8 +781,12 @@ public class Main extends SimpleApplication{
     
     public void initAmbientLight(){
         AmbientLight al = new AmbientLight();
-        al.setColor(ColorRGBA.Blue.mult(1f));
+        AmbientLight al2 = new AmbientLight();
+        al.setColor(ColorRGBA.Blue.mult(0.8f));
+        al2.setColor(ColorRGBA.White.mult(0.2f));
+        
         rootNode.addLight(al);
+        rootNode.addLight(al2);
     }
     
     public void createFog(){

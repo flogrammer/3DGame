@@ -6,13 +6,17 @@ Julian:
 (Am besten Scene Editor Tutorial anschauen)
 () Material auf Buch machen (sind im Ordner Items)
 () Gebiet einzäunen mit Mauern/Zaun & optimale Gebietsgröße festlegen
+() Progman kommt schneller auf einen zu wenn man ihn ansieht
 
 Florian:
 (x) Item collection anpassen (HUD) 
 (x) Leben für Taschenlampe einfügen 
+(x) Progman Sounds 
 () Sounds: Random creepy sounds, Wummern, ... 
 () Slenderman "gefangen" -> Game Over State, Bildrauschen, Geräusch
 () Slenderman collision
 () Regen
 () Game over und Pause - States
 () Flashlight collision
+() Shadow
+() Spotlight um Bücher nach einsammeln entfernen
