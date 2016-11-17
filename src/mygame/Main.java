@@ -31,6 +31,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.terrain.noise.Color;
 import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
 
@@ -49,6 +50,10 @@ public class Main extends SimpleApplication{
     int itemsCollected;
     int pulsefactor = 2;
     float runFactor = 0.1f;
+    float fullBattery = 200;
+    float batteryStatus = fullBattery;
+    float flashRadius = 20f;
+    float outerRange = 50f;
 
     final long FADETIME = 5000;
     final int ITEMNUMBER = 8; // Anzahl Prog Themen
@@ -168,7 +173,6 @@ public class Main extends SimpleApplication{
     @Override
     public void simpleUpdate(float tpf) {
         position = cam.getLocation();
-        System.out.println(position);
 
         // Updates
         updateProgman();
@@ -176,7 +180,8 @@ public class Main extends SimpleApplication{
         updateItems();
         updateItemCollision(tpf);
         updatePhysics();
-        
+        if (lightActivated)
+        updateBatteryStatus(tpf);
         
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
@@ -214,6 +219,16 @@ public class Main extends SimpleApplication{
 
 //       items[1].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
 
+    }
+    
+    public void updateBatteryStatus(float tpf){
+        
+          if (batteryStatus > (0+tpf))
+          batteryStatus = batteryStatus-tpf;
+          else{
+              // Sound: Battery empty
+          }
+          System.out.println(batteryStatus);
     }
     
     public void updatePhysics(){
@@ -254,6 +269,16 @@ public class Main extends SimpleApplication{
         
         spot.setPosition(cam.getLocation());               
         spot.setDirection(cam.getDirection());
+        
+        
+        
+        // Intensity of light
+        float t = batteryStatus/fullBattery;
+               
+        light.setRadius(flashRadius*t); // Abnehmender Radius...
+        spot.setSpotRange(outerRange*t); // TODO: Farbe ändern
+       
+        
     }
     
     public void updateItemCollision(float tpf){
@@ -313,7 +338,8 @@ public class Main extends SimpleApplication{
                    audio_foodsteps.setPitch(2.0f);
                    audio_foodsteps.setReverbEnabled(true);
                    audio_foodsteps.play();  
-               }      
+               }
+               
         }   
     };
     
@@ -613,7 +639,6 @@ public class Main extends SimpleApplication{
         items[i].setLocalTranslation(random, 2, random);
         itemNode.attachChild(item); 
         
-        
         }
         
         rootNode.attachChild(itemNode);
@@ -672,8 +697,8 @@ public class Main extends SimpleApplication{
     public void initFlashlight(){      
         light = new PointLight();
         light.setPosition(player.getPhysicsLocation());
-        light.setRadius(20f); // 20 Meter
-        
+        light.setRadius(flashRadius); // 20 Meter
+        light.setColor(new ColorRGBA(1,1,1,1));
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
         flash.scale(2f);
         
@@ -682,10 +707,10 @@ public class Main extends SimpleApplication{
        
         // Cone Light
         spot = new SpotLight();
-        spot.setSpotRange(50f);                           // distance
+        spot.setSpotRange(outerRange);                           // distance
         spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
         spot.setSpotOuterAngle(50f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
-        spot.setColor(ColorRGBA.White.mult(0.6f));         // light color
+        spot.setColor(new ColorRGBA(1,1,1,1));         // light color
         spot.setPosition(cam.getLocation());               // shine from camera loc
         spot.setDirection(cam.getDirection());             // shine forward from camera loc
         
