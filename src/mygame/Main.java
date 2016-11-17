@@ -10,6 +10,8 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.font.BitmapText;
+import com.jme3.font.LineWrapMode;
+import com.jme3.font.Rectangle;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -100,6 +102,21 @@ public class Main extends SimpleApplication{
     BulletAppState bulletAppState;
     CharacterControl player;
     RigidBodyControl physicsNode;
+    
+    
+    // Item Names
+    
+    String [] itemNames = {
+        "2D Spieleentwicklung",
+        "Android Entwicklung",
+        "Java Build Tools",
+        "Microservices mit Dropwizard",
+        "NoSQL mit MongoDB",
+        "Sourcecodeverwaltung mit Github",
+        "Agile Softwareentwicklung mit Scrum",
+        "User Authentication mit OAuth",
+        "Webentwicklung"    
+        };
             
     public static void main(String[] args) {
         Main app = new Main();
@@ -249,7 +266,8 @@ public class Main extends SimpleApplication{
 
         if (distance < 2 && items[i].getUserData("status").equals(false)){
             //showHUD(tpf, "Du hast ein Buch über " + items[1].getName() + " gefunden! Drücke B um es aufzunehmen.");
-            showHUD(tpf, "Drücke B");
+            showHUD(tpf, "Du hast ein Buch über " + itemNames[i] + " gefunden. " +
+                    "Drücke B um es aufzunehmen.");
         }
         }
 
@@ -358,7 +376,7 @@ public class Main extends SimpleApplication{
                  if (distances[index] < 2){
                  itemNode.detachChild(items[index]);
                  itemsCollected++;
-                 items[1].setUserData("status", false);
+                 items[index].setUserData("status", true);
                  showHUD(tpf);
                  }
              }
@@ -581,15 +599,17 @@ public class Main extends SimpleApplication{
         
 
         
+        
         for (int i = 0; i<items.length; i++){
         Spatial item = assetManager.loadModel("Models/Items/book/book.j3o");
         items[i] = item;
         //items[i].setUserData("name", name);
         items[i].setUserData("status", false);
         items[i].setUserData("id", i);
+        items[i].setUserData("name", itemNames[i]);
         items[i].rotate(FastMath.PI/2, 0, 0);
         items[i].scale(0.3f);
-        float random = (float) (10*Math.random());
+        float random = (float) (100*Math.random());
         items[i].setLocalTranslation(random, 2, random);
         itemNode.attachChild(item); 
         
@@ -607,8 +627,9 @@ public class Main extends SimpleApplication{
         color = new ColorRGBA(ColorRGBA.White);
         textField.setColor(color);                             // font color
         textField.setText("");             // the text
-        textField.setLocalTranslation(settings.getWidth()/2 - 100, settings.getHeight()/2, 0); // position
- 
+        //textField.setLocalTranslation(100, settings.getHeight()/2, 0); // position
+        textField.setBox(new Rectangle(settings.getWidth()/2-settings.getWidth()/4, settings.getHeight()*3/4, settings.getWidth()/2, settings.getHeight()/2));
+        textField.setLineWrapMode(LineWrapMode.Word);
     }
     public void initListeners(){
         inputManager.addMapping("Move", new KeyTrigger(keyInput.KEY_W));
