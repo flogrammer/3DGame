@@ -583,7 +583,7 @@ public class Main extends SimpleApplication{
      
     public void initForest()
     {
-        final int anzahlBaueme = 50;
+        final int anzahlBaueme = 42;
         final float MAX_X_RANDOM = 2.0f;
         final float MAX_Z_RANDOM = 2.0f;
         Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
@@ -605,10 +605,10 @@ public class Main extends SimpleApplication{
             {
                 trees[i][j] = tree.clone();
                 rootNode.attachChild(trees[i][j]);
-                float xrandom = (float)(Math.random()-0.2)*2.0f*MAX_X_RANDOM;
+                float xrandom = (float)(Math.random()-0.5)*2.0f*MAX_X_RANDOM;
                 
-                float zrandom = (float)(Math.random()-0.2)*2.0f*MAX_Z_RANDOM;
-                trees[i][j].setLocalTranslation((i-anzahlBaueme/2)*5.5f + xrandom,0f,(j-anzahlBaueme/2)*5.5f+zrandom);
+                float zrandom = (float)(Math.random()-0.5)*2.0f*MAX_Z_RANDOM;
+                trees[i][j].setLocalTranslation((i-anzahlBaueme/2)*6f + xrandom,0f,(j-anzahlBaueme/2)*6f+zrandom);
                 
                 RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);
                 trees[i][j].addControl(treeNode);
