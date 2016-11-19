@@ -622,15 +622,16 @@ public class Main extends SimpleApplication{
      
     public void initHouses(){
        Spatial house = assetManager.loadModel("Models/Houses/small_house.j3o");
-       /* 
+       house.scale(7.0f);
+       house.setLocalTranslation(new Vector3f(10,0,10));
+       
        CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
        RigidBodyControl houseControl = new RigidBodyControl(houseShape, 0);
        house.addControl(houseControl);
        bulletAppState.getPhysicsSpace().add(house);
        houseControl.setPhysicsLocation(new Vector3f(10, 0, 10));
-       */
-       house.scale(7.0f);
-       house.setLocalTranslation(new Vector3f(10,0,10));
+       
+      
        rootNode.attachChild(house);
 
     }
