@@ -507,7 +507,7 @@ public class Main extends SimpleApplication{
     public float getDistance(Vector3f item, Vector3f player){
         // Euklidsche Distanz
         
-        float distance = 100;        
+        float distance = 100f;        
         distance = (float) Math.sqrt(Math.pow(item.x-player.x, 2) + Math.pow(item.z-player.z, 2));
         return distance;
     }
@@ -517,7 +517,7 @@ public class Main extends SimpleApplication{
     
     
     protected void initGround() {
-        Spatial scenefile = assetManager.loadModel("Models/Scenes/newScene.j3o");
+        Spatial scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
         rootNode.attachChild(scenefile);
         
         CollisionShape groundShape = CollisionShapeFactory.createMeshShape((Node) scenefile);
