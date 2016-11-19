@@ -34,6 +34,7 @@ import com.jme3.scene.shape.Box;
 import com.jme3.terrain.noise.Color;
 import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
+import jme3tools.optimize.LodGenerator;
 
 /**
  * test
@@ -639,14 +640,23 @@ public class Main extends SimpleApplication{
         final int anzahlBaueme = 42;
         final float MAX_X_RANDOM = 2.0f;
         final float MAX_Z_RANDOM = 2.0f;
+        final float REDUCTION_TREES = 0.9f;
         Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
         Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
         Node t = (Node)tree;
         Geometry geom1 = (Geometry)t.getChild(0);
         Geometry geom2 = (Geometry)t.getChild(1);
         
-        geom1.setLodLevel(5);
-        geom2.setLodLevel(3);
+        LodGenerator lod = new LodGenerator(geom1);
+        lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL, REDUCTION_TREES);
+        geom1.setLodLevel(1);
+        
+        lod = new LodGenerator(geom2);
+        lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL, REDUCTION_TREES);
+        geom2.setLodLevel(1);
+        
+        
+        
         tree.scale(1.0f, 5.0f, 1.0f);
         
         
