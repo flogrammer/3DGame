@@ -1,0 +1,24 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mygame.model;
+
+import com.jme3.asset.AssetManager;
+import com.jme3.scene.Spatial;
+
+
+/**
+ *
+ * @author Florian
+ */
+public class Book{
+    public Spatial spatial;
+    public String name;
+    
+    public Book (AssetManager assetManager, String name){
+        spatial = assetManager.loadModel("Models/Items/old book/old book1.j3o");
+        this.name = name;
+        
+    }
+}

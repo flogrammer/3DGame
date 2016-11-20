@@ -24,6 +24,8 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -35,6 +37,8 @@ import com.jme3.terrain.noise.Color;
 import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
 import jme3tools.optimize.LodGenerator;
+import mygame.ctrl.BookManager;
+import mygame.model.Book;
 
 /**
  * test
@@ -57,11 +61,9 @@ public class Main extends SimpleApplication{
     float outerRange = 50f;
     long fadetime = 5000;
     
-    final int ITEMNUMBER = 8; // Anzahl Prog Themen
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
-    final int ITEMSET = 5;
     final float PROGMAN_X = -20.0f;
     final float PROGMAN_Y = 0f;
     final float PROGMAN_Z = -10.0f;
@@ -77,9 +79,7 @@ public class Main extends SimpleApplication{
     
     
     // Figures and Textures
-    Spatial [] items;
-    float [] distances;
-    Node itemNode;
+    BookManager bookManager;
     Spatial progman;
     Spatial flash;
     PointLight light;
@@ -119,18 +119,9 @@ public class Main extends SimpleApplication{
 
     
     // Item Names
+  
     
-    String [] itemNames = {
-        "2D Spieleentwicklung",
-        "Android Entwicklung",
-        "Java Build Tools",
-        "Microservices mit Dropwizard",
-        "NoSQL mit MongoDB",
-        "Sourcecodeverwaltung mit Github",
-        "Agile Softwareentwicklung mit Scrum",
-        "User Authentication mit OAuth",
-        "Webentwicklung"    
-        };
+   
             
     public static void main(String[] args) {
         Main app = new Main();
@@ -154,6 +145,7 @@ public class Main extends SimpleApplication{
         // Physics and Collision
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
+         //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
         
         // Init functionalities
         initListeners();
@@ -161,22 +153,20 @@ public class Main extends SimpleApplication{
         initPlayerPhysics();
         initFlashlight();
         initAmbientLight();
-        bulletAppState.getPhysicsSpace().enableDebug(assetManager);
 
         // Init Geometries
         initForest();
         initSky();
-        //initHouses();
         initItems();
         initProgman();
         initHUD();
         initGround();
         
+        createFog();
 
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
-        
         showHUD("Finde die 8 Bücher bevor deine Zeit abläuft...");
         
         
@@ -246,11 +236,10 @@ public class Main extends SimpleApplication{
     
     public void updateItems(){
 
-       for (int i = 0; i < items.length; i++){
-       items[i].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
+       for (int i = 0; i < bookManager.books.length; i++){
+       bookManager.books[i].spatial.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,-((float) FastMath.PI),(float)(-Math.PI)));
        }
 
-//       items[1].lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
 
     }
     
@@ -315,16 +304,20 @@ public class Main extends SimpleApplication{
     public void updateItemCollision(float tpf){
 
                
-        for (int i = 0; i < items.length; i++){
+        for (int i = 0; i < bookManager.books.length; i++){
         
-        float distance = getDistance(items[i].getLocalTranslation(), position);
-        distances[i] = distance;
+            if(bookManager.books[i].spatial.getUserData("status").equals(false)){
+                float distance = getDistance(bookManager.books[i].spatial.getLocalTranslation(), position);
+                bookManager.findNextBook(position);
+                bookManager.minItemDistance = distance;
+                
+                if (distance < 3){
+                showHUD("Du hast ein Buch über " + bookManager.books[i].name + " gefunden. " +
+                        "Drücke B um es aufzunehmen.");
+                }
+            }
 
-        if (distance < 2 && items[i].getUserData("status").equals(false)){
-            //showHUD(tpf, "Du hast ein Buch über " + items[1].getName() + " gefunden! Drücke B um es aufzunehmen.");
-            showHUD("Du hast ein Buch über " + itemNames[i] + " gefunden. " +
-                    "Drücke B um es aufzunehmen.");
-        }
+     
         }
 
     }
@@ -431,14 +424,13 @@ public class Main extends SimpleApplication{
              // Item collection
              
              if (name.equals("Item") && !isPressed) {
-                 int index = getMinimalDistanceID();
-                 
-                 // Get current item ID
-                 // Hier soll dann nur das Item entfernt werden, bei dem man gerade ist (ID!)
-                 if (distances[index] < 2){
-                 itemNode.detachChild(items[index]);
+                 bookManager.findNextBook(position);
+                 int index = bookManager.minItemIndex;
+
+             if (bookManager.minItemDistance < 3 && bookManager.books[index].spatial.getUserData("status").equals(false)){                 
+                 bookManager.detachChild(bookManager.books[index].spatial);
                  itemsCollected++;
-                 items[index].setUserData("status", true);
+                 bookManager.books[index].spatial.setUserData("status", true);
                  audio_item_collected.play();
                  showHUD();
                  }
@@ -468,7 +460,7 @@ public class Main extends SimpleApplication{
 
     public void showHUD(){
         startTime = System.currentTimeMillis();
-        textField.setText("You have collected " + itemsCollected + "/" + ITEMNUMBER + " items.");
+        textField.setText("You have collected " + itemsCollected + "/" + bookManager.getBookCount() + " items.");
         guiNode.attachChild(textField);
     }
     public void showHUD(String text){
@@ -492,22 +484,13 @@ public class Main extends SimpleApplication{
          textField.setColor(color);
      }         
      
-    public int getMinimalDistanceID(){
-        int index = 0;
-        for (int i = 0; i < distances.length; i++){
-             if (distances[i] < distances[index]){
-                 index = i;
-             }
-            }
     
-    return index;
-    }
         
     
     public float getDistance(Vector3f item, Vector3f player){
         // Euklidsche Distanz
         
-        float distance = 100f;        
+        float distance = 1000f; // Dummy         
         distance = (float) Math.sqrt(Math.pow(item.x-player.x, 2) + Math.pow(item.z-player.z, 2));
         return distance;
     }
@@ -543,7 +526,7 @@ public class Main extends SimpleApplication{
        audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
        audio_foodsteps.setPositional(false);
        audio_foodsteps.setLooping(true);
-       audio_foodsteps.setVolume(0.2f);
+       audio_foodsteps.setVolume(0.3f);
        rootNode.attachChild(audio_foodsteps);
        
        audio_breathing = new AudioNode(assetManager, "Sounds/soundFX/breathing.wav", false);
@@ -693,41 +676,8 @@ public class Main extends SimpleApplication{
     }
     
     public void initItems(){
-        itemNode = new Node();
-      
-        items = new Spatial [ITEMSET];
-        distances = new float [ITEMSET];
-        
-        final float REDUCTION_ITEMS = 0.97f;
-        
-        for (int i = 0; i<items.length; i++){
-        Spatial item = assetManager.loadModel("Models/Items/old book/old book1.j3o");
-        
-        
-        
-        items[i] = item;
-        //items[i].setUserData("name", name);
-        items[i].setUserData("status", false);
-        items[i].setUserData("id", i);
-        items[i].setUserData("name", itemNames[i]);
-        items[i].rotate(FastMath.PI/2, 0, 0);
-        items[i].scale(0.3f);
-        float random = (float) (100*Math.random());
-        items[i].setLocalTranslation(random, 2, random);
-        itemNode.attachChild(item);
-        
-        SpotLight itemShine = new SpotLight();
-        itemShine.setSpotRange(5f);
-        itemShine.setColor(ColorRGBA.Magenta.mult(1.2f));
-        itemShine.setPosition(items[i].getLocalTranslation());
-        itemShine.setSpotInnerAngle(0.5f);
-        itemShine.setSpotInnerAngle(3f);
-        rootNode.addLight(itemShine);
-        
-        }
-        
-        rootNode.attachChild(itemNode);
-
+        bookManager = new BookManager(assetManager);
+        rootNode.attachChild(bookManager);
     }
     
     public void initHUD(){
@@ -822,21 +772,16 @@ public class Main extends SimpleApplication{
          * attribute -> Per vertex variables (position e.g)
          * varying -> Vertex shader to fragment shader variables
          */
-      
-        ColorRGBA fogColor = new ColorRGBA(0.5f, 0.5f, 0.5f, 1f);
-        float d = 0; // Distance as range based calculation
-        float b_density = 0.05f; // fog density
-        float f = (float) Math.exp(-d * b_density);
-        
-        
-        ColorRGBA finalColor = new ColorRGBA();
-        float r = (float) (1.0 - f) * fogColor.r + f * light.getColor().r;
-        float g = (float) (1.0 - f) * fogColor.g + f * light.getColor().g;
-        float b = (float) (1.0 - f) * fogColor.b + f * light.getColor().b;
+       /** Add fog to a scene */
+        FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
+        FogFilter fog=new FogFilter();
+        fog.setFogColor(new ColorRGBA(0.7f, 0.7f, 0.7f, 1.0f));
+        fog.setFogDistance(155);
+        fog.setFogDensity(1.0f);
+        fpp.addFilter(fog);
+        viewPort.addProcessor(fpp);
 
-        finalColor.r = r;
-        finalColor.g = g;
-        finalColor.b = b;
+        
     }
  
 }
