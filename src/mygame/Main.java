@@ -9,6 +9,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.font.LineWrapMode;
 import com.jme3.font.Rectangle;
@@ -26,6 +27,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
+import com.jme3.post.filters.LightScatteringFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -641,7 +643,7 @@ public class Main extends SimpleApplication{
         
         
         
-        tree.scale(1.0f, 5.0f, 1.0f);
+       tree.scale(1.0f, 5.0f, 1.0f);
         
         
         CollisionShape treeShape = new BoxCollisionShape(new Vector3f (0.3f, 10, 0.3f));
@@ -733,7 +735,7 @@ public class Main extends SimpleApplication{
         light = new PointLight();
         light.setPosition(player.getPhysicsLocation());
         light.setRadius(flashRadius); // 20 Meter
-        light.setColor(new ColorRGBA(1,1,1,1));
+        light.setColor(new ColorRGBA(1,1,1,0.1f));
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
         flash.scale(2f);
         
@@ -743,9 +745,9 @@ public class Main extends SimpleApplication{
         spot = new SpotLight();
         spot.setSpotRange(outerRange);                           // distance
         spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
-        spot.setSpotOuterAngle(50f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
-        spot.setColor(new ColorRGBA(1,1,1,1));         // light color
-        spot.setPosition(cam.getLocation());               // shine from camera loc
+        spot.setSpotOuterAngle(20f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
+        spot.setColor(new ColorRGBA((float) 1, 1, (float) 20/255, 1));         // light color
+        spot.setPosition(flash.getLocalTranslation());               // shine from camera loc
         spot.setDirection(cam.getDirection());             // shine forward from camera loc
         
     }
@@ -753,9 +755,10 @@ public class Main extends SimpleApplication{
     public void initAmbientLight(){
         AmbientLight al = new AmbientLight();
         AmbientLight al2 = new AmbientLight();
-        al.setColor(ColorRGBA.Blue.mult(0.8f));
-        al2.setColor(ColorRGBA.White.mult(0.2f));
-        
+        al.setColor(ColorRGBA.Black.mult(0.1f));
+        al2.setColor(ColorRGBA.Blue.mult(0.1f));
+
+
         rootNode.addLight(al);
         rootNode.addLight(al2);
     }
@@ -775,8 +778,9 @@ public class Main extends SimpleApplication{
        /** Add fog to a scene */
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
         FogFilter fog=new FogFilter();
-        fog.setFogColor(new ColorRGBA(0.7f, 0.7f, 0.7f, 1.0f));
-        fog.setFogDistance(155);
+       // fog.setFogColor(new ColorRGBA((float) 80/255,(float) 0, (float) 100/255,1f));
+        fog.setFogColor(new ColorRGBA(0.2f,0.2f,0.2f,1));
+        fog.setFogDistance(100);
         fog.setFogDensity(1.0f);
         fpp.addFilter(fog);
         viewPort.addProcessor(fpp);
