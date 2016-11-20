@@ -161,12 +161,12 @@ public class Main extends SimpleApplication{
         initPlayerPhysics();
         initFlashlight();
         initAmbientLight();
-        //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+        bulletAppState.getPhysicsSpace().enableDebug(assetManager);
 
         // Init Geometries
         initForest();
-        //initSky();
-        initHouses();
+        initSky();
+        //initHouses();
         initItems();
         initProgman();
         initHUD();
@@ -698,9 +698,13 @@ public class Main extends SimpleApplication{
         items = new Spatial [ITEMSET];
         distances = new float [ITEMSET];
         
-
+        final float REDUCTION_ITEMS = 0.97f;
+        
         for (int i = 0; i<items.length; i++){
         Spatial item = assetManager.loadModel("Models/Items/old book/old book1.j3o");
+        
+        
+        
         items[i] = item;
         //items[i].setUserData("name", name);
         items[i].setUserData("status", false);
