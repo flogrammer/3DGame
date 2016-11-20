@@ -700,7 +700,7 @@ public class Main extends SimpleApplication{
         
 
         for (int i = 0; i<items.length; i++){
-        Spatial item = assetManager.loadModel("Models/Items/book/book.j3o");
+        Spatial item = assetManager.loadModel("Models/Items/old book/old book1.j3o");
         items[i] = item;
         //items[i].setUserData("name", name);
         items[i].setUserData("status", false);
