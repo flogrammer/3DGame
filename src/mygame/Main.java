@@ -1,5 +1,6 @@
 package mygame;
 
+import view.PauseState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
@@ -17,34 +18,29 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
-import com.jme3.light.DirectionalLight;
 import com.jme3.light.PointLight;
 import com.jme3.light.SpotLight;
-import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
-import com.jme3.post.filters.LightScatteringFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
-import com.jme3.terrain.noise.Color;
 import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
 import jme3tools.optimize.LodGenerator;
 import mygame.ctrl.BookManager;
-import mygame.model.Book;
+import mygame.model.Progman;
 
 /**
- * test
- * @author normenhansen
+ * Progman Version 1
+ * @author Julian and Florian
  */
 public class Main extends SimpleApplication{
     boolean isWalking;
@@ -54,8 +50,6 @@ public class Main extends SimpleApplication{
     boolean lightActivated = false;
     
     long startTime;
-    int itemsCollected;
-    int pulsefactor = 2;
     float runFactor = 0.1f;
     float fullBattery = 200;
     float batteryStatus = fullBattery;
@@ -66,23 +60,18 @@ public class Main extends SimpleApplication{
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
-    final float PROGMAN_X = -20.0f;
-    final float PROGMAN_Y = 0f;
-    final float PROGMAN_Z = -10.0f;
-    final float PROGMAN_MAX_SPEED = 0.01f;
     final float WORLD_SIZE = 125.0f;
     
     
     Camera camera;
     Node cameraNode; // For the Flashlight
     Vector3f position;
-    Vector3f progman_pos;
     ColorRGBA color;
     
     
     // Figures and Textures
     BookManager bookManager;
-    Spatial progman;
+    Progman progman;
     Spatial flash;
     PointLight light;
     SpotLight spot;
@@ -130,18 +119,13 @@ public class Main extends SimpleApplication{
         app.start();
     }
 
-    
-    
-    
-  
-        
+     
     @Override
     public void simpleInitApp() {
         isRunning = true;
         isWalking = false;
         anyKeyPressed = false;
         camera = viewPort.getCamera();
-        itemsCollected = 0;
         startTime = 0;
         
         // Physics and Collision
@@ -160,6 +144,7 @@ public class Main extends SimpleApplication{
         initForest();
         initSky();
         initItems();
+        bookManager.itemsCollected = 0;
         initProgman();
         initHUD();
         initGround();
@@ -182,6 +167,7 @@ public class Main extends SimpleApplication{
         updateProgman();
         updateFlashlight();
         updateItems();
+        //bookManager.pulseElement(tpf);
         updateItemCollision(tpf);
         updatePhysics();
         if (lightActivated)
@@ -207,25 +193,32 @@ public class Main extends SimpleApplication{
     
     public void updateProgman()
     {
-        Vector3f direction = new Vector3f(position.x-progman_pos.x, 0f, position.z-progman_pos.z);
-       //System.out.println("pos "+position + " progman: " + progman_pos + " moving to " + direction);
-        if(direction.length() > PROGMAN_MAX_SPEED)
-            direction = direction.divide(direction.length()).mult(PROGMAN_MAX_SPEED);
-        //System.out.println("2pos "+position + " progman: " + progman_pos + " moving to " + direction);
-        progman_pos = progman_pos.add(direction);
-        progman.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
-        progman.setLocalTranslation(progman_pos);
-    
         
-        float dist = getDistance(progman_pos, position);
+        float dist = getDistance(progman.progman_pos, position);
+        if (progman.moveAllowed()){
+            float newDistance = dist * 3/4;
+            float randomAngle = (float) (Math.random() * 2 * Math.PI);
+
+            float x_coordinate = newDistance * FastMath.cos(randomAngle);
+            float z_coordinate = newDistance * FastMath.sin(randomAngle);
+
+            progman.progman_pos = new Vector3f(x_coordinate, 0, z_coordinate);
+            progman.spatial.setLocalTranslation(progman.progman_pos);
+        }
+        progman.spatial.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
+        
+        
+        // If progman is near
+        
         
         if (dist < 30){
            audio_progman.setVolume(1.4f*(1-(dist/30)));
            audio_progman.play();
            if (dist < 15){
-           audio_progman2.setVolume(0.1f*(1-(dist/15)));
-           audio_progman2.play();
-           
+                audio_progman2.setVolume(0.1f*(1-(dist/15)));
+                audio_progman2.play();
+                if (progman.moveAllowed())
+                    progman.progman_pos = new Vector3f(position.x, 0, position.y);
            }else{
                 audio_progman2.stop();
            }
@@ -431,7 +424,7 @@ public class Main extends SimpleApplication{
 
              if (bookManager.minItemDistance < 3 && bookManager.books[index].spatial.getUserData("status").equals(false)){                 
                  bookManager.detachChild(bookManager.books[index].spatial);
-                 itemsCollected++;
+                 bookManager.itemsCollected++;
                  bookManager.books[index].spatial.setUserData("status", true);
                  audio_item_collected.play();
                  showHUD();
@@ -444,15 +437,7 @@ public class Main extends SimpleApplication{
     
     
     // _____________ FUNCTIONAL METHODS ____________________
-    public void pulseElement(float tpf, Spatial figure){
-        figure.setLocalScale(figure.getLocalScale().getX() + tpf*pulsefactor, figure.getLocalScale().getY() + tpf*pulsefactor, figure.getLocalScale().getZ() + tpf*pulsefactor);
-       if (figure.getLocalScale().getX() > 3.0f){
-           pulsefactor = -pulsefactor;
-       }
-       if(figure.getLocalScale().getX() <= 1.0f){
-           pulsefactor = -pulsefactor;
-       }
-    }
+    
    
     public void foodstepsCheck(){
         if (isWalking == false){
@@ -462,7 +447,8 @@ public class Main extends SimpleApplication{
 
     public void showHUD(){
         startTime = System.currentTimeMillis();
-        textField.setText("You have collected " + itemsCollected + "/" + bookManager.getBookCount() + " items.");
+        textField.setText("You have collected " + bookManager.itemsCollected + "/" + bookManager.getBookCount() + " items.");
+        textField.setAlignment(BitmapFont.Align.Center);
         guiNode.attachChild(textField);
     }
     public void showHUD(String text){
@@ -666,14 +652,9 @@ public class Main extends SimpleApplication{
             }
         }
     }
-    public void initProgman()
-    {
-        progman = assetManager.loadModel("Models/progman/progman.j3o");
-        progman.scale(0.8f);
-        progman_pos = new Vector3f(PROGMAN_X,PROGMAN_Y,PROGMAN_Z);
-        progman.setLocalTranslation(progman_pos);
-        progman.addLight(new DirectionalLight());
-        rootNode.attachChild(progman);
+    public void initProgman(){ 
+        progman = new Progman(assetManager);
+        rootNode.attachChild(progman.spatial);
         
     }
     
@@ -746,7 +727,7 @@ public class Main extends SimpleApplication{
         spot.setSpotRange(outerRange);                           // distance
         spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
         spot.setSpotOuterAngle(20f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
-        spot.setColor(new ColorRGBA((float) 1, 1, (float) 20/255, 1));         // light color
+        spot.setColor(new ColorRGBA((float) 1, 1, (float) 50/255, 1));         // light color
         spot.setPosition(flash.getLocalTranslation());               // shine from camera loc
         spot.setDirection(cam.getDirection());             // shine forward from camera loc
         
