@@ -195,18 +195,28 @@ public class Main extends SimpleApplication{
     {
         
         float dist = getDistance(progman.progman_pos, position);
+        
         if (progman.moveAllowed()){
+            progman.appearanceAngle = (float) ((Math.random() * 2 * Math.PI));
             float newDistance = dist * 3/4;
-            float randomAngle = (float) (Math.random() * 2 * Math.PI);
+            //float randomAngle = 0;
+            float x_coordinate = newDistance * FastMath.cos(progman.appearanceAngle);
+            float z_coordinate = newDistance * FastMath.sin(progman.appearanceAngle);
 
-            float x_coordinate = newDistance * FastMath.cos(randomAngle);
-            float z_coordinate = newDistance * FastMath.sin(randomAngle);
-
-            progman.progman_pos = new Vector3f(x_coordinate, 0, z_coordinate);
+            progman.progman_pos = new Vector3f(position.x + x_coordinate, 0,position.z + z_coordinate);
             progman.spatial.setLocalTranslation(progman.progman_pos);
+            
+           
+            
+            
         }
         progman.spatial.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
         
+        
+        // If eye contact is made with the progman and its near enough - Jumpscare
+            if(progman.checkEyeContact(cam.getDirection(), progman.appearanceAngle)){
+            System.out.println("DU SIEHST IHN!");   
+            }
         
         // If progman is near
         
@@ -225,6 +235,8 @@ public class Main extends SimpleApplication{
         }else{
             audio_progman.stop();
         }
+        
+        
         
         
     }
@@ -483,6 +495,7 @@ public class Main extends SimpleApplication{
         return distance;
     }
  
+    
        
      // _________________INIT METHODS_______________________
     

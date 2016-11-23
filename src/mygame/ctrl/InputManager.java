@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package mygame;
+package mygame.ctrl;
 
 /**
  *
  * @author Florian
  */
-public class GameOverState {
+public class InputManager {
     
 }

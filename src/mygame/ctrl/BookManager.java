@@ -9,6 +9,7 @@ import com.jme3.light.SpotLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import mygame.model.Book;
 
 /**
@@ -19,6 +20,9 @@ public class BookManager extends Node{
     public Book [] books = new Book[9];
     public int minItemIndex;
     public float minItemDistance;
+    public int itemsCollected;
+    int pulsefactor = 1;
+
     
     public BookManager(AssetManager assetManager){
          String [] itemNames = {
@@ -41,7 +45,10 @@ public class BookManager extends Node{
             books[i].spatial.rotate(0, (float) (- Math.PI), 0);
             books[i].spatial.scale(0.3f);
             float random = (float) (100*Math.random());
-            books[i].spatial.setLocalTranslation(random, 2, random);
+            float random2 = (float) (100*Math.random());
+            
+            
+            books[i].spatial.setLocalTranslation(random+random2, 2, random+random2);
             attachChild(books[i].spatial);
 
             SpotLight itemShine = new SpotLight();
@@ -85,6 +92,16 @@ public class BookManager extends Node{
         distance = (float) Math.sqrt(Math.pow(item.x-player.x, 2) + Math.pow(item.z-player.z, 2));
         return distance;
     }
+    
+    public void pulseElement(float tpf){
+        for (Book book : books){
+            book.spatial.setLocalScale(book.spatial.getLocalScale().getX() + tpf*pulsefactor, book.spatial.getLocalScale().getY() + tpf*pulsefactor, book.spatial.getLocalScale().getZ() + tpf*pulsefactor);
+           // TODO
+            
+        }
+        System.out.println();
+    }
+    
     
     
 }
