@@ -133,6 +133,8 @@ public class Main extends SimpleApplication{
         stateManager.attach(bulletAppState);
          //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
         
+        System.out.println(rootNode.getChildren());
+        
         // Init functionalities
         initListeners();
         initAudio();
@@ -155,6 +157,9 @@ public class Main extends SimpleApplication{
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
         showHUD("Finde die 8 Bücher bevor deine Zeit abläuft...");
+        
+        
+        
         
         
     }
@@ -502,6 +507,9 @@ public class Main extends SimpleApplication{
     
     protected void initGround() {
         Spatial scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
+       
+        
+        
         rootNode.attachChild(scenefile);
         
         CollisionShape groundShape = CollisionShapeFactory.createMeshShape((Node) scenefile);
