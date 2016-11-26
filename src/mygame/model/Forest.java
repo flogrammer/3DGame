@@ -5,6 +5,7 @@
 package mygame.model;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -13,12 +14,11 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import java.awt.Point;
+
 import java.util.List;
 import jme3tools.optimize.LodGenerator;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  *
@@ -31,14 +31,14 @@ public class Forest {
     BulletAppState bulletAppState = null;
     
     //object List
-    private List<Rectangle> objects = new ArrayList<Rectangle>(); 
+    private List<BoundingVolume> objects = new ArrayList<BoundingVolume>(); 
     
     
     //
     final int anzahlBaueme = 42;
     final float MAX_X_RANDOM = 2.0f;
     final float MAX_Z_RANDOM = 2.0f;
-    final float REDUCTION_TREES = 0.9f;
+    final float REDUCTION_TREES = 0.95f;
     Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
     boolean [][] o = new boolean[anzahlBaueme][anzahlBaueme];
     
@@ -72,14 +72,15 @@ public class Forest {
             }
         }
         
-        for(Rectangle r : objects)
+        for(BoundingVolume bV : objects)
         {
             for(int i = 0; i < trees.length ; i++)
                 for(int j = 0; j < trees[i].length;j++)
                 {
-                    Vector3f v = trees[i][j].getLocalTranslation();
+                    Vector3f v = trees[i][j].getLocalTranslation().clone();
+                    v.y = bV.getCenter().y;
                     
-                    if(r.contains(v.x,v.z))
+                    if(bV.contains(v))
                     {
                         o[i][j] = true;
                     }
@@ -105,7 +106,7 @@ public class Forest {
         }
     }
     
-    public boolean addObject(Rectangle r)
+    public boolean addObject(BoundingVolume r)
     {
         return objects.add(r);
     }

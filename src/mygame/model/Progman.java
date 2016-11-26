@@ -58,8 +58,8 @@ public class Progman {
       public boolean checkEyeContact(Vector3f direction, float angleProgman){
         float angle = (float)(Math.atan((direction.x)/direction.z)); // Bis Pi
         
-        System.out.println("Winkel progman: " + angleProgman);
-        System.out.println("Winkel ich: " + (Math.atan((direction.z)/direction.x)));
+        //System.out.println("Winkel progman: " + angleProgman);
+        //System.out.println("Winkel ich: " + (Math.atan((direction.z)/direction.x)));
         return false;
     }
     

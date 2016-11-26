@@ -3,6 +3,7 @@ package mygame;
 import view.PauseState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
@@ -29,11 +30,13 @@ import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
+import com.jme3.scene.AssetLinkNode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
+import java.util.List;
 import jme3tools.optimize.LodGenerator;
 import mygame.ctrl.BookManager;
 import mygame.model.Forest;
@@ -76,6 +79,7 @@ public class Main extends SimpleApplication{
     Spatial flash;
     PointLight light;
     SpotLight spot;
+    Spatial scenefile;
     
     // Sounds and Audio
     private AudioNode audio_theme;
@@ -134,26 +138,58 @@ public class Main extends SimpleApplication{
         stateManager.attach(bulletAppState);
          //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
         
-        System.out.println(rootNode.getChildren());
         
         // Init functionalities
+        Long time = System.currentTimeMillis();
         initListeners();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         initAudio();
+        
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         initPlayerPhysics();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         initFlashlight();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         initAmbientLight();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
 
         // Init Geometries
+   
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
+        initGround();
         forest = new Forest(rootNode, assetManager,bulletAppState);
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
+        initHouses();
+        initWorld();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         forest.initForest();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         initSky();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         initItems();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         bookManager.itemsCollected = 0;
         initProgman();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         initHUD();
-        initGround();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
         
         createFog();
+        System.out.println(System.currentTimeMillis()-time);
+        time = System.currentTimeMillis();
 
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
@@ -200,7 +236,7 @@ public class Main extends SimpleApplication{
     
     public void updateProgman()
     {
-        
+        System.out.println(position);
         float dist = getDistance(progman.progman_pos, position);
         
         if (progman.moveAllowed()){
@@ -508,7 +544,7 @@ public class Main extends SimpleApplication{
     
     
     protected void initGround() {
-        Spatial scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
+        scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
        
         
         
@@ -522,7 +558,19 @@ public class Main extends SimpleApplication{
         rootNode.attachChild(scenefile);
   }
     
-    
+    public void initWorld()
+    {
+        System.out.println(scenefile);
+        Node n = (Node) scenefile;
+        List<Spatial> liste = n.getChildren();
+        for(Spatial s : liste)
+        {
+            System.out.println(s);
+            if(s instanceof AssetLinkNode)
+                forest.addObject(s.getWorldBound());
+        }
+        
+    }
     public void initAudio(){
         // Background audio
        audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
@@ -626,8 +674,7 @@ public class Main extends SimpleApplication{
        bulletAppState.getPhysicsSpace().add(house);
        houseControl.setPhysicsLocation(new Vector3f(10, 0, 10));
        
-       
-       forest.addObject(null);
+       forest.addObject(house.getWorldBound());
        rootNode.attachChild(house);
 
     }
