@@ -36,6 +36,7 @@ import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
 import jme3tools.optimize.LodGenerator;
 import mygame.ctrl.BookManager;
+import mygame.model.Forest;
 import mygame.model.Progman;
 
 /**
@@ -110,7 +111,7 @@ public class Main extends SimpleApplication{
 
     
     // Item Names
-  
+    Forest forest = null;
     
    
             
@@ -143,7 +144,8 @@ public class Main extends SimpleApplication{
         initAmbientLight();
 
         // Init Geometries
-        initForest();
+        forest = new Forest(rootNode, assetManager,bulletAppState);
+        forest.initForest();
         initSky();
         initItems();
         bookManager.itemsCollected = 0;
@@ -617,13 +619,15 @@ public class Main extends SimpleApplication{
        house.scale(7.0f);
        house.setLocalTranslation(new Vector3f(10,0,10));
        
+       
        CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
        RigidBodyControl houseControl = new RigidBodyControl(houseShape, 0);
        house.addControl(houseControl);
        bulletAppState.getPhysicsSpace().add(house);
        houseControl.setPhysicsLocation(new Vector3f(10, 0, 10));
        
-      
+       
+       forest.addObject(null);
        rootNode.attachChild(house);
 
     }
