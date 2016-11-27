@@ -3,9 +3,7 @@ package mygame;
 import view.PauseState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
-import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
@@ -31,13 +29,11 @@ import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.AssetLinkNode;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
 import java.util.List;
-import jme3tools.optimize.LodGenerator;
 import mygame.ctrl.BookManager;
 import mygame.model.Forest;
 import mygame.model.Progman;
@@ -142,53 +138,52 @@ public class Main extends SimpleApplication{
         // Init functionalities
         Long time = System.currentTimeMillis();
         initListeners();
-        System.out.println(System.currentTimeMillis()-time);
+        System.out.println("1 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initAudio();
         
-        System.out.println(System.currentTimeMillis()-time);
+        System.out.println("1 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initPlayerPhysics();
-        System.out.println(System.currentTimeMillis()-time);
+        System.out.println("2 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initFlashlight();
-        System.out.println(System.currentTimeMillis()-time);
+        System.out.println("3 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initAmbientLight();
-        System.out.println(System.currentTimeMillis()-time);
+        System.out.println("4 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
 
         // Init Geometries
-   
-        System.out.println(System.currentTimeMillis()-time);
-        time = System.currentTimeMillis();
-        initGround();
         forest = new Forest(rootNode, assetManager,bulletAppState);
-        System.out.println(System.currentTimeMillis()-time);
+   
+        System.out.println("5 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initGround(); //extrem aufwendig
+        System.out.println("6 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initHouses();
-        initWorld();
-        System.out.println(System.currentTimeMillis()-time);
+        System.out.println("7 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
-        forest.initForest();
-        System.out.println(System.currentTimeMillis()-time);
+        forest.initForest(); //extrem aufwendig
+        System.out.println("8 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initSky();
-        System.out.println(System.currentTimeMillis()-time);
+        System.out.println("9 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
-        initItems();
-        System.out.println(System.currentTimeMillis()-time);
+        initItems(); //relativ aufwendig
+        System.out.println("10 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         bookManager.itemsCollected = 0;
-        initProgman();
-        System.out.println(System.currentTimeMillis()-time);
+        initProgman(); //extrem aufwendig
+        System.out.println("11 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initHUD();
-        System.out.println(System.currentTimeMillis()-time);
+        System.out.println("12 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         
         createFog();
-        System.out.println(System.currentTimeMillis()-time);
+        System.out.println("13 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
 
         setDisplayStatView(false);
@@ -236,7 +231,7 @@ public class Main extends SimpleApplication{
     
     public void updateProgman()
     {
-        System.out.println(position);
+        //System.out.println(position);
         float dist = getDistance(progman.progman_pos, position);
         
         if (progman.moveAllowed()){
@@ -545,7 +540,14 @@ public class Main extends SimpleApplication{
     
     protected void initGround() {
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
-       
+        //Add Models in scenefile to forest object List
+        Node n = (Node) scenefile;
+        List<Spatial> liste = n.getChildren();
+        for(Spatial s : liste)
+        {
+            if(s instanceof AssetLinkNode)
+                forest.addObject(s.getWorldBound());
+        }
         
         
         rootNode.attachChild(scenefile);
@@ -558,19 +560,7 @@ public class Main extends SimpleApplication{
         rootNode.attachChild(scenefile);
   }
     
-    public void initWorld()
-    {
-        System.out.println(scenefile);
-        Node n = (Node) scenefile;
-        List<Spatial> liste = n.getChildren();
-        for(Spatial s : liste)
-        {
-            System.out.println(s);
-            if(s instanceof AssetLinkNode)
-                forest.addObject(s.getWorldBound());
-        }
-        
-    }
+    
     public void initAudio(){
         // Background audio
        audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
@@ -679,51 +669,7 @@ public class Main extends SimpleApplication{
 
     }
      
-    public void initForest()
-    {
-        final int anzahlBaueme = 42;
-        final float MAX_X_RANDOM = 2.0f;
-        final float MAX_Z_RANDOM = 2.0f;
-        final float REDUCTION_TREES = 0.9f;
-        Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
-        Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
-        Node t = (Node)tree;
-        Geometry geom1 = (Geometry)t.getChild(0);
-        Geometry geom2 = (Geometry)t.getChild(1);
-        
-        LodGenerator lod = new LodGenerator(geom1);
-        lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL, REDUCTION_TREES);
-        geom1.setLodLevel(1);
-        
-        lod = new LodGenerator(geom2);
-        lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL, REDUCTION_TREES);
-        geom2.setLodLevel(1);
-        
-        
-        
-       tree.scale(1.0f, 5.0f, 1.0f);
-        
-        
-        CollisionShape treeShape = new BoxCollisionShape(new Vector3f (0.3f, 10, 0.3f));
-
-        for( int i = 0; i < trees.length; i++)
-        {
-            for(int j = 0; j < trees[i].length; j++)
-            {
-                trees[i][j] = tree.clone();
-                rootNode.attachChild(trees[i][j]);
-                float xrandom = (float)(Math.random()-0.5)*2.0f*MAX_X_RANDOM;
-                
-                float zrandom = (float)(Math.random()-0.5)*2.0f*MAX_Z_RANDOM;
-                trees[i][j].setLocalTranslation((i-anzahlBaueme/2)*6f + xrandom,0f,(j-anzahlBaueme/2)*6f+zrandom);
-                
-                RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);
-                trees[i][j].addControl(treeNode);
-                bulletAppState.getPhysicsSpace().add(trees[i][j]);
-                treeNode.setPhysicsLocation(trees[i][j].getLocalTranslation());  
-            }
-        }
-    }
+    
     public void initProgman(){ 
         progman = new Progman(assetManager);
         rootNode.attachChild(progman.spatial);
