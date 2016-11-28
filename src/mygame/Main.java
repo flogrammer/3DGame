@@ -9,6 +9,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.collision.CollisionResults;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.font.LineWrapMode;
@@ -76,6 +77,7 @@ public class Main extends SimpleApplication{
     PointLight light;
     SpotLight spot;
     Spatial scenefile;
+    Spatial house;
     
     // Sounds and Audio
     private AudioNode audio_theme;
@@ -184,8 +186,8 @@ public class Main extends SimpleApplication{
         
         createFog();
         System.out.println("13 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-
+        
+        
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
@@ -244,7 +246,16 @@ public class Main extends SimpleApplication{
             progman.progman_pos = new Vector3f(position.x + x_coordinate, 0,position.z + z_coordinate);
             progman.spatial.setLocalTranslation(progman.progman_pos);
             
-           
+            CollisionResults cR = new CollisionResults();
+            
+            
+            
+            System.out.println("" + house.getLocalTranslation() + "  " + progman.spatial.getLocalTranslation()+ " " + house.collideWith(progman.spatial.getWorldBound(), cR));
+            
+            progman.spatial.setLocalTranslation(house.getLocalTranslation());
+            cR = new CollisionResults();
+            System.out.println("" + house.getLocalTranslation() + "  " + progman.spatial.getLocalTranslation()+ " " + house.collideWith(progman.spatial.getWorldBound(), cR));
+            
             
             
         }
@@ -653,7 +664,7 @@ public class Main extends SimpleApplication{
     }
      
     public void initHouses(){
-       Spatial house = assetManager.loadModel("Models/Houses/small_house.j3o");
+       house = assetManager.loadModel("Models/Houses/small_house.j3o");
        house.scale(7.0f);
        house.setLocalTranslation(new Vector3f(10,0,10));
        
