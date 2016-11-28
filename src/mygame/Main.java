@@ -139,7 +139,7 @@ public class Main extends SimpleApplication{
         // Physics and Collision
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-         //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+        //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
         
         
         // Init functionalities
@@ -557,39 +557,97 @@ public class Main extends SimpleApplication{
     
     
     protected void initGround() {
+        System.out.println(assetManager);
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
         
-        final float worldSize = 250f;
+        final float worldSize = 125f;
         
         
-        Box box = new Box(worldSize,2.5f,0.5f);
         
-        Spatial wall_north = new Geometry("wall_north", box );
-        Spatial wall_south = new Geometry("wall_south", box );
-        Spatial wall_west = new Geometry("wall_west", box );
-        Spatial wall_east = new Geometry("wall_east", box );
+        Box box = new Box(2.5f,3.0f,0.25f);
+        Material mat_brick = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_brick.setTexture("ColorMap",assetManager.loadTexture("Textures/Terrain/BrickWall/BrickWall.jpg"));
         
-        Material mat_brick = new Material( 
-            assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_brick.setTexture("ColorMap", 
-            assetManager.loadTexture("Textures/Terrain/BrickWall/BrickWall.jpg"));
-        wall_north.setMaterial(mat_brick);
-        wall_south.setMaterial(mat_brick);
-        wall_west.setMaterial(mat_brick);
-        wall_east.setMaterial(mat_brick);
+        Spatial[] wall_north = new Geometry[51];
+        for(int i = 0; i < 51; i++)
+        {
+            wall_north[i] = new Geometry("wall_north", box );
+            wall_north[i].setMaterial(mat_brick);
+            
+            wall_north[i].rotate(0,(float)( Math.PI/2.0), 0);
+            wall_north[i].setLocalTranslation(126.5f,0,i*5.0f-126.0f);
+            rootNode.attachChild(wall_north[i]);
+        }
         
-        wall_north.rotate(0,(float)( Math.PI/2.0), 0);
-        wall_south.rotate(0,(float)( Math.PI/2.0), 0);
+        Spatial[] wall_south = new Geometry[51];
+        for(int i = 0; i < 51; i++)
+        {
+            wall_south[i] = new Geometry("wall_south", box );
+            wall_south[i].setMaterial(mat_brick);
+            
+            wall_south[i].rotate(0,(float)( Math.PI/2.0), 0);
+            wall_south[i].setLocalTranslation(-126.5f,0,i*5.0f-126.0f);
+            rootNode.attachChild(wall_south[i]);
+        }
         
-        wall_north.setLocalTranslation(124.5f,0,0);
-        wall_south.setLocalTranslation(-124.5f,0,0);
-        wall_west.setLocalTranslation(0,0,-124.5f);
-        wall_east.setLocalTranslation(0,0,-124.5f);
+        Spatial[] wall_east = new Geometry[51];
+        for(int i = 0; i < 51; i++)
+        {
+            wall_east[i] = new Geometry("wall_east", box );
+           
+            wall_east[i].setMaterial(mat_brick);
+            
+            
+            wall_east[i].setLocalTranslation(i*5.0f-126.0f,0,126.5f);
+            rootNode.attachChild(wall_east[i]);
+        }
         
-        rootNode.attachChild(wall_north);
-        rootNode.attachChild(wall_south);
-        rootNode.attachChild(wall_west);
-        rootNode.attachChild(wall_east);
+        Spatial[] wall_west = new Geometry[51];
+        for(int i = 0; i < 51; i++)
+        {
+            wall_west[i] = new Geometry("wall_west", box );
+            
+            wall_west[i].setMaterial(mat_brick);
+            
+            
+            wall_west[i].setLocalTranslation(i*5.0f-126.0f,0,-126.5f);
+            rootNode.attachChild(wall_west[i]);
+        }
+        Box box1 = new Box(126f,2.5f,1f);
+        Spatial north = new Geometry("wall_north", box1 );
+        Spatial south = new Geometry("wall_south", box1 );
+        Spatial west = new Geometry("wall_west", box1 );
+        Spatial east = new Geometry("wall_east", box1 );
+        
+        
+        
+        north.rotate(0,(float)( Math.PI/2.0), 0);
+        south.rotate(0,(float)( Math.PI/2.0), 0);
+        
+        north.setLocalTranslation(126.5f,0,0);
+        south.setLocalTranslation(-126.5f,0,0);
+        west.setLocalTranslation(0,0,-126.5f);
+        east.setLocalTranslation(0,0,126.5f);
+        
+        CollisionShape southShape = CollisionShapeFactory.createMeshShape((Geometry) south);
+        RigidBodyControl southControl = new RigidBodyControl(southShape, 0);
+        south.addControl(southControl);
+        bulletAppState.getPhysicsSpace().add(south);
+        
+        CollisionShape northShape = CollisionShapeFactory.createMeshShape((Geometry) north);
+        RigidBodyControl northControl = new RigidBodyControl(northShape, 0);
+        north.addControl(northControl);
+        bulletAppState.getPhysicsSpace().add(north);
+        
+        CollisionShape westShape = CollisionShapeFactory.createMeshShape((Geometry) west);
+        RigidBodyControl westControl = new RigidBodyControl(westShape, 0);
+        west.addControl(westControl);
+        bulletAppState.getPhysicsSpace().add(west);
+        
+        CollisionShape eastShape = CollisionShapeFactory.createMeshShape((Geometry) east);
+        RigidBodyControl eastControl = new RigidBodyControl(eastShape, 0);
+        east.addControl(eastControl);
+        bulletAppState.getPhysicsSpace().add(east);
         
         
         //Add Models in scenefile to forest object List
