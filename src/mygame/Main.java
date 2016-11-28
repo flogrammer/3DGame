@@ -20,6 +20,7 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.PointLight;
 import com.jme3.light.SpotLight;
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
@@ -30,11 +31,15 @@ import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.AssetLinkNode;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
 import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mygame.ctrl.BookManager;
 import mygame.model.Forest;
 import mygame.model.Progman;
@@ -202,7 +207,7 @@ public class Main extends SimpleApplication{
     @Override
     public void simpleUpdate(float tpf) {
         position = cam.getLocation();
-
+        System.out.println(position);
         // Updates
         updateProgman();
         updateFlashlight();
@@ -254,6 +259,8 @@ public class Main extends SimpleApplication{
             
             progman.spatial.setLocalTranslation(house.getLocalTranslation());
             cR = new CollisionResults();
+            
+            
             System.out.println("" + house.getLocalTranslation() + "  " + progman.spatial.getLocalTranslation()+ " " + house.collideWith(progman.spatial.getWorldBound(), cR));
             
             
@@ -551,6 +558,40 @@ public class Main extends SimpleApplication{
     
     protected void initGround() {
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
+        
+        final float worldSize = 250f;
+        
+        
+        Box box = new Box(worldSize,2.5f,0.5f);
+        
+        Spatial wall_north = new Geometry("wall_north", box );
+        Spatial wall_south = new Geometry("wall_south", box );
+        Spatial wall_west = new Geometry("wall_west", box );
+        Spatial wall_east = new Geometry("wall_east", box );
+        
+        Material mat_brick = new Material( 
+            assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_brick.setTexture("ColorMap", 
+            assetManager.loadTexture("Textures/Terrain/BrickWall/BrickWall.jpg"));
+        wall_north.setMaterial(mat_brick);
+        wall_south.setMaterial(mat_brick);
+        wall_west.setMaterial(mat_brick);
+        wall_east.setMaterial(mat_brick);
+        
+        wall_north.rotate(0,(float)( Math.PI/2.0), 0);
+        wall_south.rotate(0,(float)( Math.PI/2.0), 0);
+        
+        wall_north.setLocalTranslation(124.5f,0,0);
+        wall_south.setLocalTranslation(-124.5f,0,0);
+        wall_west.setLocalTranslation(0,0,-124.5f);
+        wall_east.setLocalTranslation(0,0,-124.5f);
+        
+        rootNode.attachChild(wall_north);
+        rootNode.attachChild(wall_south);
+        rootNode.attachChild(wall_west);
+        rootNode.attachChild(wall_east);
+        
+        
         //Add Models in scenefile to forest object List
         Node n = (Node) scenefile;
         List<Spatial> liste = n.getChildren();
@@ -569,8 +610,7 @@ public class Main extends SimpleApplication{
         bulletAppState.getPhysicsSpace().add(groundControl);
     
         rootNode.attachChild(scenefile);
-  }
-    
+  }   
     
     public void initAudio(){
         // Background audio

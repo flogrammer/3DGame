@@ -40,6 +40,7 @@ public class Forest {
     final float MAX_Z_RANDOM = 2.0f;
     final float REDUCTION_TREES = 0.95f;
     Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
+    Vector3f [][] trees_position = new Vector3f[anzahlBaueme][anzahlBaueme];
     boolean [][] o = new boolean[anzahlBaueme][anzahlBaueme];
     
     
@@ -64,11 +65,9 @@ public class Forest {
         {
             for(int j = 0; j < trees[i].length; j++)
             {
-                trees[i][j] = tree.clone();
                 float xrandom = (float)(Math.random()-0.5)*2.0f*MAX_X_RANDOM;
-                
                 float zrandom = (float)(Math.random()-0.5)*2.0f*MAX_Z_RANDOM;
-                trees[i][j].setLocalTranslation((i-anzahlBaueme/2)*6f + xrandom,0f,(j-anzahlBaueme/2)*6f+zrandom);
+                trees_position[i][j] = new Vector3f((i-anzahlBaueme/2)*6f + xrandom,0f,(j-anzahlBaueme/2)*6f+zrandom);
             }
         }
         
@@ -77,7 +76,7 @@ public class Forest {
             for(int i = 0; i < trees.length ; i++)
                 for(int j = 0; j < trees[i].length;j++)
                 {
-                    Vector3f v = trees[i][j].getLocalTranslation().clone();
+                    Vector3f v = trees_position[i][j].clone();
                     v.y = bV.getCenter().y;
                     
                     if(bV.contains(v))
@@ -95,6 +94,8 @@ public class Forest {
             {
                 if(!o[i][j])
                 {
+                    trees[i][j] = tree.clone();
+                    trees[i][j].setLocalTranslation(trees_position[i][j]);
                     rootNode.attachChild(trees[i][j]);
                     RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);
                     trees[i][j].addControl(treeNode);
