@@ -79,7 +79,6 @@ public class Main extends SimpleApplication{
     BookManager bookManager;
     Progman progman;
     Spatial flash;
-    PointLight light;
     SpotLight spot;
     Spatial scenefile;
     Spatial house;
@@ -209,10 +208,9 @@ public class Main extends SimpleApplication{
         position = cam.getLocation();
         
         // Updates
-        updateProgman();
+        //updateProgman();
         updateFlashlight();
         updateItems();
-        //bookManager.pulseElement(tpf);
         updateItemCollision(tpf);
         updatePhysics();
         if (lightActivated)
@@ -221,7 +219,6 @@ public class Main extends SimpleApplication{
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf, fadetime);
-        light.setPosition(player.getPhysicsLocation());
         
         
 
@@ -411,7 +408,6 @@ public class Main extends SimpleApplication{
         // Intensity of light
         float t = batteryStatus/fullBattery;
                
-        light.setRadius(flashRadius*t); // Abnehmender Radius...
         spot.setSpotRange(outerRange*t); // TODO: Farbe ändern
        
         
@@ -506,7 +502,6 @@ public class Main extends SimpleApplication{
                 if(!lightActivated){
                     if(batteryStatus > 0){
                         audio_flash_on.play();
-                        rootNode.addLight(light);
                         rootNode.addLight(spot);
                         rootNode.attachChild(flash);
                         lightActivated = true;
@@ -518,7 +513,6 @@ public class Main extends SimpleApplication{
                 
                 else{
                 audio_flash_off.play();
-                rootNode.removeLight(light);
                 rootNode.removeLight(spot);
                 rootNode.detachChild(flash);
                 lightActivated = false;
@@ -865,7 +859,6 @@ public class Main extends SimpleApplication{
         inputManager.addMapping("Run", new KeyTrigger(keyInput.KEY_LSHIFT));
         inputManager.addMapping("Item", new KeyTrigger(keyInput.KEY_B));
 
-
         inputManager.addListener(analogListener, "Move");
         inputManager.addListener(analogListener, "Left");
         inputManager.addListener(analogListener, "Back");
@@ -893,21 +886,18 @@ public class Main extends SimpleApplication{
 
     }
     public void initFlashlight(){      
-        light = new PointLight();
-        light.setPosition(player.getPhysicsLocation());
-        light.setRadius(flashRadius); // 20 Meter
-        light.setColor(new ColorRGBA(1,1,1,0.1f));
+        
+        
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
         flash.scale(2f);
         
-     
-       
+
         // Cone Light
         spot = new SpotLight();
         spot.setSpotRange(outerRange);                           // distance
         spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
         spot.setSpotOuterAngle(20f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
-        spot.setColor(new ColorRGBA((float) 1, 1, (float) 50/255, 1));         // light color
+        spot.setColor(new ColorRGBA((float) 1, 1, (float) 1, 1));         // light color
         spot.setPosition(flash.getLocalTranslation());               // shine from camera loc
         spot.setDirection(cam.getDirection());             // shine forward from camera loc
         
@@ -940,9 +930,9 @@ public class Main extends SimpleApplication{
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
         FogFilter fog=new FogFilter();
        // fog.setFogColor(new ColorRGBA((float) 80/255,(float) 0, (float) 100/255,1f));
-        fog.setFogColor(new ColorRGBA(0.2f,0.2f,0.2f,1));
+        fog.setFogColor(new ColorRGBA(0.3f,0.3f,0.3f,1));
         fog.setFogDistance(100);
-        fog.setFogDensity(1.0f);
+        fog.setFogDensity(2.0f);
         fpp.addFilter(fog);
         viewPort.addProcessor(fpp);
 
