@@ -207,7 +207,7 @@ public class Main extends SimpleApplication{
     @Override
     public void simpleUpdate(float tpf) {
         position = cam.getLocation();
-        System.out.println(position);
+        
         // Updates
         updateProgman();
         updateFlashlight();
@@ -270,32 +270,35 @@ public class Main extends SimpleApplication{
             
             tree_indices_j[2] = Math.min(forest.trees_position.length, tree_index2+1); 
             
-            System.out.println("Index found [" +tree_index1+" , " + tree_index2 + "] , "+ progman.progman_pos + " " + forest.trees_position[tree_index1][tree_index2]);
-            for(int i = 0; i < forest.trees_position.length;i++)
-            {
-                for(int j = 0; j < forest.trees_position[i].length; j++)
-                    System.out.println("Index [" +i+" , " + j+ "] , " + forest.trees_position[i][j]);
-            }
             
             float [] distances_trees = new float[3]; 
             int tree_i=tree_index1;
             int tree_j = tree_index2;
-            final float MAX_DISTANCE = 1.0f;
+            final float MAX_DISTANCE = 2.0f;
+            float min_distance = 10.0f;
+            boolean collision_detected = false;
             for(int i = 0; i < distances_trees.length;i++)
             {
                 for(int j = 0; j < distances_trees.length;j++)
                 {
                     float distance = forest.trees_position[tree_indices_i[i]][tree_indices_j[j]].distance(progman.progman_pos);
                     System.out.println("baueme gefunden " + i + "  " + j + " " + distance);
-                    if(distance< MAX_DISTANCE )
+                    if(distance < min_distance )
                     {
+                        min_distance = distance;
                         tree_i = tree_indices_i[i];
                         tree_j = tree_indices_j[j];
                     }
                 }
             }
+            
             System.out.println("closest tree: " + tree_i + tree_j);
             
+            if(min_distance < MAX_DISTANCE)
+            {
+                collision_detected = true;
+                System.out.println("Collision detected mit Tree " +tree_i + " " + tree_j);
+            }
             
             
             progman.spatial.setLocalTranslation(progman.progman_pos);
