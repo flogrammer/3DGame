@@ -40,7 +40,7 @@ public class Forest {
     final float MAX_Z_RANDOM = 2.0f;
     final float REDUCTION_TREES = 0.95f;
     Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
-    Vector3f [][] trees_position = new Vector3f[anzahlBaueme][anzahlBaueme];
+    public Vector3f [][] trees_position = new Vector3f[anzahlBaueme][anzahlBaueme];
     boolean [][] o = new boolean[anzahlBaueme][anzahlBaueme];
     
     

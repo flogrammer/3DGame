@@ -249,9 +249,58 @@ public class Main extends SimpleApplication{
             float z_coordinate = newDistance * FastMath.sin(progman.appearanceAngle);
 
             progman.progman_pos = new Vector3f(position.x + x_coordinate, 0,position.z + z_coordinate);
+            
+            int tree_index1 = (int)progman.progman_pos.x/6+ 21;
+            int tree_index2 = (int)progman.progman_pos.z/6+ 21;
+            
+            int[]tree_indices_i = new int[3];
+            int[]tree_indices_j = new int[3];
+           
+            tree_indices_i[0] = Math.max(0, tree_index1-1); 
+            
+            tree_indices_i[1] = tree_index1; 
+            
+            
+            tree_indices_i[2] = Math.min(forest.trees_position.length, tree_index1+1); 
+            
+            
+            tree_indices_j[0] = Math.max(0, tree_index2-1); 
+            
+            tree_indices_j[1] = tree_index2; 
+            
+            tree_indices_j[2] = Math.min(forest.trees_position.length, tree_index2+1); 
+            
+            System.out.println("Index found [" +tree_index1+" , " + tree_index2 + "] , "+ progman.progman_pos + " " + forest.trees_position[tree_index1][tree_index2]);
+            for(int i = 0; i < forest.trees_position.length;i++)
+            {
+                for(int j = 0; j < forest.trees_position[i].length; j++)
+                    System.out.println("Index [" +i+" , " + j+ "] , " + forest.trees_position[i][j]);
+            }
+            
+            float [] distances_trees = new float[3]; 
+            int tree_i=tree_index1;
+            int tree_j = tree_index2;
+            final float MAX_DISTANCE = 1.0f;
+            for(int i = 0; i < distances_trees.length;i++)
+            {
+                for(int j = 0; j < distances_trees.length;j++)
+                {
+                    float distance = forest.trees_position[tree_indices_i[i]][tree_indices_j[j]].distance(progman.progman_pos);
+                    System.out.println("baueme gefunden " + i + "  " + j + " " + distance);
+                    if(distance< MAX_DISTANCE )
+                    {
+                        tree_i = tree_indices_i[i];
+                        tree_j = tree_indices_j[j];
+                    }
+                }
+            }
+            System.out.println("closest tree: " + tree_i + tree_j);
+            
+            
+            
             progman.spatial.setLocalTranslation(progman.progman_pos);
             
-            CollisionResults cR = new CollisionResults();
+            /*CollisionResults cR = new CollisionResults();
             
             
             
@@ -262,6 +311,7 @@ public class Main extends SimpleApplication{
             
             
             System.out.println("" + house.getLocalTranslation() + "  " + progman.spatial.getLocalTranslation()+ " " + house.collideWith(progman.spatial.getWorldBound(), cR));
+            */
             
             
             
