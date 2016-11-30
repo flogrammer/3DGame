@@ -1,0 +1,65 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.187496374)
+
+newmtl White Steel
+Kd 1 1 1
+Ka 1 1 1
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 75
+illum 2
+
+newmtl Metal 
+Kd 0.788235 0.788235 0.788235
+Ka 0.309804 0.309804 0.309804
+Ks 0.647059 0.647059 0.647059
+Ke 0 0 0
+d 1
+Ns 55
+illum 2
+
+newmtl Red Bucket Color
+Kd 1 0 0
+Ka 0.560784 0 0
+Ks 1 0.854902 0.854902
+Ke 0 0 0
+d 1
+Ns 75
+illum 2
+
+newmtl Rubber Handles
+Kd 0.262745 0.262745 0.262745
+Ka 0.0705882 0.0705882 0.0705882
+Ks 0.611765 0.611765 0.611765
+Ke 0 0 0
+d 1
+Ns 75
+illum 2
+
+newmtl Rubber
+Kd 0.235294 0.235294 0.235294
+Ka 0.12549 0.12549 0.12549
+Ks 0.52549 0.52549 0.52549
+Ke 0 0 0
+d 1
+Ns 15
+illum 2
+
+newmtl Ground
+Kd 0.588235 0.588235 0.588235
+Ka 0.376471 0.376471 0.376471
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+Ns 5
+illum 2
+
+newmtl %%%DEFAULT
+Kd 0.3 0.3 0.3
+Ka 0 0 0
+Ks 0 0 0
+Ke 0 0 0
+d 1
+illum 1
+
