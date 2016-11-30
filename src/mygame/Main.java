@@ -10,6 +10,8 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.collision.CollisionResults;
+import com.jme3.effect.ParticleEmitter;
+import com.jme3.effect.ParticleMesh;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.font.LineWrapMode;
@@ -62,6 +64,7 @@ public class Main extends SimpleApplication{
     float flashRadius = 20f;
     float outerRange = 50f;
     long fadetime = 5000;
+    float fogDensity = 1.8f;
     
     final int MOVEMENTSPEED = 5;
     final int GRAVITY = 10;
@@ -73,7 +76,7 @@ public class Main extends SimpleApplication{
     Node cameraNode; // For the Flashlight
     Vector3f position;
     ColorRGBA color;
-    
+    FogFilter fog;
     
     // Figures and Textures
     BookManager bookManager;
@@ -189,6 +192,7 @@ public class Main extends SimpleApplication{
         time = System.currentTimeMillis();
         
         createFog();
+        makeFire();
         System.out.println("13 "+(System.currentTimeMillis()-time));
         
         
@@ -408,9 +412,11 @@ public class Main extends SimpleApplication{
         // Intensity of light
         float t = batteryStatus/fullBattery;
                
-        spot.setSpotRange(outerRange*t); // TODO: Farbe ändern
-       
+        spot.setSpotRange(outerRange*t); 
         
+        // Also: Make fog darker
+        
+       
     }
     
     public void updateItemCollision(float tpf){
@@ -928,15 +934,33 @@ public class Main extends SimpleApplication{
          */
        /** Add fog to a scene */
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
-        FogFilter fog=new FogFilter();
+        fog=new FogFilter();
        // fog.setFogColor(new ColorRGBA((float) 80/255,(float) 0, (float) 100/255,1f));
         fog.setFogColor(new ColorRGBA(0.3f,0.3f,0.3f,1));
         fog.setFogDistance(100);
-        fog.setFogDensity(2.0f);
+        fog.setFogDensity(fogDensity);
         fpp.addFilter(fog);
         viewPort.addProcessor(fpp);
 
-        
+    }
+    public void makeFire(){
+         /** Uses Texture from jme3-test-data library! */
+    ParticleEmitter fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
+    Material fireMat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
+    //fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
+    fireEffect.setMaterial(fireMat);
+    fireEffect.setImagesX(2); fireEffect.setImagesY(2); // 2x2 texture animation
+    fireEffect.setEndColor( new ColorRGBA(1f, 0f, 0f, 1f) );   // red
+    fireEffect.setStartColor( new ColorRGBA(1f, 1f, 0f, 0.5f) ); // yellow
+    fireEffect.getParticleInfluencer().setInitialVelocity(new Vector3f(0, 2, 0));
+    fireEffect.setStartSize(0.6f);
+    fireEffect.setEndSize(0.1f);
+    fireEffect.setGravity(0f,0f,0f);
+    fireEffect.setLowLife(0.5f);
+    fireEffect.setHighLife(3f);
+    fireEffect.getParticleInfluencer().setVelocityVariation(0.3f);
+    fireEffect.setLocalTranslation(new Vector3f(90.729515f, 0.0f, 14.6222f));
+    rootNode.attachChild(fireEffect);
     }
  
 }
