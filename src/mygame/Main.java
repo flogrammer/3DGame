@@ -212,7 +212,7 @@ public class Main extends SimpleApplication{
         position = cam.getLocation();
         
         // Updates
-        //updateProgman();
+        updateProgman();
         updateFlashlight();
         updateItems();
         updateItemCollision(tpf);
