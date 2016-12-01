@@ -17,7 +17,6 @@ import com.jme3.scene.Spatial;
 
 import java.util.List;
 import jme3tools.optimize.LodGenerator;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 
 /**
@@ -125,6 +124,69 @@ public class Forest {
         lod = new LodGenerator(geom2);
         lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL, REDUCTION_TREES);
         geom2.setLodLevel(1);
+    }
+    public boolean checkCollision(Vector3f position)
+    {
+        boolean collision_detected = false;
+        
+        /*
+         * checking for Collision with trees
+         */
+        
+        
+        int tree_index1 = (int)position.x/6+ 21;
+        int tree_index2 = (int)position.z/6+ 21;
+
+        int[]tree_indices_i = new int[3];
+        int[]tree_indices_j = new int[3];
+
+        tree_indices_i[0] = Math.min(Math.max(0, tree_index1-1),trees_position.length-1); 
+        tree_indices_i[1] = Math.min(Math.max(tree_index1,0),trees_position.length-1); 
+        tree_indices_i[2] = Math.max(Math.min(trees_position.length-1, tree_index1+1),0); 
+        tree_indices_j[0] = Math.max(0, Math.min(tree_index2-1,trees_position.length-1)); 
+        tree_indices_j[1] = Math.min(Math.max(tree_index2,0),trees_position.length-1); 
+        tree_indices_j[2] = Math.max(0,Math.min(trees_position.length-1, tree_index2+1)); 
+
+
+
+        int tree_i=tree_index1;
+        int tree_j = tree_index2;
+        final float MAX_DISTANCE = 2.0f;
+        float min_distance = 10.0f;
+        for(int i = 0; i < tree_indices_i.length;i++)
+        {
+            for(int j = 0; j < tree_indices_j.length;j++)
+            {
+                float distance = trees_position[tree_indices_i[i]][tree_indices_j[j]].distance(position);
+                if(distance < min_distance )
+                {
+                    min_distance = distance;
+                    tree_i = tree_indices_i[i];
+                    tree_j = tree_indices_j[j];
+                }
+            }
+        }
+        if(min_distance < MAX_DISTANCE)
+        {
+            collision_detected = true;
+            System.out.println("Collision detected with Tree [" +tree_i + ", " + tree_j+"]");
+        }
+        
+        /*
+         * checking for Collision with world
+         */
+        for(BoundingVolume bV : objects)
+        {
+            if(bV.contains(position))
+            {
+                collision_detected = true;
+                System.out.println("Collision detected with Object: " +bV);
+                
+            }
+        }
+        
+        
+        return collision_detected;
     }
     
 }

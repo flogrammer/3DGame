@@ -3,6 +3,7 @@ package mygame;
 import view.PauseState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
+import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -16,6 +17,7 @@ import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.font.LineWrapMode;
 import com.jme3.font.Rectangle;
+import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -72,6 +74,16 @@ public class Main extends SimpleApplication{
     final float WORLD_SIZE = 125.0f;
     
     
+    //MoveCheck
+    int [] averageX = new int[50];
+    int [] averageZ = new int[50];
+    int averageCounter = 0;
+    int averageX_counter = 0;
+    int averageZ_counter = 0;
+    boolean shocking = false;
+    
+    
+    
     Camera camera;
     Node cameraNode; // For the Flashlight
     Vector3f position;
@@ -111,7 +123,7 @@ public class Main extends SimpleApplication{
     private Vector3f walkDirection = new Vector3f(0,0,0);
     private Vector3f camLeft = new Vector3f();
     private boolean left = false, right = false, move = false, back = false;
-    
+       
     BulletAppState bulletAppState;
     CharacterControl player;
     RigidBodyControl physicsNode;
@@ -184,7 +196,9 @@ public class Main extends SimpleApplication{
         System.out.println("10 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         bookManager.itemsCollected = 0;
-        initProgman(); //extrem aufwendig
+        progman = new Progman(rootNode,assetManager,forest); //extrem aufwendig
+        progman.setAudio_progman(audio_progman);
+        progman.setAudio_progman2(audio_progman2);
         System.out.println("11 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initHUD();
@@ -207,12 +221,54 @@ public class Main extends SimpleApplication{
         
     }
     
+    public void checkShocking()
+    {
+        if(++averageCounter > 7)
+        {
+            averageCounter = 0;
+
+            averageX[averageX_counter++] = (int)position.x;
+            averageZ[averageZ_counter++] = (int)position.z;
+            if(averageX_counter >= averageX.length)
+            {
+                averageX_counter = 0;
+                shocking = true;
+            }
+            if(averageZ_counter >= averageZ.length)
+                averageZ_counter = 0;
+            
+            if(shocking)
+            {
+                int meanX = 0;
+                int meanZ = 0;
+                for(int i : averageX)
+                    meanX += i; 
+                meanX /= averageX.length;
+
+                for(int i : averageZ)
+                    meanZ += i; 
+                meanZ /= averageZ.length;
+                
+                Vector3f averagePos = new Vector3f(meanX,position.y,meanZ);
+                float distance = averagePos.distance(position);
+                if(distance < 2.5)
+                {
+                    System.out.println("NOT MOVING ANYMORE");
+                    progman.shocking = true;
+                    shocking = false;
+                }
+                
+            }
+        }
+    }
+    
     @Override
     public void simpleUpdate(float tpf) {
         position = cam.getLocation();
         
         // Updates
-        updateProgman();
+        checkShocking();
+        progman.updateProgman(position,cam);
         updateFlashlight();
         updateItems();
         updateItemCollision(tpf);
@@ -237,119 +293,7 @@ public class Main extends SimpleApplication{
      
     // ________________________UPDATE METHODS_________________________
     
-    public void updateProgman()
-    {
-        //System.out.println(position);
-        float dist = getDistance(progman.progman_pos, position);
-        
-        if (progman.moveAllowed()){
-            progman.appearanceAngle = (float) ((Math.random() * 2 * Math.PI));
-            float newDistance = dist * 3/4;
-            //float randomAngle = 0;
-            float x_coordinate = newDistance * FastMath.cos(progman.appearanceAngle);
-            float z_coordinate = newDistance * FastMath.sin(progman.appearanceAngle);
-
-            progman.progman_pos = new Vector3f(position.x + x_coordinate, 0,position.z + z_coordinate);
-            
-            int tree_index1 = (int)progman.progman_pos.x/6+ 21;
-            int tree_index2 = (int)progman.progman_pos.z/6+ 21;
-            
-            int[]tree_indices_i = new int[3];
-            int[]tree_indices_j = new int[3];
-           
-            tree_indices_i[0] = Math.max(0, tree_index1-1); 
-            
-            tree_indices_i[1] = tree_index1; 
-            
-            
-            tree_indices_i[2] = Math.min(forest.trees_position.length, tree_index1+1); 
-            
-            
-            tree_indices_j[0] = Math.max(0, tree_index2-1); 
-            
-            tree_indices_j[1] = tree_index2; 
-            
-            tree_indices_j[2] = Math.min(forest.trees_position.length, tree_index2+1); 
-            
-            
-            float [] distances_trees = new float[3]; 
-            int tree_i=tree_index1;
-            int tree_j = tree_index2;
-            final float MAX_DISTANCE = 2.0f;
-            float min_distance = 10.0f;
-            boolean collision_detected = false;
-            for(int i = 0; i < distances_trees.length;i++)
-            {
-                for(int j = 0; j < distances_trees.length;j++)
-                {
-                    float distance = forest.trees_position[tree_indices_i[i]][tree_indices_j[j]].distance(progman.progman_pos);
-                    System.out.println("baueme gefunden " + i + "  " + j + " " + distance);
-                    if(distance < min_distance )
-                    {
-                        min_distance = distance;
-                        tree_i = tree_indices_i[i];
-                        tree_j = tree_indices_j[j];
-                    }
-                }
-            }
-            
-            System.out.println("closest tree: " + tree_i + tree_j);
-            
-            if(min_distance < MAX_DISTANCE)
-            {
-                collision_detected = true;
-                System.out.println("Collision detected mit Tree " +tree_i + " " + tree_j);
-            }
-            
-            
-            progman.spatial.setLocalTranslation(progman.progman_pos);
-            
-            /*CollisionResults cR = new CollisionResults();
-            
-            
-            
-            System.out.println("" + house.getLocalTranslation() + "  " + progman.spatial.getLocalTranslation()+ " " + house.collideWith(progman.spatial.getWorldBound(), cR));
-            
-            progman.spatial.setLocalTranslation(house.getLocalTranslation());
-            cR = new CollisionResults();
-            
-            
-            System.out.println("" + house.getLocalTranslation() + "  " + progman.spatial.getLocalTranslation()+ " " + house.collideWith(progman.spatial.getWorldBound(), cR));
-            */
-            
-            
-            
-        }
-        progman.spatial.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
-        
-        
-        // If eye contact is made with the progman and its near enough - Jumpscare
-            if(progman.checkEyeContact(cam.getDirection(), progman.appearanceAngle)){
-            System.out.println("DU SIEHST IHN!");   
-            }
-        
-        // If progman is near
-        
-        
-        if (dist < 30){
-           audio_progman.setVolume(1.4f*(1-(dist/30)));
-           audio_progman.play();
-           if (dist < 15){
-                audio_progman2.setVolume(0.1f*(1-(dist/15)));
-                audio_progman2.play();
-                if (progman.moveAllowed())
-                    progman.progman_pos = new Vector3f(position.x, 0, position.y);
-           }else{
-                audio_progman2.stop();
-           }
-        }else{
-            audio_progman.stop();
-        }
-        
-        
-        
-        
-    }
+    
     
     public void updateItems(){
 
@@ -425,7 +369,7 @@ public class Main extends SimpleApplication{
         for (int i = 0; i < bookManager.books.length; i++){
         
             if(bookManager.books[i].spatial.getUserData("status").equals(false)){
-                float distance = getDistance(bookManager.books[i].spatial.getLocalTranslation(), position);
+                float distance = bookManager.books[i].spatial.getLocalTranslation().distance(position);
                 bookManager.findNextBook(position);
                 bookManager.minItemDistance = distance;
                 
@@ -572,13 +516,13 @@ public class Main extends SimpleApplication{
         textField.setAlignment(BitmapFont.Align.Center);
         guiNode.attachChild(textField);
     }
+    
     public void showHUD(String text){
         startTime = System.currentTimeMillis();
         textField.setText("" + text);
         guiNode.attachChild(textField);
     }
    
-    
     public void fadeHUD(float tpf, float fadeTime){
          if (startTime == 0)
              return;
@@ -593,17 +537,6 @@ public class Main extends SimpleApplication{
          textField.setColor(color);
      }         
      
-    
-        
-    
-    public float getDistance(Vector3f item, Vector3f player){
-        // Euklidsche Distanz
-        
-        float distance = 1000f; // Dummy         
-        distance = (float) Math.sqrt(Math.pow(item.x-player.x, 2) + Math.pow(item.z-player.z, 2));
-        return distance;
-    }
- 
     
        
      // _________________INIT METHODS_______________________
@@ -830,13 +763,6 @@ public class Main extends SimpleApplication{
        rootNode.attachChild(house);
 
     }
-     
-    
-    public void initProgman(){ 
-        progman = new Progman(assetManager);
-        rootNode.attachChild(progman.spatial);
-        
-    }
     
     public void initItems(){
         bookManager = new BookManager(assetManager);
@@ -855,15 +781,15 @@ public class Main extends SimpleApplication{
         textField.setLineWrapMode(LineWrapMode.Word);
     }
     public void initListeners(){
-        inputManager.addMapping("Move", new KeyTrigger(keyInput.KEY_W));
-        inputManager.addMapping("Left", new KeyTrigger(keyInput.KEY_A));
-        inputManager.addMapping("Back", new KeyTrigger(keyInput.KEY_S));
-        inputManager.addMapping("Right", new KeyTrigger(keyInput.KEY_D));
-        inputManager.addMapping("Jump", new KeyTrigger(keyInput.KEY_SPACE));
-        inputManager.addMapping("Pause", new KeyTrigger(keyInput.KEY_P));
-        inputManager.addMapping("Light", new KeyTrigger(keyInput.KEY_L));
-        inputManager.addMapping("Run", new KeyTrigger(keyInput.KEY_LSHIFT));
-        inputManager.addMapping("Item", new KeyTrigger(keyInput.KEY_B));
+        inputManager.addMapping("Move", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("Back", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+        inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("Pause", new KeyTrigger(KeyInput.KEY_P));
+        inputManager.addMapping("Light", new KeyTrigger(KeyInput.KEY_L));
+        inputManager.addMapping("Run", new KeyTrigger(KeyInput.KEY_LSHIFT));
+        inputManager.addMapping("Item", new KeyTrigger(KeyInput.KEY_B));
 
         inputManager.addListener(analogListener, "Move");
         inputManager.addListener(analogListener, "Left");
@@ -891,9 +817,9 @@ public class Main extends SimpleApplication{
         player.setGravity(20);
 
     }
-    public void initFlashlight(){      
-        
-        
+   
+    public void initFlashlight()
+    {      
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
         flash.scale(2f);
         
@@ -945,22 +871,22 @@ public class Main extends SimpleApplication{
     }
     public void makeFire(){
          /** Uses Texture from jme3-test-data library! */
-    ParticleEmitter fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
-    Material fireMat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
-    //fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
-    fireEffect.setMaterial(fireMat);
-    fireEffect.setImagesX(2); fireEffect.setImagesY(2); // 2x2 texture animation
-    fireEffect.setEndColor( new ColorRGBA(1f, 0f, 0f, 1f) );   // red
-    fireEffect.setStartColor( new ColorRGBA(1f, 1f, 0f, 0.5f) ); // yellow
-    fireEffect.getParticleInfluencer().setInitialVelocity(new Vector3f(0, 2, 0));
-    fireEffect.setStartSize(0.6f);
-    fireEffect.setEndSize(0.1f);
-    fireEffect.setGravity(0f,0f,0f);
-    fireEffect.setLowLife(0.5f);
-    fireEffect.setHighLife(3f);
-    fireEffect.getParticleInfluencer().setVelocityVariation(0.3f);
-    fireEffect.setLocalTranslation(new Vector3f(90.729515f, 0.0f, 14.6222f));
-    rootNode.attachChild(fireEffect);
+        ParticleEmitter fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
+        Material fireMat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
+        //fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
+        fireEffect.setMaterial(fireMat);
+        fireEffect.setImagesX(2); fireEffect.setImagesY(2); // 2x2 texture animation
+        fireEffect.setEndColor( new ColorRGBA(1f, 0f, 0f, 1f) );   // red
+        fireEffect.setStartColor( new ColorRGBA(1f, 1f, 0f, 0.5f) ); // yellow
+        fireEffect.getParticleInfluencer().setInitialVelocity(new Vector3f(0, 2, 0));
+        fireEffect.setStartSize(0.6f);
+        fireEffect.setEndSize(0.1f);
+        fireEffect.setGravity(0f,0f,0f);
+        fireEffect.setLowLife(0.5f);
+        fireEffect.setHighLife(3f);
+        fireEffect.getParticleInfluencer().setVelocityVariation(0.3f);
+        fireEffect.setLocalTranslation(new Vector3f(90.729515f, 0.0f, 14.6222f));
+        rootNode.attachChild(fireEffect);
     }
  
 }
