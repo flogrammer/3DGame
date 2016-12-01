@@ -104,10 +104,11 @@ public class Progman {
         //System.out.println(position);
         if(catching)
         {
-            Vector3f diff = progman_pos.subtract(position).clone();
+            System.out.println("catching");
+            Vector3f diff = position.subtract(progman_pos).clone();
             diff.y = 0;
             float length = diff.length();
-            length = (float)Math.pow(length,0.8);
+            length = 0.05f;
             diff = diff.normalize();
             diff = diff.mult(length);
             progman_pos = progman_pos.add(diff);
@@ -115,7 +116,7 @@ public class Progman {
         }
         else if(shocking)
         {
-            System.out.println("yeah");
+            System.out.println("shocking");
             shocking = false;
             final float APPEARANCE_DISTANCE = 25;
             Vector3f newPosition = cam.getDirection().clone();
@@ -137,12 +138,12 @@ public class Progman {
            
             progman_pos = new Vector3f(position.x + x_coordinate, 0,position.z + z_coordinate);
             */
+            System.out.println("moving");
             
-            
-            Vector3f diff = progman_pos.subtract(position).clone();
+            Vector3f diff = position.subtract(progman_pos).clone();
             diff.y = 0;
             float length = diff.length();
-            length = (float)Math.pow(length,0.8);
+            length = (float)Math.pow(length,0.90);
             diff = diff.normalize();
             diff = diff.mult(length);
             progman_pos = progman_pos.add(diff);
