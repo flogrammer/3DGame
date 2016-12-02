@@ -100,6 +100,7 @@ public class Progman {
         }
         
         
+        final float SHOCKING_DISTANCE = 25;
         
         //System.out.println(position);
         if(catching)
@@ -114,14 +115,13 @@ public class Progman {
             progman_pos = progman_pos.add(diff);
             spatial.setLocalTranslation(progman_pos);
         }
-        else if(shocking)
+        else if(shocking && dist > SHOCKING_DISTANCE)
         {
             System.out.println("shocking");
             shocking = false;
-            final float APPEARANCE_DISTANCE = 25;
             Vector3f newPosition = cam.getDirection().clone();
             newPosition.y = 0;
-            newPosition = position.add(newPosition.normalize().mult(APPEARANCE_DISTANCE));
+            newPosition = position.add(newPosition.normalize().mult(SHOCKING_DISTANCE));
             newPosition.y = progman_pos.y;
             
             spatial.setLocalTranslation(newPosition);
