@@ -41,7 +41,7 @@ public class Progman {
     
     
     public Progman(Node rN,AssetManager assetManager, Forest f){
-          spatial = assetManager.loadModel("Models/progman/progman.j3o");
+          spatial = assetManager.loadModel("Models/progman/real_progman.j3o");
           spatial.scale(0.8f);
           progman_pos = PROGMAN_STARTPOSITION;
           spatial.setLocalTranslation(progman_pos);
