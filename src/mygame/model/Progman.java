@@ -143,7 +143,7 @@ public class Progman {
             Vector3f diff = position.subtract(progman_pos).clone();
             diff.y = 0;
             float length = diff.length();
-            length = (float)Math.pow(length,0.90);
+            length = (float)Math.pow(length,0.95);
             diff = diff.normalize();
             diff = diff.mult(length);
             progman_pos = progman_pos.add(diff);
