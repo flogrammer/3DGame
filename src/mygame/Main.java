@@ -195,7 +195,7 @@ public class Main extends SimpleApplication{
         System.out.println("10 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         bookManager.itemsCollected = 0;
-        progman = new Progman(rootNode,assetManager,forest); //extrem aufwendig
+        progman = new Progman(rootNode,assetManager, cam ,forest); //extrem aufwendig
         progman.setAudio_progman(audio_progman);
         progman.setAudio_progman2(audio_progman2);
         System.out.println("11 "+(System.currentTimeMillis()-time));
@@ -250,7 +250,11 @@ public class Main extends SimpleApplication{
                 
                 Vector3f averagePos = new Vector3f(meanX,position.y,meanZ);
                 float distance = averagePos.distance(position);
-                if(distance < 2.5)
+                
+                
+                float dist = progman.progman_pos.distance(position);
+                
+                if(distance < 2.5 && dist > progman.SHOCKING_DISTANCE)
                 {
                     System.out.println("NOT MOVING ANYMORE");
                     progman.shocking = true;
@@ -267,7 +271,7 @@ public class Main extends SimpleApplication{
         
         // Updates
         checkShocking();
-        progman.updateProgman(position,cam);
+        progman.updateProgman(position);
         updateFlashlight();
         updateItems();
         updateItemCollision(tpf);

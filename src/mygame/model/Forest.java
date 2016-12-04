@@ -66,7 +66,7 @@ public class Forest {
             {
                 float xrandom = (float)(Math.random()-0.5)*2.0f*MAX_X_RANDOM;
                 float zrandom = (float)(Math.random()-0.5)*2.0f*MAX_Z_RANDOM;
-                trees_position[i][j] = new Vector3f((i-anzahlBaueme/2)*6f + xrandom,0f,(j-anzahlBaueme/2)*6f+zrandom);
+                trees_position[i][j] = new Vector3f((i-anzahlBaueme/2+0.3f)*6f + xrandom,0f,(j-anzahlBaueme/2)*6f+zrandom);
             }
         }
         

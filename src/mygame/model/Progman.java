@@ -6,6 +6,7 @@ package mygame.model;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
+import com.jme3.bounding.BoundingVolume;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -30,27 +31,45 @@ public class Progman {
     public int moveTimeMs = 10000; // Alle 10 Sec neue Position, abnehmend!
     public float appearanceAngle = 0;
     public Node rootNode;
+    public Camera cam;
     public boolean shocking = false;
     public boolean catching = false;
     Forest forest = null;
+    public ProgmanState STATE = ProgmanState.moving;
+    public final float SHOCKING_DISTANCE = 25;
     
+    
+    public float movingAngle = 0;
+    public float movingDistance = 100;
+    
+    public enum ProgmanState {
+        catching, shocking, moving, EyeContact;
+    }
+    
+    private float old_dist;
     
     private AudioNode audio_progman;
     private AudioNode audio_progman2;
     
     
     
-    public Progman(Node rN,AssetManager assetManager, Forest f){
-          spatial = assetManager.loadModel("Models/progman/real_progman.j3o");
-          spatial.scale(0.8f);
-          progman_pos = PROGMAN_STARTPOSITION;
-          spatial.setLocalTranslation(progman_pos);
-          spatial.addLight(new DirectionalLight());
-          rootNode = rN;
-          rootNode.attachChild(spatial);
-          forest = f;
-          
-          startTime = System.currentTimeMillis();
+    public Progman(Node rN,AssetManager assetManager, Camera c, Forest f){
+        /*
+         * Instanzvariablen werden gesetzt
+         */  
+        rootNode = rN;
+        forest = f;
+        spatial = assetManager.loadModel("Models/progman/real_progman.j3o");
+        cam = c;
+
+
+        spatial.scale(0.8f);
+        progman_pos = PROGMAN_STARTPOSITION;
+        spatial.setLocalTranslation(progman_pos);
+        spatial.addLight(new DirectionalLight());
+        rootNode.attachChild(spatial);
+
+        startTime = System.currentTimeMillis();
    }
     
     public boolean moveAllowed(){
@@ -71,41 +90,79 @@ public class Progman {
         return status;
     }
     
-    public boolean checkEyeContact(Vector3f direction, float angleProgman){
-        float angle = (float)(Math.atan((direction.x)/direction.z)); // Bis Pi
+    public boolean checkEyeContact(Vector3f position){
+        float distance = position.subtract(progman_pos).length();
+        if(distance > 60)
+            return false;
+        BoundingVolume bv = spatial.getWorldBound();
+        int planeState = cam.getPlaneState();
+        cam.setPlaneState(0);
+        Camera.FrustumIntersect result = cam.contains(bv);
+        cam.setPlaneState(planeState);
+        if(result == Camera.FrustumIntersect.Inside)
+            STATE = ProgmanState.EyeContact;
+        return result == Camera.FrustumIntersect.Inside;
         
-        //System.out.println("Winkel progman: " + angleProgman);
-        //System.out.println("Winkel ich: " + (Math.atan((direction.z)/direction.x)));
-        return false;
     }
     
-    public void updateProgman(Vector3f position, Camera cam){
-        
-        float dist = progman_pos.distance(position);
-        
-        // If progman is near
+    public void playMusic(float dist)
+    {
         if (dist < 30){
            audio_progman.setVolume(1.4f*(1-(dist/30)));
            audio_progman.play();
            if (dist < 15){
-                catching = true;
+                STATE = ProgmanState.catching;
                 audio_progman2.setVolume(0.1f*(1-(dist/15)));
                 audio_progman2.play();
            }else{
                 audio_progman2.stop();
            }
         }else{
-            catching = false;
             audio_progman.stop();
         }
-        
-        
-        final float SHOCKING_DISTANCE = 25;
-        
-        //System.out.println(position);
-        if(catching)
+    }
+    
+    public void updateSTATE(Vector3f position)
+    {
+        ProgmanState oldState = STATE;
+        float dist = progman_pos.distance(position);
+        if(dist < 15)
+            STATE = ProgmanState.catching;
+        else if(checkEyeContact(position))
         {
-            System.out.println("catching");
+            STATE = ProgmanState.EyeContact;
+            if(oldState != ProgmanState.EyeContact)
+            {
+                    old_dist = movingDistance;
+                    if(oldState == ProgmanState.shocking)
+                        movingDistance = SHOCKING_DISTANCE;
+            }
+            
+        }
+        else if(shocking)
+        {
+            STATE = ProgmanState.shocking;
+        }
+        else
+            STATE = ProgmanState.moving;
+        if(oldState != STATE)
+            System.out.println("State changed " + STATE);
+        //remembering old movingDistance before EyeContact
+        if(oldState == ProgmanState.EyeContact && STATE != ProgmanState.EyeContact)
+            movingDistance = old_dist;
+    }
+    
+    public void updateProgman(Vector3f position){
+        
+        float dist = progman_pos.distance(position);
+        playMusic(dist);
+        // If progman is near
+        updateSTATE(position);
+        boolean moved = false;
+        
+        if(STATE == ProgmanState.catching)
+        {
+            moved = true;
             Vector3f diff = position.subtract(progman_pos).clone();
             diff.y = 0;
             float length = diff.length();
@@ -113,59 +170,108 @@ public class Progman {
             diff = diff.normalize();
             diff = diff.mult(length);
             progman_pos = progman_pos.add(diff);
-            spatial.setLocalTranslation(progman_pos);
         }
-        else if(shocking && dist > SHOCKING_DISTANCE)
+        else if(STATE == ProgmanState.shocking)
         {
-            System.out.println("shocking");
+            moved = true;
             shocking = false;
             Vector3f newPosition = cam.getDirection().clone();
             newPosition.y = 0;
             newPosition = position.add(newPosition.normalize().mult(SHOCKING_DISTANCE));
             newPosition.y = progman_pos.y;
             
-            spatial.setLocalTranslation(newPosition);
             progman_pos= newPosition.clone();
             startTime = System.currentTimeMillis();
             
         }
-        else if (moveAllowed()){
-            /*appearanceAngle = (float) ((Math.random() * 2 * Math.PI));
-            float newDistance = (float)Math.pow(dist,0.75);
-            
-            float x_coordinate = newDistance * FastMath.cos(appearanceAngle);
-            float z_coordinate = newDistance * FastMath.sin(appearanceAngle);
+        else if(STATE == ProgmanState.EyeContact&& moveAllowed())
+        {
+            System.out.println("me: " + position + " progman: " +progman_pos);
+            moved = true;
+            Vector3f dir = progman_pos.subtract(position).clone();
+            dir.y = 0;
+            System.out.println("Vector " + dir +  " x/length" + dir.x/dir.length());
            
-            progman_pos = new Vector3f(position.x + x_coordinate, 0,position.z + z_coordinate);
-            */
-            System.out.println("moving");
-            
-            Vector3f diff = position.subtract(progman_pos).clone();
-            diff.y = 0;
-            float length = diff.length();
-            length = (float)Math.pow(length,0.95);
-            diff = diff.normalize();
-            diff = diff.mult(length);
-            progman_pos = progman_pos.add(diff);
-            spatial.setLocalTranslation(progman_pos);
-            
-            
-            System.out.println("Collision detected: " + forest.checkCollision(progman_pos));
-            
-            spatial.setLocalTranslation(progman_pos);
+            movingAngle = (float)Math.atan2(dir.z,dir.x);
+            System.out.println("angle: " + movingAngle);
+            movingDistance = (float)Math.pow(movingDistance, 0.75);
+            float x = (float)Math.cos(movingAngle)*movingDistance;
+            float z = (float)Math.sin(movingAngle)*movingDistance;
+            Vector3f n = new Vector3f(x,0,z);
+            n = n.add(position);
+            n.y = progman_pos.y;
+            progman_pos = n.clone();
             
             
         }
+        else if (STATE == ProgmanState.moving && moveAllowed()){
+            moved = true;
+            
+            movingAngle = movingAngle + (float)(Math.random()*2*Math.PI-Math.PI);
+            movingDistance = (float)Math.pow(movingDistance, 0.99);
+            if(movingDistance < 30)
+                movingDistance = 30;
+            float x = (float)Math.cos(movingAngle)*movingDistance;
+            float z = (float)Math.sin(movingAngle)*movingDistance;
+            Vector3f n = new Vector3f(x,0,z);
+            n = n.add(position);
+            n.y = progman_pos.y;
+            progman_pos = n.clone();
+            System.out.println("mD" + movingDistance);
+           // System.out.println("Collision detected: " + forest.checkCollision(progman_pos));
+            
+            
+        }
+        /*
+         * Collision Manager
+         */
+        if(moved)
+        {
+            Vector3f p = progman_pos.clone();
+            
+            if(p.x> 126)
+                p.x = 126;
+            else if(p.x < -126)
+                p.x = -126;
+            
+            if(p.z> 126)
+                p.z = 126;
+            else if(p.z < -126)
+                p.z = -126;
+            progman_pos = p;
+                
+        }
+        if(moved && forest.checkCollision(progman_pos))
+        {
+            float randomFactor = 1.0f;
+            int counter = 0;
+            Vector3f p = progman_pos.clone();
+            do
+            {
+                p = progman_pos.clone();
+                float X = (float) (Math.random()-0.5)*randomFactor;
+                float Z = (float) (Math.random()-0.5)*randomFactor;
+                Vector3f v = new Vector3f(X,0,Z);
+                p = p.add(v);
+                if(p.x> 126)
+                    p.x = 126;
+                else if(p.x < -126)
+                    p.x = -126;
+            
+                if(p.z> 126)
+                    p.z = 126;
+                else if(p.z < -126)
+                    p.z = -126;
+                randomFactor += 1.0f;
+            }while(forest.checkCollision(p) & counter++ < 30);
+            progman_pos = p; 
+        }
+            
+        spatial.setLocalTranslation(progman_pos);
+        
+        
+        //making Progman look at Player
         spatial.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
-        
-        
-        // If eye contact is made with the progman and its near enough - Jumpscare
-        if(checkEyeContact(cam.getDirection(), appearanceAngle)){
-            System.out.println("DU SIEHST IHN!");   
-            }
-        
-        
-        
         
         
     }
