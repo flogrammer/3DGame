@@ -437,7 +437,8 @@ public class Main extends SimpleApplication{
             if(name.equals("Pause") && isPressed){
               
                 isRunning = !isRunning; // Continue or Pause game
-                stateManager.attach(new PauseState());
+                stateManager.attach(new PauseState(flyCam, stateManager, assetManager, inputManager, audioRenderer, guiViewPort));
+                
               }
             if(name.equals("Move") && isPressed == false){
                 audio_fast_breathing.stop();
