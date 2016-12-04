@@ -43,7 +43,7 @@ public class Progman {
     public float movingDistance = 100;
     
     public enum ProgmanState {
-        catching, shocking, moving, EyeContact;
+        catching, shocking, moving, EyeContact, catched;
     }
     
     private float old_dist;
@@ -143,8 +143,11 @@ public class Progman {
         {
             STATE = ProgmanState.shocking;
         }
+        else if(dist < 8)
+            STATE = ProgmanState.catched;
         else
             STATE = ProgmanState.moving;
+        
         if(oldState != STATE)
             System.out.println("State changed " + STATE);
         //remembering old movingDistance before EyeContact
@@ -152,7 +155,7 @@ public class Progman {
             movingDistance = old_dist;
     }
     
-    public void updateProgman(Vector3f position){
+    public boolean updateProgman(Vector3f position){
         
         float dist = progman_pos.distance(position);
         playMusic(dist);
@@ -160,7 +163,11 @@ public class Progman {
         updateSTATE(position);
         boolean moved = false;
         
-        if(STATE == ProgmanState.catching)
+        if(STATE == ProgmanState.catched)
+        {
+            return false;
+        }
+        else if(STATE == ProgmanState.catching)
         {
             moved = true;
             Vector3f diff = position.subtract(progman_pos).clone();
@@ -272,7 +279,7 @@ public class Progman {
         
         //making Progman look at Player
         spatial.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
-        
+        return true;
         
     }
     

@@ -169,7 +169,7 @@ public class Forest {
         if(min_distance < MAX_DISTANCE)
         {
             collision_detected = true;
-            System.out.println("Collision detected with Tree [" +tree_i + ", " + tree_j+"]");
+            
         }
         
         /*
@@ -180,7 +180,6 @@ public class Forest {
             if(bV.contains(position))
             {
                 collision_detected = true;
-                System.out.println("Collision detected with Object: " +bV);
                 
             }
         }

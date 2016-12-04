@@ -111,7 +111,7 @@ public class Main extends SimpleApplication{
     private AudioNode audio_item_collected;
     private AudioNode audio_progman;
     private AudioNode audio_progman2;
-
+    private boolean gameOver = false;
 
 
     
@@ -271,7 +271,7 @@ public class Main extends SimpleApplication{
         
         // Updates
         checkShocking();
-        progman.updateProgman(position);
+        gameOver = progman.updateProgman(position);
         updateFlashlight();
         updateItems();
         updateItemCollision(tpf);
