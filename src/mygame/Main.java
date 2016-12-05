@@ -530,7 +530,11 @@ public class Main extends SimpleApplication{
 
     public void showHUD(){
         startTime = System.currentTimeMillis();
+        if(bookManager.itemsCollected < bookManager.getBookCount()){
         textField.setText("You have collected " + bookManager.itemsCollected + "/" + bookManager.getBookCount() + " items.");
+        } else if (bookManager.itemsCollected == bookManager.getBookCount()){
+        textField.setText("You have collected all items. You can work for the AIFB now.");
+        }
         textField.setAlignment(BitmapFont.Align.Center);
         guiNode.attachChild(textField);
     }
