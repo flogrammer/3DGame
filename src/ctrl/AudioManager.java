@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package mygame.ctrl;
+package ctrl;
 
 /**
  *
  * @author Florian
  */
-public class InputManager {
+public class AudioManager {
     
 }

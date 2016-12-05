@@ -5,10 +5,10 @@
     <useStyles filename="nifty-default-styles.xml" />
     <useControls filename="nifty-default-controls.xml" />
 
-    <screen id="start">
+    <screen id="pause">
         <layer id="windows" childLayout="absolute">
-            <control id="window-3" name="window" title="Pause" width="80%" height="80%" x="0">
-                <text text="Game Paused. Press P to unpause again" style="base-font" color="#eeef" valign="center" width="80%" />
+            <control id="window-3" name="window" title="Pause" width="100%" height="100%" x="0">
+                <text text="Game Paused. Press P to unpause again" style="base-font" color="#eeef" valign="center" width="100%" />
             </control>
         </layer>
     </screen>
