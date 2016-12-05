@@ -44,9 +44,12 @@ import com.jme3.texture.Texture;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mygame.ctrl.BookManager;
-import mygame.model.Forest;
-import mygame.model.Progman;
+import ctrl.BookManager;
+import model.Forest;
+import model.Progman;
+import view.GameFinishedState;
+import view.GameOverState;
+import view.MenuState;
 
 /**
  * Progman Version 1
@@ -134,7 +137,11 @@ public class Main extends SimpleApplication{
     // Item Names
     Forest forest = null;
     
-   
+   // States
+    PauseState pState;
+    GameFinishedState gfState;
+    GameOverState goState;
+    MenuState mState;
             
     public static void main(String[] args) {
         Main app = new Main();
@@ -153,6 +160,8 @@ public class Main extends SimpleApplication{
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
         //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+        
+     
         
         
         // Init functionalities
@@ -435,9 +444,14 @@ public class Main extends SimpleApplication{
     private ActionListener actionListener = new ActionListener(){
         public void onAction(String name, boolean isPressed, float tpf) {
             if(name.equals("Pause") && isPressed){
-              
-                isRunning = !isRunning; // Continue or Pause game
-                stateManager.attach(new PauseState(flyCam, stateManager, assetManager, inputManager, audioRenderer, guiViewPort));
+                
+                
+                
+                        pState = new PauseState(flyCam, stateManager, assetManager, inputManager, audioRenderer, guiViewPort);
+                        isRunning = false; // Continue or Pause game
+                        stateManager.attach(pState);
+                
+                
                 
               }
             if(name.equals("Move") && isPressed == false){
