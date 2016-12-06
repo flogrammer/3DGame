@@ -27,7 +27,6 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.Filter;
-import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
@@ -223,10 +222,13 @@ public class Main extends SimpleApplication{
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
         showHUD("Finde die 8 Bücher bevor deine Zeit abläuft...");
-        
-        
-        
-        
+        /*create Filter
+        processor = (FilterPostProcessor) assetManager.loadAsset("Filters/noise.j3f");
+        viewPort.addProcessor(processor);
+        //set Filter params
+        CrossHatchFilter cHF = processor.getFilter(CrossHatchFilter.class);
+        cHF.setLineThickness(3.0f);
+        */
         
     }
     
@@ -289,9 +291,6 @@ public class Main extends SimpleApplication{
         walkDirection.set(0, 0, 0);
         
         if (left) {
-            
-            for(Filter i : processor.getFilterList())
-                System.out.println(i);
             walkDirection.addLocal(camLeft);
         }
         if (right) {
