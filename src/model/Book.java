@@ -6,7 +6,6 @@ package model;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.light.DirectionalLight;
-import com.jme3.light.SpotLight;
 import com.jme3.scene.Spatial;
 
 

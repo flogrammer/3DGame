@@ -3,14 +3,12 @@ package mygame;
 import view.PauseState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
-import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.collision.CollisionResults;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.effect.ParticleMesh;
 import com.jme3.font.BitmapFont;
@@ -22,13 +20,13 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
-import com.jme3.light.PointLight;
 import com.jme3.light.SpotLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.post.Filter;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.Camera;
@@ -39,17 +37,20 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.system.AppSettings;
 import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
-import java.util.List;
+import java.util.List;                           
+import ctrl.BookManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ctrl.BookManager;
 import model.Forest;
 import model.Progman;
 import view.GameFinishedState;
 import view.GameOverState;
 import view.MenuState;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.CrossHatchFilter;
 
 /**
  * Progman Version 1
@@ -77,13 +78,6 @@ public class Main extends SimpleApplication{
     final float WORLD_SIZE = 125.0f;
     
     
-    //MoveCheck
-    int [] averageX = new int[50];
-    int [] averageZ = new int[50];
-    int averageCounter = 0;
-    int averageX_counter = 0;
-    int averageZ_counter = 0;
-    boolean shocking = false;
     
     
     
@@ -116,7 +110,7 @@ public class Main extends SimpleApplication{
     private AudioNode audio_progman2;
     private boolean gameOver = false;
 
-
+    FilterPostProcessor processor;
     
     // Labels & Textfields
     BitmapText textField;
@@ -144,7 +138,15 @@ public class Main extends SimpleApplication{
     MenuState mState;
             
     public static void main(String[] args) {
+        //Hide some Information in Output
+        Logger.getLogger("de.lessvoid").setLevel(Level.SEVERE);
+        Logger.getLogger("com.jme3").setLevel(Level.SEVERE);
+        
+        AppSettings aS = new AppSettings(true);
+        aS.setSettingsDialogImage("Models/Images/progman.png");
+        
         Main app = new Main();
+        app.setSettings(aS);
         app.start();
     }
  
@@ -161,13 +163,12 @@ public class Main extends SimpleApplication{
         stateManager.attach(bulletAppState);
         //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
         
-     
         
         
         // Init functionalities
         Long time = System.currentTimeMillis();
         initListeners();
-        System.out.println("1 "+(System.currentTimeMillis()-time));
+        System.out.println("0 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initAudio();
         
@@ -229,57 +230,14 @@ public class Main extends SimpleApplication{
         
     }
     
-    public void checkShocking()
-    {
-        if(++averageCounter > 7)
-        {
-            averageCounter = 0;
-
-            averageX[averageX_counter++] = (int)position.x;
-            averageZ[averageZ_counter++] = (int)position.z;
-            if(averageX_counter >= averageX.length)
-            {
-                averageX_counter = 0;
-                shocking = true;
-            }
-            if(averageZ_counter >= averageZ.length)
-                averageZ_counter = 0;
-            
-            if(shocking)
-            {
-                int meanX = 0;
-                int meanZ = 0;
-                for(int i : averageX)
-                    meanX += i; 
-                meanX /= averageX.length;
-
-                for(int i : averageZ)
-                    meanZ += i; 
-                meanZ /= averageZ.length;
-                
-                Vector3f averagePos = new Vector3f(meanX,position.y,meanZ);
-                float distance = averagePos.distance(position);
-                
-                
-                float dist = progman.progman_pos.distance(position);
-                
-                if(distance < 2.5 && dist > progman.SHOCKING_DISTANCE)
-                {
-                    System.out.println("NOT MOVING ANYMORE");
-                    progman.shocking = true;
-                    shocking = false;
-                }
-                
-            }
-        }
-    }
+    
     
     @Override
     public void simpleUpdate(float tpf) {
         position = cam.getLocation();
         
+        
         // Updates
-        checkShocking();
         gameOver = progman.updateProgman(position);
         updateFlashlight();
         updateItems();
@@ -331,6 +289,9 @@ public class Main extends SimpleApplication{
         walkDirection.set(0, 0, 0);
         
         if (left) {
+            
+            for(Filter i : processor.getFilterList())
+                System.out.println(i);
             walkDirection.addLocal(camLeft);
         }
         if (right) {
@@ -565,7 +526,6 @@ public class Main extends SimpleApplication{
     
     
     protected void initGround() {
-        System.out.println(assetManager);
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
         
         final float worldSize = 125f;
@@ -802,6 +762,7 @@ public class Main extends SimpleApplication{
         textField.setBox(new Rectangle(settings.getWidth()/2-settings.getWidth()/4, settings.getHeight()*3/4, settings.getWidth()/2, settings.getHeight()/2));
         textField.setLineWrapMode(LineWrapMode.Word);
     }
+    
     public void initListeners(){
         inputManager.addMapping("Move", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
@@ -847,7 +808,9 @@ public class Main extends SimpleApplication{
         
 
         // Cone Light
+        
         spot = new SpotLight();
+        
         spot.setSpotRange(outerRange);                           // distance
         spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
         spot.setSpotOuterAngle(20f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
@@ -891,6 +854,7 @@ public class Main extends SimpleApplication{
         viewPort.addProcessor(fpp);
 
     }
+    
     public void makeFire(){
          /** Uses Texture from jme3-test-data library! */
         ParticleEmitter fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);

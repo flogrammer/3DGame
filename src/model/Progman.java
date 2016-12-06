@@ -8,7 +8,6 @@ import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.light.DirectionalLight;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
@@ -48,9 +47,25 @@ public class Progman {
     
     private float old_dist;
     
+    
+    
+    /*
+     * Audio
+     */
     private AudioNode audio_progman;
     private AudioNode audio_progman2;
     
+    /*
+     * Check for shocking
+     */
+    
+    //MoveCheck
+    int [] averageX = new int[50];
+    int [] averageZ = new int[50];
+    int averageCounter = 0;
+    int averageX_counter = 0;
+    int averageZ_counter = 0;
+    boolean shock_enabled = false;
     
     
     public Progman(Node rN,AssetManager assetManager, Camera c, Forest f){
@@ -155,11 +170,65 @@ public class Progman {
             movingDistance = old_dist;
     }
     
+    public void checkShocking(Vector3f position)
+    {
+        if(++averageCounter > 7)
+        {
+            averageCounter = 0;
+
+            averageX[averageX_counter++] = (int)position.x;
+            averageZ[averageZ_counter++] = (int)position.z;
+            if(averageX_counter >= averageX.length)
+            {
+                averageX_counter = 0;
+                int meanX = 0;
+                int meanZ = 0;
+                for(int i : averageX)
+                    meanX += i;
+                for(int i : averageZ)
+                    meanZ += i; 
+                meanZ /= averageZ.length;
+                meanX /= averageX.length;
+                if(Math.abs(meanX) >= 5.0 && Math.abs(meanZ) >= 5.0) //shocking wird aktiviert, wenn der Spieler einmal losgelaufen ist
+                    shock_enabled = true;
+            }
+            if(averageZ_counter >= averageZ.length)
+                averageZ_counter = 0;
+            
+            if(shock_enabled)
+            {
+                int meanX = 0;
+                int meanZ = 0;
+                for(int i : averageX)
+                    meanX += i; 
+                meanX /= averageX.length;
+
+                for(int i : averageZ)
+                    meanZ += i; 
+                meanZ /= averageZ.length;
+                
+                Vector3f averagePos = new Vector3f(meanX,position.y,meanZ);
+                float distance = averagePos.distance(position);
+                
+                
+                float dist = progman_pos.distance(position);
+                
+                if(distance < 2.5 && dist > SHOCKING_DISTANCE)
+                {
+                    System.out.println("NOT MOVING ANYMORE");
+                    shocking = true;
+                    shock_enabled = false;
+                }
+                
+            }
+        }
+    }
+    
     public boolean updateProgman(Vector3f position){
         
         float dist = progman_pos.distance(position);
         playMusic(dist);
-        // If progman is near
+        checkShocking(position);
         updateSTATE(position);
         boolean moved = false;
         
@@ -225,7 +294,6 @@ public class Progman {
             n.y = progman_pos.y;
             progman_pos = n.clone();
             System.out.println("mD" + movingDistance);
-           // System.out.println("Collision detected: " + forest.checkCollision(progman_pos));
             
             
         }

@@ -9,7 +9,6 @@ import com.jme3.light.SpotLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import model.Book;
 
 /**
@@ -50,8 +49,10 @@ public class BookManager extends Node{
             
             books[i].spatial.setLocalTranslation(random+random2, 2, random+random2);
             attachChild(books[i].spatial);
-
+            
+            
             SpotLight itemShine = new SpotLight();
+            
             itemShine.setSpotRange(5f);
             itemShine.setColor(ColorRGBA.Magenta.mult(1.2f));
             itemShine.setPosition(books[i].spatial.getLocalTranslation());
