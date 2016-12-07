@@ -9,6 +9,7 @@ import com.jme3.audio.AudioNode;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.Vector3f;
+import com.jme3.post.filters.CrossHatchFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -46,6 +47,7 @@ public class Progman {
     }
     
     private float old_dist;
+    CrossHatchFilter filter;
     
     
     
@@ -76,7 +78,6 @@ public class Progman {
         forest = f;
         spatial = assetManager.loadModel("Models/progman/real_progman.j3o");
         cam = c;
-
 
         spatial.scale(0.8f);
         progman_pos = PROGMAN_STARTPOSITION;
@@ -189,7 +190,7 @@ public class Progman {
                     meanZ += i; 
                 meanZ /= averageZ.length;
                 meanX /= averageX.length;
-                if(Math.abs(meanX) >= 5.0 && Math.abs(meanZ) >= 5.0) //shocking wird aktiviert, wenn der Spieler einmal losgelaufen ist
+                if(Math.abs(meanX) >= 2.0 || Math.abs(meanZ) >= 2.0) //shocking wird aktiviert, wenn der Spieler einmal losgelaufen ist
                     shock_enabled = true;
             }
             if(averageZ_counter >= averageZ.length)
@@ -224,12 +225,29 @@ public class Progman {
         }
     }
     
+    public void updateFilter(Vector3f position)
+    {
+        float dist = progman_pos.distance(position);
+        if(dist < 30)
+        {
+            //System.out.println("filter");
+            //filter.setEnabled(true);
+            filter.setLineDistance(4.0f-dist/10.0f);
+        }
+        else
+        {
+            filter.setEnabled(false);
+        }
+        
+    }
+    
     public boolean updateProgman(Vector3f position){
         
         float dist = progman_pos.distance(position);
         playMusic(dist);
         checkShocking(position);
         updateSTATE(position);
+        updateFilter(position);
         boolean moved = false;
         
         if(STATE == ProgmanState.catched)
@@ -359,4 +377,9 @@ public class Progman {
     {
         audio_progman2 = aN;
     }
+    public void setFilter(CrossHatchFilter f)
+    {
+        filter = f;
+    }
+
 }

@@ -109,7 +109,7 @@ public class Main extends SimpleApplication{
     private AudioNode audio_progman2;
     private boolean gameOver = false;
 
-    FilterPostProcessor processor;
+    CrossHatchFilter filter;
     
     // Labels & Textfields
     BitmapText textField;
@@ -161,6 +161,8 @@ public class Main extends SimpleApplication{
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
         //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+        
+        
         
         
         
@@ -222,13 +224,15 @@ public class Main extends SimpleApplication{
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
         showHUD("Finde die 8 Bücher bevor deine Zeit abläuft...");
-        /*create Filter
-        processor = (FilterPostProcessor) assetManager.loadAsset("Filters/noise.j3f");
+        
+        //create Filter
+        FilterPostProcessor processor = (FilterPostProcessor) assetManager.loadAsset("Filters/noise.j3f");
         viewPort.addProcessor(processor);
+        
         //set Filter params
-        CrossHatchFilter cHF = processor.getFilter(CrossHatchFilter.class);
-        cHF.setLineThickness(3.0f);
-        */
+        filter = processor.getFilter(CrossHatchFilter.class);
+        progman.setFilter(filter);
+        filter.setEnabled(true);
         
     }
     
@@ -246,12 +250,11 @@ public class Main extends SimpleApplication{
         updateItemCollision(tpf);
         updatePhysics();
         if (lightActivated)
-        updateBatteryStatus(tpf);
+            updateBatteryStatus(tpf);
         
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf, fadetime);
-        
         
 
     }
