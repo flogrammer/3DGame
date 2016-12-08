@@ -43,6 +43,7 @@ public class Progman {
     
     public float movingAngle = 0;
     public float movingDistance = 100;
+
     
     public enum ProgmanState {
         catching, shocking, moving, EyeContact, catched;
@@ -58,6 +59,7 @@ public class Progman {
      */
     private AudioNode audio_progman;
     private AudioNode audio_progman2;
+    private AudioNode noise;
     
     /*
      * Check for shocking
@@ -88,6 +90,10 @@ public class Progman {
         rootNode.attachChild(spatial);
 
         startTime = System.currentTimeMillis();
+        
+        // Setup Audio for Progman
+      initNoise(assetManager);
+        
    }
     
     public boolean moveAllowed(){
@@ -148,7 +154,9 @@ public class Progman {
             STATE = ProgmanState.catching;
         else if(checkEyeContact(position))
         {
+                        
             STATE = ProgmanState.EyeContact;
+            noise.play();
             if(oldState != ProgmanState.EyeContact)
             {
                     old_dist = movingDistance;
@@ -161,8 +169,9 @@ public class Progman {
         {
             STATE = ProgmanState.shocking;
         }
-        else if(dist < 8)
+        else if(dist < 8){
             STATE = ProgmanState.catched;
+        }
         else
             STATE = ProgmanState.moving;
         
@@ -285,13 +294,15 @@ public class Progman {
             newPosition.y = 0;
             newPosition = position.add(newPosition.normalize().mult(SHOCKING_DISTANCE));
             newPosition.y = progman_pos.y;
-            
             progman_pos= newPosition.clone();
             startTime = System.currentTimeMillis();
             
         }
         else if(STATE == ProgmanState.EyeContact&& moveAllowed())
         {
+            
+            
+
             System.out.println("me: " + position + " progman: " +progman_pos);
             moved = true;
             Vector3f dir = progman_pos.subtract(position).clone();
@@ -393,5 +404,11 @@ public class Progman {
     {
         filter = f;
     }
+     private void initNoise(AssetManager assetManager) {
+       noise = new AudioNode(assetManager, "Sounds/soundFX/noise.wav", false);
+       noise.setPositional(false);
+       noise.setLooping(false);
+       noise.setVolume(0.4f);
+       rootNode.attachChild(noise);    }
 
 }
