@@ -13,6 +13,8 @@ import com.jme3.post.filters.CrossHatchFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -167,8 +169,10 @@ public class Progman {
         if(oldState != STATE)
             System.out.println("State changed " + STATE);
         //remembering old movingDistance before EyeContact
-        if(oldState == ProgmanState.EyeContact && STATE != ProgmanState.EyeContact)
+        if(oldState == ProgmanState.EyeContact && STATE != ProgmanState.EyeContact){
             movingDistance = old_dist;
+            System.out.println("recovering old dist" + old_dist);
+        }
     }
     
     public void checkShocking(Vector3f position)
@@ -231,8 +235,16 @@ public class Progman {
         if(dist < 30)
         {
             //System.out.println("filter");
-            //filter.setEnabled(true);
-            filter.setLineDistance(4.0f-dist/10.0f);
+            filter.setEnabled(false);
+            /*for(int i = 0; i < 10; i++){
+                filter.setLineThickness(0f);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Progman.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            System.out.println("filter: " + filter.getLineThickness());
+            }*/
         }
         else
         {

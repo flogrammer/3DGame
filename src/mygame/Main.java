@@ -233,6 +233,12 @@ public class Main extends SimpleApplication{
         filter = processor.getFilter(CrossHatchFilter.class);
         progman.setFilter(filter);
         filter.setEnabled(true);
+
+        filter.setColorInfluenceLine(0.8f);
+        filter.setColorInfluencePaper(0.1f);
+        filter.setFillValue(0.1f);
+        filter.setLineDistance(1.0f);
+        filter.setLineThickness(4.0f);
         
     }
     
