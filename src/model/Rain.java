@@ -49,11 +49,8 @@ attachChild(points);
 public void applyParameters(int weather) {
 
     points = new ParticleEmitter("rainPoints", Type.Triangle, 800*weather);
-    points.setShape(new EmitterSphereShape(Vector3f.ZERO, 1920f)); // TODO: Get size of screen
+    points.setShape(new EmitterSphereShape(Vector3f.ZERO, 1920f)); // TODO: Get Distance of field
     points.setLocalTranslation(new Vector3f(0f, height, 0f));
-    //points.setInitialVelocity(new Vector3f(0.0f, -1.0f, 0.0f));
-    //points.setMaximumAngle(3.1415927f);
-    //points.setMinimumAngle(0.0f);
     points.setImagesX(1);
     points.setImagesY(1);
     points.setGravity(new Vector3f(0,3000f*weather,0));
@@ -93,9 +90,6 @@ Vector3f intersection= loc;
 ray.intersectsWherePlane(piano, intersection);
 System.out.println(intersection);
 intersection.y=cam.getLocation().y+height;
-
-//intersection.x=cam.getLocation().x+cam.getDirection().x*50f;
-//intersection.z=cam.getLocation().z+cam.getDirection().z*50f;
 
 this.setLocalTranslation(intersection);
 System.out.println("pos rain="+this.getLocalTranslation());

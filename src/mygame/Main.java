@@ -50,6 +50,7 @@ import view.GameOverState;
 import view.MenuState;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CrossHatchFilter;
+import model.Rain;
 
 /**
  * Progman Version 1
@@ -107,6 +108,7 @@ public class Main extends SimpleApplication{
     private AudioNode audio_item_collected;
     private AudioNode audio_progman;
     private AudioNode audio_progman2;
+    private AudioNode audio_rain;
     private boolean gameOver = false;
 
     CrossHatchFilter filter;
@@ -127,8 +129,9 @@ public class Main extends SimpleApplication{
     RigidBodyControl flashControl;
 
     
-    // Item Names
+    // Geometries
     Forest forest = null;
+    Rain rain = null;
     
    // States
     PauseState pState;
@@ -240,6 +243,8 @@ public class Main extends SimpleApplication{
         filter.setLineDistance(1.0f);
         filter.setLineThickness(4.0f);
         
+        makeItRain();
+        
     }
     
     
@@ -247,8 +252,7 @@ public class Main extends SimpleApplication{
     @Override
     public void simpleUpdate(float tpf) {
         position = cam.getLocation();
-        
-        
+       
         // Updates
         gameOver = progman.updateProgman(position);
         updateFlashlight();
@@ -257,11 +261,12 @@ public class Main extends SimpleApplication{
         updatePhysics();
         if (lightActivated)
             updateBatteryStatus(tpf);
-        
+        rain.updateLogicalState(tpf);
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf, fadetime);
-        
+        super.simpleUpdate(tpf); // For Rain Node, updates all
+
 
     }
    
@@ -723,6 +728,13 @@ public class Main extends SimpleApplication{
        audio_progman2.setLooping(true);
        audio_progman2.setVolume(0.1f);
        rootNode.attachChild(audio_progman2);
+       
+       audio_rain = new AudioNode(assetManager, "Sounds/rain.wav", false);
+       audio_rain.setPositional(false);
+       audio_rain.setLooping(true);
+       audio_rain.setVolume(0.03f);
+       rootNode.attachChild(audio_rain);
+       audio_rain.play();
     }
       
     public void initSky(){
@@ -882,5 +894,11 @@ public class Main extends SimpleApplication{
         fireEffect.setLocalTranslation(new Vector3f(90.729515f, 0.0f, 14.6222f));
         rootNode.attachChild(fireEffect);
     }
+    
+    public void makeItRain(){
+        rain = new Rain(assetManager,cam,2); // Last param is the weather intensity
+        rootNode.attachChild(rain);
+    }
  
 }
+
