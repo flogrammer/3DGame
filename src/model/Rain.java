@@ -56,11 +56,11 @@ public void applyParameters(int weather) {
     //points.setMinimumAngle(0.0f);
     points.setImagesX(1);
     points.setImagesY(1);
-    points.setGravity(new Vector3f(0,30f*weather,0));
+    points.setGravity(new Vector3f(0,1500f*weather,0));
     // points.setLowLife(1626.0f);
-    points.setLowLife(1);
-    points.setHighLife(1);
-    points.setStartSize(1.0f);
+    points.setLowLife(0.5f);
+    points.setHighLife(4);
+    points.setStartSize(3f);
     points.setEndSize(1.0f);
     points.setStartColor(new ColorRGBA(0.0f, 0.0f, 1.0f, 0.8f));
     points.setEndColor(new ColorRGBA(0.0f, 0.0f, 1.0f, 0.8f));
@@ -75,7 +75,7 @@ public void applyParameters(int weather) {
     Material mat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
     //mat.setTexture("m_Texture", assetManager.loadTexture("mygame/raindrop.png"));
     points.setMaterial(mat);
-    //points.setQueueBucket(Bucket.Transparent);
+    points.setQueueBucket(Bucket.Gui);
     points.updateLogicalState(0);
     points.updateGeometricState();
 
@@ -97,7 +97,7 @@ intersection.y=cam.getLocation().y+height;
 //intersection.x=cam.getLocation().x+cam.getDirection().x*50f;
 //intersection.z=cam.getLocation().z+cam.getDirection().z*50f;
 
-//this.setLocalTranslation(loc);
+this.setLocalTranslation(intersection);
 System.out.println("pos rain="+this.getLocalTranslation());
 /*System.out.println("pos rain="+points.getParticles()[0].position);
 float x=(int) (Math.random()*far)-far/2;
