@@ -49,19 +49,19 @@ attachChild(points);
 public void applyParameters(int weather) {
 
     points = new ParticleEmitter("rainPoints", Type.Triangle, 800*weather);
-    points.setShape(new EmitterSphereShape(Vector3f.ZERO, 600f));
+    points.setShape(new EmitterSphereShape(Vector3f.ZERO, 1920f)); // TODO: Get size of screen
     points.setLocalTranslation(new Vector3f(0f, height, 0f));
     //points.setInitialVelocity(new Vector3f(0.0f, -1.0f, 0.0f));
     //points.setMaximumAngle(3.1415927f);
     //points.setMinimumAngle(0.0f);
     points.setImagesX(1);
     points.setImagesY(1);
-    points.setGravity(new Vector3f(0,1500f*weather,0));
+    points.setGravity(new Vector3f(0,3000f*weather,0));
     // points.setLowLife(1626.0f);
     points.setLowLife(0.5f);
     points.setHighLife(4);
     points.setStartSize(3f);
-    points.setEndSize(1.0f);
+    points.setEndSize(2.0f);
     points.setStartColor(new ColorRGBA(0.0f, 0.0f, 1.0f, 0.8f));
     points.setEndColor(new ColorRGBA(0.0f, 0.0f, 1.0f, 0.8f));
     //points.setRandomAngle(randomAngle)Mod(0.0f);
@@ -70,7 +70,7 @@ public void applyParameters(int weather) {
     points.setParticlesPerSec(80000*weather);
     //points.setVelocityVariation(20.0f);
     //points.setInitialVelocity(0.58f);
-    points.setRotateSpeed(0.0f);
+    points.setRotateSpeed(0.2f);
     points.setShadowMode(ShadowMode.CastAndReceive);
     Material mat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
     //mat.setTexture("m_Texture", assetManager.loadTexture("mygame/raindrop.png"));
@@ -89,9 +89,9 @@ float far=800f;
 Vector3f loc=new Vector3f(cam.getLocation());
 Plane piano=new Plane(loc,far);
 Ray ray=new Ray(loc,cam.getDirection());
-Vector3f intersection=loc;
+Vector3f intersection= loc;
 ray.intersectsWherePlane(piano, intersection);
-
+System.out.println(intersection);
 intersection.y=cam.getLocation().y+height;
 
 //intersection.x=cam.getLocation().x+cam.getDirection().x*50f;
