@@ -218,7 +218,7 @@ public class Main extends SimpleApplication{
         System.out.println("12 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         
-        //createFog();
+        createFog();
         makeFire();
         System.out.println("13 "+(System.currentTimeMillis()-time));
         
@@ -227,6 +227,7 @@ public class Main extends SimpleApplication{
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 500f); // Camera nur bis 100 meter
         showHUD("Finde die 8 Bücher bevor deine Zeit abläuft...");
+        
         
         //create Filter
         FilterPostProcessor processor = (FilterPostProcessor) assetManager.loadAsset("Filters/noise.j3f");
@@ -843,7 +844,7 @@ public class Main extends SimpleApplication{
     public void initAmbientLight(){
         AmbientLight al = new AmbientLight();
         AmbientLight al2 = new AmbientLight();
-        al.setColor(ColorRGBA.Black.mult(0.1f));
+        al.setColor(ColorRGBA.White.mult(0.3f));
         al2.setColor(ColorRGBA.Blue.mult(0.1f));
 
         
@@ -867,11 +868,12 @@ public class Main extends SimpleApplication{
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
         fog=new FogFilter();
        // fog.setFogColor(new ColorRGBA((float) 80/255,(float) 0, (float) 100/255,1f));
-        fog.setFogColor(new ColorRGBA(0.3f,0.3f,0.3f,1));
+        fog.setFogColor(new ColorRGBA(0.2f,0.2f,0.2f,0.2f));
         fog.setFogDistance(100);
         fog.setFogDensity(fogDensity);
         fpp.addFilter(fog);
         viewPort.addProcessor(fpp);
+        
 
     }
     
