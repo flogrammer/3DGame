@@ -50,6 +50,7 @@ import view.GameOverState;
 import view.MenuState;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CrossHatchFilter;
+import java.awt.Color;
 import model.Rain;
 
 /**
@@ -73,7 +74,6 @@ public class Main extends SimpleApplication{
     float fogDensity = 1.8f;
     
     final int MOVEMENTSPEED = 5;
-    final int GRAVITY = 10;
     final int JUMPFACTOR = 50;
     final float WORLD_SIZE = 125.0f;
     
@@ -218,14 +218,14 @@ public class Main extends SimpleApplication{
         System.out.println("12 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         
-        createFog();
+        //createFog();
         makeFire();
         System.out.println("13 "+(System.currentTimeMillis()-time));
         
         
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
-        camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 100f); // Camera nur bis 100 meter
+        camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 500f); // Camera nur bis 100 meter
         showHUD("Finde die 8 Bücher bevor deine Zeit abläuft...");
         
         //create Filter
@@ -252,8 +252,8 @@ public class Main extends SimpleApplication{
     @Override
     public void simpleUpdate(float tpf) {
         position = cam.getLocation();
-       
-        // Updates
+      
+       // Updates
         gameOver = progman.updateProgman(position);
         updateFlashlight();
         updateItems();
@@ -818,7 +818,7 @@ public class Main extends SimpleApplication{
         player.setPhysicsLocation(new Vector3f(0, 2, 0));
         bulletAppState.getPhysicsSpace().add(player);
         player.setGravity(20);
-
+        
     }
    
     public void initFlashlight()
@@ -846,7 +846,7 @@ public class Main extends SimpleApplication{
         al.setColor(ColorRGBA.Black.mult(0.1f));
         al2.setColor(ColorRGBA.Blue.mult(0.1f));
 
-
+        
         rootNode.addLight(al);
         rootNode.addLight(al2);
     }
@@ -896,7 +896,7 @@ public class Main extends SimpleApplication{
     }
     
     public void makeItRain(){
-        rain = new Rain(assetManager,cam,2); // Last param is the weather intensity
+        rain = new Rain(assetManager,cam,4); // Last param is the weather intensity
         rootNode.attachChild(rain);
     }
  
