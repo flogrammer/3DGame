@@ -11,6 +11,8 @@ import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.effect.ParticleMesh;
+import com.jme3.effect.ParticleMesh.Type;
+import com.jme3.effect.shapes.EmitterSphereShape;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.font.LineWrapMode;
@@ -50,6 +52,8 @@ import view.GameOverState;
 import view.MenuState;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CrossHatchFilter;
+import ctrl.PostFogFilter;
+import ctrl.PostScatterFilter;
 import java.awt.Color;
 import model.Rain;
 
@@ -85,7 +89,6 @@ public class Main extends SimpleApplication{
     Node cameraNode; // For the Flashlight
     Vector3f position;
     ColorRGBA color;
-    FogFilter fog;
     
     // Figures and Textures
     BookManager bookManager;
@@ -111,7 +114,11 @@ public class Main extends SimpleApplication{
     private AudioNode audio_rain;
     private boolean gameOver = false;
 
+    
+    //Filters
+    PostFogFilter fog;
     CrossHatchFilter filter;
+    PostScatterFilter scatter;
     
     // Labels & Textfields
     BitmapText textField;
@@ -225,7 +232,7 @@ public class Main extends SimpleApplication{
         
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
-        camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 500f); // Camera nur bis 100 meter
+        camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 400f); // Camera nur bis 100 meter
         showHUD("Finde die 8 Bücher bevor deine Zeit abläuft...");
         
         
@@ -262,13 +269,10 @@ public class Main extends SimpleApplication{
         updatePhysics();
         if (lightActivated)
             updateBatteryStatus(tpf);
-        rain.updateLogicalState(tpf);
+        //rain.updateLogicalState(tpf);
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf, fadetime);
-        super.simpleUpdate(tpf); // For Rain Node, updates all
-
-
     }
    
     @Override
@@ -866,9 +870,9 @@ public class Main extends SimpleApplication{
          */
        /** Add fog to a scene */
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
-        fog=new FogFilter();
+        fog=new PostFogFilter();
        // fog.setFogColor(new ColorRGBA((float) 80/255,(float) 0, (float) 100/255,1f));
-        fog.setFogColor(new ColorRGBA(0.2f,0.2f,0.2f,0.2f));
+        fog.setFogColor(new ColorRGBA(0.2f,0.2f,0.2f,1f));
         fog.setFogDistance(100);
         fog.setFogDensity(fogDensity);
         fpp.addFilter(fog);
@@ -878,10 +882,9 @@ public class Main extends SimpleApplication{
     }
     
     public void makeFire(){
-         /** Uses Texture from jme3-test-data library! */
         ParticleEmitter fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
         Material fireMat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
-        //fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
+        fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
         fireEffect.setMaterial(fireMat);
         fireEffect.setImagesX(2); fireEffect.setImagesY(2); // 2x2 texture animation
         fireEffect.setEndColor( new ColorRGBA(1f, 0f, 0f, 1f) );   // red
@@ -900,6 +903,10 @@ public class Main extends SimpleApplication{
     public void makeItRain(){
         rain = new Rain(assetManager,cam,4); // Last param is the weather intensity
         rootNode.attachChild(rain);
+    }
+    
+    public void scatterEffect(){
+        //scatter = new PostScatterFilter();
     }
  
 }
