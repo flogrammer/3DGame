@@ -72,6 +72,7 @@ public class Progman {
     int averageX_counter = 0;
     int averageZ_counter = 0;
     boolean shock_enabled = false;
+    boolean eyeContact = false;
     
     
     public Progman(Node rN,AssetManager assetManager, Camera c, Forest f){
@@ -124,9 +125,10 @@ public class Progman {
         Camera.FrustumIntersect result = cam.contains(bv);
         cam.setPlaneState(planeState);
         if(result == Camera.FrustumIntersect.Inside)
-            STATE = ProgmanState.EyeContact;
-        return result == Camera.FrustumIntersect.Inside;
-        
+            eyeContact = true;
+        else
+            eyeContact = false;
+        return eyeContact;        
     }
     
     public void playMusic(float dist)
@@ -135,7 +137,6 @@ public class Progman {
            audio_progman.setVolume(1.4f*(1-(dist/30)));
            audio_progman.play();
            if (dist < 15){
-                STATE = ProgmanState.catching;
                 audio_progman2.setVolume(0.1f*(1-(dist/15)));
                 audio_progman2.play();
            }else{
@@ -178,10 +179,13 @@ public class Progman {
         else
             STATE = ProgmanState.moving;
         
-        if(oldState != STATE)
+        
+        if(!oldState.equals( STATE))
             System.out.println("State changed " + STATE);
+        
+        System.out.println();
         //remembering old movingDistance before EyeContact
-        if(oldState == ProgmanState.EyeContact && STATE != ProgmanState.EyeContact){
+        if(oldState.equals(ProgmanState.EyeContact) && !STATE.equals(ProgmanState.EyeContact)){
             movingDistance = old_dist;
             System.out.println("recovering old dist" + old_dist);
         }
