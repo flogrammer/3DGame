@@ -174,9 +174,6 @@ public class Main extends SimpleApplication{
         //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
         
         
-        
-        
-        
         // Init functionalities
         Long time = System.currentTimeMillis();
         initListeners();
@@ -234,7 +231,7 @@ public class Main extends SimpleApplication{
         setDisplayStatView(false);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 400f); // Camera nur bis 100 meter
-        showHUD("Finde die 8 Bücher bevor deine Zeit abläuft...");
+        showHUD("Finde die 9 Bücher bevor deine Zeit abläuft...");
         
         
         //create Filter
@@ -256,14 +253,13 @@ public class Main extends SimpleApplication{
         
     }
     
-    
-    
     @Override
     public void simpleUpdate(float tpf) {
         Long t = System.currentTimeMillis();
         
         
         position = cam.getLocation();
+        System.out.println(position);
       
        // Updates
         gameOver = progman.updateProgman(position, lightActivated,(float)(bookManager.itemsCollected/bookManager.getBookCount()));
@@ -778,7 +774,7 @@ public class Main extends SimpleApplication{
     }
     
     public void initItems(){
-        bookManager = new BookManager(assetManager);
+        bookManager = new BookManager(assetManager,forest);
         rootNode.attachChild(bookManager);
     }
     

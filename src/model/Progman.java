@@ -151,7 +151,7 @@ public class Progman {
     {
         ProgmanState oldState = STATE;
         float dist = progman_pos.distance(position);
-        if(dist < 8)
+        if(dist < 6)
             STATE = ProgmanState.catched;
         else if(dist < 15)
             STATE = ProgmanState.catching;
@@ -274,7 +274,7 @@ public class Progman {
         
         if(STATE == ProgmanState.catched)
         {
-            return false;
+            return true;
         }
         else if(STATE == ProgmanState.catching)
         {
@@ -320,11 +320,11 @@ public class Progman {
             moved = true;
             
             movingAngle = movingAngle + (float)(Math.random()*2*Math.PI-Math.PI);
-            float factor = 0.995f;
+            float factor = 0.997f;
             //wenn das Licht angeschaltet ist, kommt er schneller (0.8956)
             if(lightActivated)
-                factor = factor*0.9f;
-            factor = (1-collectedItems/8)*factor;
+                factor = factor*factor;
+            factor = (1-collectedItems/200.0f)*factor;
             movingDistance = (float)Math.pow(movingDistance, factor);
             if(movingDistance < 30)
                 movingDistance = 30;

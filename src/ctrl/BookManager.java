@@ -10,6 +10,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import model.Book;
+import model.Forest;
 
 /**
  *
@@ -21,9 +22,9 @@ public class BookManager extends Node{
     public float minItemDistance;
     public int itemsCollected;
     int pulsefactor = 1;
-
+    Forest forest = null;
     
-    public BookManager(AssetManager assetManager){
+    public BookManager(AssetManager assetManager, Forest f){
          String [] itemNames = {
         "2D Spieleentwicklung",
         "Android Entwicklung",
@@ -35,7 +36,7 @@ public class BookManager extends Node{
         "User Authentication mit OAuth",
         "Webentwicklung"    
         };
-         
+        forest = f;
         for (int i = 0; i < itemNames.length; i++){
             books[i] = new Book(assetManager, itemNames[i]);
             books[i].spatial.setUserData("status", false);
@@ -43,12 +44,27 @@ public class BookManager extends Node{
             books[i].spatial.setUserData("name", itemNames[i]);
             books[i].spatial.rotate(0, (float) (- Math.PI), 0);
             books[i].spatial.scale(0.3f);
-            float random = (float) (100*Math.random());
-            float random2 = (float) (100*Math.random());
+            /*
+             * set Translation
+             */
+            float randomX=0;
+            float randomZ=0;
+            Vector3f pos=new Vector3f(0,0,0);
+            int counter = 0;
+            do
+            {
+                randomX = (float) (250*Math.random()-125);
+                randomZ = (float) (250*Math.random()-125);
+
+                pos = new Vector3f(randomX,2,randomZ);
+            }
+            while(forest.checkCollision(pos)&counter++<10);
             
-            
-            books[i].spatial.setLocalTranslation(random+random2, 2, random+random2);
+            books[i].spatial.setLocalTranslation(pos);
             attachChild(books[i].spatial);
+            System.out.println(pos);
+            
+            
             
             
             SpotLight itemShine = new SpotLight();
@@ -103,6 +119,10 @@ public class BookManager extends Node{
         System.out.println();
     }
     
+    public void setForest(Forest f)
+    {
+        forest = f;
+    }
     
     
 }
