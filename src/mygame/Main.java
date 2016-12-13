@@ -279,7 +279,7 @@ public class Main extends SimpleApplication{
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf, fadetime);
-        System.out.println(System.currentTimeMillis()-t);
+        //System.out.println(System.currentTimeMillis()-t);
     }
    
     @Override

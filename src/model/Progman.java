@@ -388,7 +388,7 @@ public class Progman {
         
         //making Progman look at Player
         spatial.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,1,0));
-        return true;
+        return false;
         
     }
     
