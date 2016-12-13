@@ -89,11 +89,11 @@ public void updateLogicalState(float tpf){
     Ray ray=new Ray(loc,cam.getDirection());
     Vector3f intersection= new Vector3f(cam.getLocation());
     ray.intersectsWherePlane(piano, intersection);
-    System.out.println(intersection);
+    //System.out.println(intersection);
     intersection.y=cam.getLocation().y+height;
 
     this.setLocalTranslation(intersection);
-    System.out.println("pos rain="+this.getLocalTranslation());
+    //System.out.println("pos rain="+this.getLocalTranslation());
     /*System.out.println("pos rain="+points.getParticles()[0].position);
     float x=(int) (Math.random()*far)-far/2;
     float z=(int) (Math.random()*far)-far/2;

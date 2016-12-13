@@ -151,7 +151,10 @@ public class Progman {
         ProgmanState oldState = STATE;
         float dist = progman_pos.distance(position);
         if(dist < 15)
+        {
             STATE = ProgmanState.catching;
+            //System.out.println("catching rkannt");
+        }
         else if(checkEyeContact(position))
         {
                         
@@ -300,17 +303,11 @@ public class Progman {
         }
         else if(STATE == ProgmanState.EyeContact&& moveAllowed())
         {
-            
-            
-
-            System.out.println("me: " + position + " progman: " +progman_pos);
             moved = true;
             Vector3f dir = progman_pos.subtract(position).clone();
             dir.y = 0;
-            System.out.println("Vector " + dir +  " x/length" + dir.x/dir.length());
            
             movingAngle = (float)Math.atan2(dir.z,dir.x);
-            System.out.println("angle: " + movingAngle);
             movingDistance = (float)Math.pow(movingDistance, 0.75);
             float x = (float)Math.cos(movingAngle)*movingDistance;
             float z = (float)Math.sin(movingAngle)*movingDistance;
@@ -325,7 +322,7 @@ public class Progman {
             moved = true;
             
             movingAngle = movingAngle + (float)(Math.random()*2*Math.PI-Math.PI);
-            movingDistance = (float)Math.pow(movingDistance, 0.99);
+            movingDistance = (float)Math.pow(movingDistance, 0.995);
             if(movingDistance < 30)
                 movingDistance = 30;
             float x = (float)Math.cos(movingAngle)*movingDistance;
