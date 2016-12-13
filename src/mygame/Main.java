@@ -52,6 +52,7 @@ import view.GameOverState;
 import view.MenuState;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CrossHatchFilter;
+import ctrl.PostFogFilter;
 //import ctrl.PostFogFilter;
 //import ctrl.PostScatterFilter;
 import java.awt.Color;
@@ -116,7 +117,7 @@ public class Main extends SimpleApplication{
 
     
     //Filters
-    //PostFogFilter fog;
+    PostFogFilter fog;
     CrossHatchFilter filter;
     //PostScatterFilter scatter;
     
@@ -868,15 +869,15 @@ public class Main extends SimpleApplication{
          * attribute -> Per vertex variables (position e.g)
          * varying -> Vertex shader to fragment shader variables
          */
-       /** Add fog to a scene */
-       /* FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
+      
+        FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
         fog=new PostFogFilter();
        // fog.setFogColor(new ColorRGBA((float) 80/255,(float) 0, (float) 100/255,1f));
         fog.setFogColor(new ColorRGBA(0.2f,0.2f,0.2f,1f));
         fog.setFogDistance(100);
         fog.setFogDensity(fogDensity);
         fpp.addFilter(fog);
-        viewPort.addProcessor(fpp);*/
+        viewPort.addProcessor(fpp);
         
 
     }

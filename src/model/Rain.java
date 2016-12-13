@@ -63,7 +63,7 @@ public void applyParameters(int weather) {
     //points.setRandomAngle(randomAngle)Mod(0.0f);
     points.setFacingVelocity(false);
     //points.setFaceNormal(new Vector3f(0,0,1));
-    points.setParticlesPerSec(80000*weather);
+    points.setParticlesPerSec(100000*weather);
     //points.setVelocityVariation(20.0f);
     //points.setInitialVelocity(0.58f);
     points.setRotateSpeed(0.2f);
