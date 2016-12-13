@@ -117,7 +117,7 @@ public class Progman {
     
     public boolean checkEyeContact(Vector3f position){
         float distance = position.subtract(progman_pos).length();
-        if(distance > 60)
+        if(distance > 55)
             return false;
         BoundingVolume bv = spatial.getWorldBound();
         int planeState = cam.getPlaneState();
@@ -151,11 +151,10 @@ public class Progman {
     {
         ProgmanState oldState = STATE;
         float dist = progman_pos.distance(position);
-        if(dist < 15)
-        {
+        if(dist < 8)
+            STATE = ProgmanState.catched;
+        else if(dist < 15)
             STATE = ProgmanState.catching;
-            //System.out.println("catching rkannt");
-        }
         else if(checkEyeContact(position))
         {
                         
@@ -170,12 +169,8 @@ public class Progman {
             
         }
         else if(shocking)
-        {
             STATE = ProgmanState.shocking;
-        }
-        else if(dist < 8){
-            STATE = ProgmanState.catched;
-        }
+        
         else
             STATE = ProgmanState.moving;
         
@@ -183,7 +178,6 @@ public class Progman {
         if(!oldState.equals( STATE))
             System.out.println("State changed " + STATE);
         
-        System.out.println();
         //remembering old movingDistance before EyeContact
         if(oldState.equals(ProgmanState.EyeContact) && !STATE.equals(ProgmanState.EyeContact)){
             movingDistance = old_dist;
@@ -269,7 +263,7 @@ public class Progman {
         
     }
     
-    public boolean updateProgman(Vector3f position){
+    public boolean updateProgman(Vector3f position,boolean lightActivated, float collectedItems ){
         
         float dist = progman_pos.distance(position);
         playMusic(dist);
@@ -326,7 +320,12 @@ public class Progman {
             moved = true;
             
             movingAngle = movingAngle + (float)(Math.random()*2*Math.PI-Math.PI);
-            movingDistance = (float)Math.pow(movingDistance, 0.995);
+            float factor = 0.995f;
+            //wenn das Licht angeschaltet ist, kommt er schneller (0.8956)
+            if(lightActivated)
+                factor = factor*0.9f;
+            factor = (1-collectedItems/8)*factor;
+            movingDistance = (float)Math.pow(movingDistance, factor);
             if(movingDistance < 30)
                 movingDistance = 30;
             float x = (float)Math.cos(movingAngle)*movingDistance;

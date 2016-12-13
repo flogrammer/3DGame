@@ -260,10 +260,15 @@ public class Main extends SimpleApplication{
     
     @Override
     public void simpleUpdate(float tpf) {
+        Long t = System.currentTimeMillis();
+        
+        
         position = cam.getLocation();
       
        // Updates
-        gameOver = progman.updateProgman(position);
+        gameOver = progman.updateProgman(position, lightActivated,(float)(bookManager.itemsCollected/bookManager.getBookCount()));
+        if(gameOver == true)
+            System.out.println("GAME OVER");
         updateFlashlight();
         updateItems();
         updateItemCollision(tpf);
@@ -274,6 +279,7 @@ public class Main extends SimpleApplication{
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf, fadetime);
+        System.out.println(System.currentTimeMillis()-t);
     }
    
     @Override
@@ -290,7 +296,7 @@ public class Main extends SimpleApplication{
     public void updateItems(){
 
        for (int i = 0; i < bookManager.books.length; i++){
-       bookManager.books[i].spatial.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,-((float) FastMath.PI),(float)(-Math.PI)));
+        bookManager.books[i].spatial.lookAt(new Vector3f(cam.getLocation().x, 0, cam.getLocation().z),new Vector3f(0,-((float) FastMath.PI),(float)(-Math.PI)));
        }
 
 
@@ -548,7 +554,6 @@ public class Main extends SimpleApplication{
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
         
         final float worldSize = 125f;
-        
         
         
         Box box = new Box(2.5f,3.0f,0.25f);
