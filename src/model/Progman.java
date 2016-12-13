@@ -73,6 +73,7 @@ public class Progman {
     int averageZ_counter = 0;
     boolean shock_enabled = false;
     boolean eyeContact = false;
+    boolean movingAllowed = false;
     
     
     public Progman(Node rN,AssetManager assetManager, Camera c, Forest f){
@@ -103,7 +104,9 @@ public class Progman {
         long time = System.currentTimeMillis();
         
         float t = (float) (time - startTime);
-        if (t > moveTimeMs){
+        if(!movingAllowed&&t > 50000)
+            movingAllowed=true;
+        if (movingAllowed && t > moveTimeMs){
           startTime = System.currentTimeMillis();
           status = true;
           moveTimeMs = moveTimeMs - 200; // jeweils 0.2 Sekunden weniger
