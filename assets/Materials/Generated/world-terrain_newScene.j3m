@@ -1,0 +1,25 @@
+Material MyMaterial : Common/MatDefs/Terrain/TerrainLighting.j3md {
+    MaterialParameters {
+        DiffuseMap_0_scale : 16.0625
+        AlphaMap_1 : /Textures/terrain-alpha/world-terrain-world-alphablend1.png
+        AlphaMap_2 : /Textures/terrain-alpha/world-terrain-world-alphablend2.png
+        useTriPlanarMapping : false
+        WardIso : true
+        DiffuseMap_1_scale : -1.0
+        DiffuseMap : Flip Repeat Textures/Terrain/splat/grass.jpg
+        AlphaMap : /Textures/terrain-alpha/world-terrain-world-alphablend0.png
+        NormalMap : Flip Repeat Textures/Terrain/splat/grass_normal.jpg
+        Shininess : 0.01
+    }
+    AdditionalRenderState {
+        FaceCull Back
+        Wireframe Off
+        DepthWrite On
+        PolyOffset 0.0 0.0
+        AlphaTestFalloff 0.0
+        Blend Off
+        PointSprite Off
+        ColorWrite On
+        DepthTest On
+    }
+}

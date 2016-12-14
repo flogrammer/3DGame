@@ -11,8 +11,6 @@ import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.effect.ParticleMesh;
-import com.jme3.effect.ParticleMesh.Type;
-import com.jme3.effect.shapes.EmitterSphereShape;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.font.LineWrapMode;
@@ -52,10 +50,9 @@ import view.GameOverState;
 import view.MenuState;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CrossHatchFilter;
+import com.jme3.terrain.geomipmap.TerrainGridLodControl;
+import com.jme3.terrain.geomipmap.TerrainLodControl;
 import ctrl.PostFogFilter;
-//import ctrl.PostFogFilter;
-//import ctrl.PostScatterFilter;
-import java.awt.Color;
 import model.Rain;
 
 /**
@@ -547,8 +544,16 @@ public class Main extends SimpleApplication{
     
     
     protected void initGround() {
-        scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
+        /*
+         Spatil terrain = assetManager.loadModel("Scenes/Terrain.j3o");
+         TerrainLodControl lodControl = terrain.getChild("terrain-Scene").getControl(TerrainLodControl.class);
+         lodControl.setCamera(getCamera());
+         LodGenerator lod = new LodGenerator(terrain);
+         lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL,0.5f);
+         */
         
+        scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
+
         final float worldSize = 125f;
         
         
@@ -910,6 +915,6 @@ public class Main extends SimpleApplication{
     public void scatterEffect(){
         //scatter = new PostScatterFilter();
     }
- 
+    
 }
 
