@@ -26,8 +26,6 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.post.Filter;
-import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -212,7 +210,7 @@ public class Main extends SimpleApplication{
         System.out.println("10 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         bookManager.itemsCollected = 0;
-        progman = new Progman(rootNode,guiNode, assetManager, cam ,forest); //extrem aufwendig
+        progman = new Progman(rootNode,guiNode, settings, assetManager, cam ,forest); //extrem aufwendig
         progman.setAudio_progman(audio_progman);
         progman.setAudio_progman2(audio_progman2);
         System.out.println("11 "+(System.currentTimeMillis()-time));
@@ -253,27 +251,24 @@ public class Main extends SimpleApplication{
     
     @Override
     public void simpleUpdate(float tpf) {
-        Long t = System.currentTimeMillis();
-        
+        if (isRunning){
         position = cam.getLocation();
-        System.out.println(position);
-      
+     
        // Updates
         gameOver = progman.updateProgman(position, lightActivated,(float)(bookManager.itemsCollected/bookManager.getBookCount()));
-        if(gameOver == true)
-            System.out.println("GAME OVER");
+
         updateFlashlight();
         updateItems();
         updateItemCollision(tpf);
         updatePhysics();
+        
         if (lightActivated)
             updateBatteryStatus(tpf);
-        //rain.updateLogicalState(tpf);
+
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf, fadetime);
-        //System.out.println(System.currentTimeMillis()-t);
-        
+        }
     }
    
     @Override
@@ -426,13 +421,6 @@ public class Main extends SimpleApplication{
             if(name.equals("Pause") && isPressed){
                 /*pState = new PauseState(flyCam, stateManager, assetManager, inputManager, audioRenderer, guiViewPort);
                 stateManager.attach(pState); */
-                Picture gameOver = new Picture("gameover");
-                gameOver.setImage(assetManager, "Textures/gameover.png", true);
-                gameOver.setWidth(200);
-                gameOver.setHeight(200);
-                gameOver.setPosition(settings.getWidth()/2, settings.getHeight()/2);
-                guiNode.attachChild(gameOver);
-                
 
               }
             if(name.equals("Move") && isPressed == false){
@@ -512,9 +500,22 @@ public class Main extends SimpleApplication{
     public void showHUD(){
         startTime = System.currentTimeMillis();
         if(bookManager.itemsCollected < bookManager.getBookCount()){
-        textField.setText("You have collected " + bookManager.itemsCollected + "/" + bookManager.getBookCount() + " items.");
+        textField.setText("Du hast " + bookManager.itemsCollected + "/" + bookManager.getBookCount() + " Bücher gesammelt.");
         } else if (bookManager.itemsCollected == bookManager.getBookCount()){
-        textField.setText("You have collected all items. You can work for the AIFB now.");
+                Picture gameOver = new Picture("gameover");
+                gameOver.setImage(assetManager, "Textures/gamewon.png", true);
+                gameOver.setWidth(settings.getWidth());
+                gameOver.setHeight(settings.getHeight());
+                gameOver.setPosition(0,0);
+                guiNode.attachChild(gameOver);
+                
+                // Detach all sounds
+                audio_nature.stop();
+                audio_rain.stop();
+                // Stop game
+                isRunning = false;
+                // Theme melody
+                audio_theme.play();
         }
         textField.setAlignment(BitmapFont.Align.Center);
         guiNode.attachChild(textField);
@@ -555,11 +556,7 @@ public class Main extends SimpleApplication{
          */
         
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
-
-        final float worldSize = 125f;
-        
-        
-        
+        /*
         Box box = new Box(2.5f,5.0f,0.25f);
         Material mat_brick = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_brick.setTexture("ColorMap",assetManager.loadTexture("Textures/Terrain/BrickWall/BrickWall.jpg"));
@@ -644,7 +641,7 @@ public class Main extends SimpleApplication{
         RigidBodyControl eastControl = new RigidBodyControl(eastShape, 0);
         east.addControl(eastControl);
         bulletAppState.getPhysicsSpace().add(east);
-        
+        */
         
         //Add Models in scenefile to forest object List
         Node n = (Node) scenefile;
@@ -881,7 +878,6 @@ public class Main extends SimpleApplication{
       
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
         fog=new PostFogFilter();
-       // fog.setFogColor(new ColorRGBA((float) 80/255,(float) 0, (float) 100/255,1f));
         fog.setFogColor(new ColorRGBA(0.2f,0.2f,0.2f,1f));
         fog.setFogDistance(100);
         fog.setFogDensity(fogDensity);

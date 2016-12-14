@@ -13,6 +13,8 @@ import com.jme3.post.filters.CrossHatchFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.system.AppSettings;
+import com.jme3.ui.Picture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +37,8 @@ public class Progman {
     public Node rootNode;
     public Node guiNode;
     public Camera cam;
+    public AssetManager assetManager;
+    public AppSettings settings;
     public boolean shocking = false;
     public boolean catching = false;
     Forest forest = null;
@@ -77,16 +81,18 @@ public class Progman {
     boolean movingAllowed = false;
     
     
-    public Progman(Node rN, Node gN, AssetManager assetManager, Camera c, Forest f){
+    public Progman(Node rN, Node gN, AppSettings as, AssetManager assetManager, Camera c, Forest f){
         /*
          * Instanzvariablen werden gesetzt
-         */  
+         */ 
+        settings = as;
         guiNode = gN;
         rootNode = rN;
         forest = f;
         spatial = assetManager.loadModel("Models/progman/real_progman.j3o");
         cam = c;
-
+        this.assetManager = assetManager;
+        
         spatial.scale(0.8f);
         progman_pos = PROGMAN_STARTPOSITION;
         spatial.setLocalTranslation(progman_pos);
@@ -139,14 +145,9 @@ public class Progman {
     public void playMusic(float dist)
     {
         if (dist < 30){
-           audio_progman.setVolume(1.4f*(1-(dist/30)));
+           audio_progman.setVolume(1.8f*(1-(dist/30)));
            audio_progman.play();
-           if (dist < 15){
-                audio_progman2.setVolume(0.1f*(1-(dist/15)));
-                audio_progman2.play();
-           }else{
-                audio_progman2.stop();
-           }
+          
         }else{
             audio_progman.stop();
         }
@@ -156,14 +157,24 @@ public class Progman {
     {
         ProgmanState oldState = STATE;
         float dist = progman_pos.distance(position);
-        if(dist < 6)
-            STATE = ProgmanState.catched;
+        if(dist < 6){
+                noise.play();
+                
+                
+                STATE = ProgmanState.catched;
+                Picture gameOver = new Picture("gameover");
+                gameOver.setImage(assetManager, "Textures/gameover.png", true);
+                gameOver.setWidth(settings.getWidth());
+                gameOver.setHeight(settings.getHeight());
+                gameOver.setPosition(0,0);
+                guiNode.attachChild(gameOver);
+        }
         else if(dist < 15)
             STATE = ProgmanState.catching;
         else if(checkEyeContact(position))
         {
             STATE = ProgmanState.EyeContact;
-            noise.play();
+            
             
             if(oldState != ProgmanState.EyeContact)
             {
