@@ -52,6 +52,7 @@ import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CrossHatchFilter;
 import com.jme3.terrain.geomipmap.TerrainGridLodControl;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
+import com.jme3.ui.Picture;
 import ctrl.PostFogFilter;
 import model.Rain;
 
@@ -211,7 +212,7 @@ public class Main extends SimpleApplication{
         System.out.println("10 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         bookManager.itemsCollected = 0;
-        progman = new Progman(rootNode,assetManager, cam ,forest); //extrem aufwendig
+        progman = new Progman(rootNode,guiNode, assetManager, cam ,forest); //extrem aufwendig
         progman.setAudio_progman(audio_progman);
         progman.setAudio_progman2(audio_progman2);
         System.out.println("11 "+(System.currentTimeMillis()-time));
@@ -254,7 +255,6 @@ public class Main extends SimpleApplication{
     public void simpleUpdate(float tpf) {
         Long t = System.currentTimeMillis();
         
-        
         position = cam.getLocation();
         System.out.println(position);
       
@@ -273,6 +273,7 @@ public class Main extends SimpleApplication{
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         fadeHUD(tpf, fadetime);
         //System.out.println(System.currentTimeMillis()-t);
+        
     }
    
     @Override
@@ -423,15 +424,16 @@ public class Main extends SimpleApplication{
     private ActionListener actionListener = new ActionListener(){
         public void onAction(String name, boolean isPressed, float tpf) {
             if(name.equals("Pause") && isPressed){
+                /*pState = new PauseState(flyCam, stateManager, assetManager, inputManager, audioRenderer, guiViewPort);
+                stateManager.attach(pState); */
+                Picture gameOver = new Picture("gameover");
+                gameOver.setImage(assetManager, "Textures/gameover.png", true);
+                gameOver.setWidth(200);
+                gameOver.setHeight(200);
+                gameOver.setPosition(settings.getWidth()/2, settings.getHeight()/2);
+                guiNode.attachChild(gameOver);
                 
-                
-                
-                        pState = new PauseState(flyCam, stateManager, assetManager, inputManager, audioRenderer, guiViewPort);
-                        isRunning = false; // Continue or Pause game
-                        stateManager.attach(pState);
-                
-                
-                
+
               }
             if(name.equals("Move") && isPressed == false){
                 audio_fast_breathing.stop();
@@ -557,7 +559,8 @@ public class Main extends SimpleApplication{
         final float worldSize = 125f;
         
         
-        Box box = new Box(2.5f,3.0f,0.25f);
+        
+        Box box = new Box(2.5f,5.0f,0.25f);
         Material mat_brick = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_brick.setTexture("ColorMap",assetManager.loadTexture("Textures/Terrain/BrickWall/BrickWall.jpg"));
         

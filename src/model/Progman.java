@@ -33,6 +33,7 @@ public class Progman {
     public int moveTimeMs = 10000; // Alle 10 Sec neue Position, abnehmend!
     public float appearanceAngle = 0;
     public Node rootNode;
+    public Node guiNode;
     public Camera cam;
     public boolean shocking = false;
     public boolean catching = false;
@@ -76,10 +77,11 @@ public class Progman {
     boolean movingAllowed = false;
     
     
-    public Progman(Node rN,AssetManager assetManager, Camera c, Forest f){
+    public Progman(Node rN, Node gN, AssetManager assetManager, Camera c, Forest f){
         /*
          * Instanzvariablen werden gesetzt
          */  
+        guiNode = gN;
         rootNode = rN;
         forest = f;
         spatial = assetManager.loadModel("Models/progman/real_progman.j3o");
@@ -160,9 +162,9 @@ public class Progman {
             STATE = ProgmanState.catching;
         else if(checkEyeContact(position))
         {
-                        
             STATE = ProgmanState.EyeContact;
             noise.play();
+            
             if(oldState != ProgmanState.EyeContact)
             {
                     old_dist = movingDistance;
