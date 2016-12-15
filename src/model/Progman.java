@@ -113,7 +113,10 @@ public class Progman {
         
         float t = (float) (time - startTime);
         if(!movingAllowed&&t > 50000)
+        {
             movingAllowed=true;
+            System.out.println("allowed");
+        }
         if (movingAllowed && t > moveTimeMs){
           startTime = System.currentTimeMillis();
           status = true;
@@ -220,7 +223,7 @@ public class Progman {
                     meanZ += i; 
                 meanZ /= averageZ.length;
                 meanX /= averageX.length;
-                if(Math.abs(meanX) >= 2.0 || Math.abs(meanZ) >= 2.0) //shocking wird aktiviert, wenn der Spieler einmal losgelaufen ist
+                if(movingAllowed&&(Math.abs(meanX) >= 2.0 || Math.abs(meanZ) >= 2.0)) //shocking wird aktiviert, wenn der Spieler einmal losgelaufen ist
                     shock_enabled = true;
             }
             if(averageZ_counter >= averageZ.length)

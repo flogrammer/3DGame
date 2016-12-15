@@ -48,8 +48,10 @@ import view.GameOverState;
 import view.MenuState;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CrossHatchFilter;
+import com.jme3.terrain.Terrain;
 import com.jme3.terrain.geomipmap.TerrainGridLodControl;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
+import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
 import com.jme3.ui.Picture;
 import ctrl.PostFogFilter;
 import model.Rain;
@@ -649,7 +651,20 @@ public class Main extends SimpleApplication{
         for(Spatial s : liste)
         {
             if(s instanceof AssetLinkNode)
+            {
+                System.out.println(s + "V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
                 forest.addObject(s.getWorldBound());
+            }
+            else if(s instanceof Terrain)
+            {
+                System.out.println(s +  " V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
+                Terrain t = (Terrain) s;
+                TerrainLodControl control =  new TerrainLodControl(t, cam);
+                control.setLodCalculator( new DistanceLodCalculator(20, 0.5f) );
+
+                s.addControl(control);
+                System.out.println(s +  " V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
+            }
         }
         
         
@@ -661,6 +676,9 @@ public class Main extends SimpleApplication{
         bulletAppState.getPhysicsSpace().add(groundControl);
     
         rootNode.attachChild(scenefile);
+        
+        
+        
   }   
     
     public void initAudio(){
@@ -774,7 +792,7 @@ public class Main extends SimpleApplication{
        houseControl.setPhysicsLocation(new Vector3f(10, 0, 10));
        
        forest.addObject(house.getWorldBound());
-       rootNode.attachChild(house);
+       //rootNode.attachChild(house);
 
     }
     
