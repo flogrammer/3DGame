@@ -64,7 +64,7 @@ public class BookManager extends Node{
             attachChild(books[i].spatial);
             System.out.println(pos);
             
-            
+          /*  
             
             
             SpotLight itemShine = new SpotLight();
@@ -74,7 +74,7 @@ public class BookManager extends Node{
             itemShine.setPosition(books[i].spatial.getLocalTranslation());
             itemShine.setSpotInnerAngle(0.5f);
             itemShine.setSpotInnerAngle(3f);
-            addLight(itemShine);
+            addLight(itemShine);*/
        }
       
     }

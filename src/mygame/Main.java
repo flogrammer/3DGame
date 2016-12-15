@@ -54,6 +54,7 @@ import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
 import com.jme3.ui.Picture;
 import ctrl.PostFogFilter;
+import jme3tools.optimize.LodGenerator;
 import model.Rain;
 
 /**
@@ -531,10 +532,14 @@ public class Main extends SimpleApplication{
    
     public void fadeHUD(float tpf, float fadeTime){
          if (startTime == 0)
+         {
              return;
+         }
          long time = System.currentTimeMillis();
          float t = ((float) (time - startTime))/fadeTime;
          if(t > 1){
+            color.a = 0;
+            textField.setColor(color);
              startTime = 0;
              return;
          }
@@ -657,18 +662,22 @@ public class Main extends SimpleApplication{
             }
             else if(s instanceof Terrain)
             {
+                
+                
                 System.out.println(s +  " V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
                 Terrain t = (Terrain) s;
                 TerrainLodControl control =  new TerrainLodControl(t, cam);
-                control.setLodCalculator( new DistanceLodCalculator(20, 0.5f) );
+                control.setLodCalculator( new DistanceLodCalculator(10, 0.1f) );
 
                 s.addControl(control);
+                
+      
+                
                 System.out.println(s +  " V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
             }
         }
         
         
-        rootNode.attachChild(scenefile);
         
         CollisionShape groundShape = CollisionShapeFactory.createMeshShape((Node) scenefile);
         
@@ -792,7 +801,7 @@ public class Main extends SimpleApplication{
        houseControl.setPhysicsLocation(new Vector3f(10, 0, 10));
        
        forest.addObject(house.getWorldBound());
-       //rootNode.attachChild(house);
+       rootNode.attachChild(house);
 
     }
     

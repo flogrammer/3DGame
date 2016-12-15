@@ -42,7 +42,7 @@ public class Progman {
     public boolean shocking = false;
     public boolean catching = false;
     Forest forest = null;
-    public ProgmanState STATE = ProgmanState.moving;
+    private ProgmanState STATE = ProgmanState.moving;
     public final float SHOCKING_DISTANCE = 25;
     
     
@@ -165,12 +165,12 @@ public class Progman {
                 
                 
                 STATE = ProgmanState.catched;
-                Picture gameOver = new Picture("gameover");
+              /*  Picture gameOver = new Picture("gameover");
                 gameOver.setImage(assetManager, "Textures/gameover.png", true);
                 gameOver.setWidth(settings.getWidth());
                 gameOver.setHeight(settings.getHeight());
                 gameOver.setPosition(0,0);
-                guiNode.attachChild(gameOver);
+                guiNode.attachChild(gameOver);*/
         }
         else if(dist < 15)
             STATE = ProgmanState.catching;
@@ -284,7 +284,12 @@ public class Progman {
     
     public boolean updateProgman(Vector3f position,boolean lightActivated, float collectedItems ){
         
-        float dist = progman_pos.distance(position);
+        Vector3f progman_pos_2 = progman_pos.clone();
+        progman_pos_2.y = 0;
+        Vector3f position_2 = position.clone();
+        position_2.y = 0;
+        float dist = progman_pos_2.distance(position_2);
+        
         playMusic(dist);
         checkShocking(position);
         updateSTATE(position);
@@ -297,7 +302,8 @@ public class Progman {
         }
         else if(STATE == ProgmanState.catching)
         {
-            moved = true;
+            /*
+             * moved = true;
             Vector3f diff = position.subtract(progman_pos).clone();
             diff.y = 0;
             float length = diff.length();
@@ -305,6 +311,17 @@ public class Progman {
             diff = diff.normalize();
             diff = diff.mult(length);
             progman_pos = progman_pos.add(diff);
+             */
+            moved = true;
+            Vector3f v = cam.getDirection().clone();//position.subtract(progman_pos).clone();
+            v.y = 0;
+            float length = dist;
+            length = length-0.1f;
+            Vector3f newPosition = position.add(v.normalize().mult(length));
+            newPosition.y = progman_pos.y;
+            //System.out.println(position + " " + progman_pos + " " + dist + " " + length + "  " + v);
+            
+            progman_pos = newPosition.clone();
         }
         else if(STATE == ProgmanState.shocking)
         {
@@ -378,7 +395,7 @@ public class Progman {
         }
         if(moved && forest.checkCollision(progman_pos))
         {
-            float randomFactor = 1.0f;
+            float randomFactor = 0.1f;
             int counter = 0;
             Vector3f p = progman_pos.clone();
             do
@@ -397,8 +414,8 @@ public class Progman {
                     p.z = 126;
                 else if(p.z < -126)
                     p.z = -126;
-                randomFactor += 1.0f;
-            }while(forest.checkCollision(p) & counter++ < 30);
+                randomFactor += 0.1f;
+            }while(forest.checkCollision(p) & counter++ < 300);
             progman_pos = p; 
         }
             
