@@ -917,7 +917,7 @@ public class Main extends SimpleApplication{
     public void makeFire(){
         ParticleEmitter fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
         Material fireMat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
-        fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
+        //fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
         fireEffect.setMaterial(fireMat);
         fireEffect.setImagesX(2); fireEffect.setImagesY(2); // 2x2 texture animation
         fireEffect.setEndColor( new ColorRGBA(1f, 0f, 0f, 1f) );   // red
