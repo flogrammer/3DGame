@@ -153,7 +153,6 @@ public class Main extends SimpleApplication{
         
         AppSettings aS = new AppSettings(true);
         aS.setSettingsDialogImage("Models/Images/progman.png");
-        
         Main app = new Main();
         app.setSettings(aS);
         app.start();
@@ -161,6 +160,7 @@ public class Main extends SimpleApplication{
  
     @Override
     public void simpleInitApp() {
+                
         isRunning = true;
         isWalking = false;
         anyKeyPressed = false;
@@ -227,7 +227,7 @@ public class Main extends SimpleApplication{
         System.out.println("13 "+(System.currentTimeMillis()-time));
         
         
-        setDisplayStatView(false);
+        setDisplayStatView(true);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 400f); // Camera nur bis 100 meter
         showHUD("Finde die 9 Bücher bevor deine Zeit abläuft...");

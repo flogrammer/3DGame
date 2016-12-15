@@ -165,12 +165,12 @@ public class Progman {
                 
                 
                 STATE = ProgmanState.catched;
-              /*  Picture gameOver = new Picture("gameover");
+                Picture gameOver = new Picture("gameover");
                 gameOver.setImage(assetManager, "Textures/gameover.png", true);
                 gameOver.setWidth(settings.getWidth());
                 gameOver.setHeight(settings.getHeight());
                 gameOver.setPosition(0,0);
-                guiNode.attachChild(gameOver);*/
+                guiNode.attachChild(gameOver);
         }
         else if(dist < 15)
             STATE = ProgmanState.catching;
