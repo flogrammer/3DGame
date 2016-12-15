@@ -6,7 +6,6 @@ import com.jme3.effect.shapes.EmitterSphereShape;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.effect.ParticleMesh.Type;
 import com.jme3.material.Material;
-import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Plane;
 import com.jme3.math.Ray;
@@ -45,26 +44,26 @@ attachChild(points);
 
 public void applyParameters(int weather) {
 
-    points = new ParticleEmitter("rainPoints", Type.Triangle, 1000*weather);
-    points.setShape(new EmitterSphereShape(Vector3f.ZERO, 1000f)); // TODO: Get Distance of field
+    points = new ParticleEmitter("rainPoints", Type.Triangle, 800*weather);
+    points.setShape(new EmitterSphereShape(Vector3f.ZERO, 600f)); // TODO: Get Distance of field
     points.setLocalTranslation(new Vector3f(0f, 0f, 0f));
     points.setImagesX(1);
     points.setImagesY(1);
-    points.setGravity(new Vector3f(0,2000f*weather,0));
+    points.setGravity(new Vector3f(0,100f*weather,0));
     // points.setLowLife(1626.0f);
-    points.setLowLife(0.5f);
-    points.setHighLife(8f);
-    points.setStartSize(1.3f);
-    points.setEndSize(0.8f);
-    points.setStartColor(new ColorRGBA((float)(70/255),(float)(130/255),(float)180/255, 1f));
-    points.setEndColor(new ColorRGBA(ColorRGBA.Gray));
+    points.setLowLife(1f);
+    points.setHighLife(3f);
+    points.setStartSize(0.9f);
+    points.setEndSize(0.6f);
+    points.setStartColor(new ColorRGBA((float)(25/255),(float)(25/255),(float)112/255, 1f));
+    points.setEndColor(new ColorRGBA((float)(25/255),(float)(25/255),(float)112/255, 1f));
     points.setFacingVelocity(true);
     points.setParticlesPerSec(10000*weather);
     points.setShadowMode(ShadowMode.Receive);
     Material mat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
     mat.setTexture("Texture", assetManager.loadTexture("Textures/Rain/raindrop.png"));
     points.setMaterial(mat);
-    points.setQueueBucket(Bucket.Inherit);
+    points.setQueueBucket(Bucket.Transparent);
     points.updateLogicalState(0);
     points.updateGeometricState();
 

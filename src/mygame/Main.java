@@ -223,6 +223,7 @@ public class Main extends SimpleApplication{
         time = System.currentTimeMillis();
         
         createFog();
+        makeItRain();
         makeFire();
         System.out.println("13 "+(System.currentTimeMillis()-time));
         
@@ -248,7 +249,7 @@ public class Main extends SimpleApplication{
         filter.setLineDistance(1.0f);
         filter.setLineThickness(4.0f);
         
-        makeItRain();
+        
         
     }
     
@@ -882,7 +883,7 @@ public class Main extends SimpleApplication{
     public void initAmbientLight(){
         AmbientLight al = new AmbientLight();
         AmbientLight al2 = new AmbientLight();
-        al.setColor(ColorRGBA.White.mult(0.3f));
+        al.setColor(ColorRGBA.White.mult(0.1f));
         al2.setColor(ColorRGBA.Blue.mult(0.1f));
 
         
