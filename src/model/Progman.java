@@ -161,18 +161,11 @@ public class Progman {
         ProgmanState oldState = STATE;
         float dist = progman_pos.distance(position);
         if(dist < 6){
-                noise.play();
                 
                 
                 STATE = ProgmanState.catched;
-                Picture gameOver = new Picture("gameover");
-                gameOver.setImage(assetManager, "Textures/gameover.png", true);
-                gameOver.setWidth(settings.getWidth());
-                gameOver.setHeight(settings.getHeight());
-                gameOver.setPosition(0,0);
-                guiNode.attachChild(gameOver);
         }
-        else if(dist < 15)
+        else if(dist < 18)
             STATE = ProgmanState.catching;
         else if(checkEyeContact(position))
         {
@@ -298,6 +291,14 @@ public class Progman {
         
         if(STATE == ProgmanState.catched)
         {
+            noise.play();
+            Picture gameOver = new Picture("gameover");
+            gameOver.setImage(assetManager, "Textures/gameover.png", true);
+            gameOver.setWidth(settings.getWidth());
+            gameOver.setHeight(settings.getHeight());
+            gameOver.setPosition(0,0);
+            guiNode.attachChild(gameOver);
+            
             return true;
         }
         else if(STATE == ProgmanState.catching)
