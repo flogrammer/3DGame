@@ -78,6 +78,9 @@ public class Main extends SimpleApplication{
     float outerRange = 50f;
     long fadetime = 5000;
     float fogDensity = 1.8f;
+    int initiationCounter = 0;
+    
+    
     
     final int MOVEMENTSPEED = 5;
     final int JUMPFACTOR = 50;
@@ -112,6 +115,7 @@ public class Main extends SimpleApplication{
     
     // Labels & Textfields
     BitmapText textField;
+    Picture loadingScreen;
             
     // Stuff for Collision detection
     private Vector3f camDir = new Vector3f();
@@ -150,100 +154,24 @@ public class Main extends SimpleApplication{
  
     @Override
     public void simpleInitApp() {
-                
-        isRunning = true;
-        isWalking = false;
-        anyKeyPressed = false;
-        camera = viewPort.getCamera();
-        startTime = 0;
-        
-        // Physics and Collision
-        bulletAppState = new BulletAppState();
-        stateManager.attach(bulletAppState);
-        //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
-        
-        
-        // Init functionalities
-        Long time = System.currentTimeMillis();
-        initListeners();
-        System.out.println("0 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        initAudio();
-        
-        System.out.println("1 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        initPlayerPhysics();
-        System.out.println("2 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        initFlashlight();
-        System.out.println("3 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        initAmbientLight();
-        System.out.println("4 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-
-        // Init Geometries
-        forest = new Forest(rootNode, assetManager,bulletAppState);
-   
-        System.out.println("5 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        initGround(); //extrem aufwendig
-        System.out.println("6 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        initHouses();
-        System.out.println("7 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        forest.initForest(); //extrem aufwendig
-        System.out.println("8 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        initSky();
-        System.out.println("9 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        initItems(); //relativ aufwendig
-        System.out.println("10 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        bookManager.itemsCollected = 0;
-        progman = new Progman(rootNode,guiNode, settings, assetManager, cam ,forest); //extrem aufwendig
-        progman.setAudio_progman(audioManager.audio_progman);
-        progman.setAudio_progman2(audioManager.audio_progman2);
-        System.out.println("11 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        initHUD();
-        System.out.println("12 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-        
-        createFog();
-        //makeItRain();
-        makeFire();
-        System.out.println("13 "+(System.currentTimeMillis()-time));
-        
-        
-        setDisplayStatView(true);
-        flyCam.setMoveSpeed(MOVEMENTSPEED);
-        camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 400f); // Camera nur bis 100 meter
-        showHUD("Finde die 9 Bücher bevor deine Zeit abläuft...");
-        
-        
-        //create Filter
-        FilterPostProcessor processor = (FilterPostProcessor) assetManager.loadAsset("Filters/noise.j3f");
-        viewPort.addProcessor(processor);
-        
-        //set Filter params
-        filter = processor.getFilter(CrossHatchFilter.class);
-        progman.setFilter(filter);
-        filter.setEnabled(true);
-        filter.setColorInfluenceLine(0.8f);
-        filter.setColorInfluencePaper(0.1f);
-        filter.setFillValue(0.1f);
-        filter.setLineDistance(1.0f);
-        filter.setLineThickness(4.0f);
-        
-        
-        
+        // Hinweis: Weil keine Menuführung vorhanden, init in update verschoben!
+        loadingScreen = new Picture("gameover");
+        loadingScreen.setImage(assetManager, "Textures/progman.jpg", true);
+        loadingScreen.setWidth(settings.getWidth());
+        loadingScreen.setHeight(settings.getHeight());
+        loadingScreen.setPosition(0,0);
+        guiNode.attachChild(loadingScreen); 
     }
     
     @Override
-    public void simpleUpdate(float tpf) {
+    public void simpleUpdate(float tpf) {  
+        if (initiationCounter == 1){
+           initiateGame();
+           guiNode.detachChild(loadingScreen);
+        }
+        initiationCounter++;
+        
+        
         if (isRunning){
         position = cam.getLocation();
      
@@ -331,17 +259,12 @@ public class Main extends SimpleApplication{
         
         spot.setPosition(cam.getLocation());               
         spot.setDirection(cam.getDirection());
-        
-        
-        
+
         // Intensity of light
         float t = batteryStatus/fullBattery;
                
         spot.setSpotRange(outerRange*t); 
-        
         // Also: Make fog darker
-        
-       
     }
     
     public void updateItemCollision(float tpf){
@@ -569,6 +492,96 @@ public class Main extends SimpleApplication{
        
      // _________________INIT METHODS_______________________
     
+    
+    public void initiateGame(){
+                
+        isRunning = true;
+        isWalking = false;
+        anyKeyPressed = false;
+        camera = viewPort.getCamera();
+        startTime = 0;
+        
+        // Physics and Collision
+        bulletAppState = new BulletAppState();
+        stateManager.attach(bulletAppState);
+        //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+        
+        
+        // Init functionalities
+        Long time = System.currentTimeMillis();
+        initListeners();
+        System.out.println("0 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initAudio();
+        
+        System.out.println("1 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initPlayerPhysics();
+        System.out.println("2 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initFlashlight();
+        System.out.println("3 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initAmbientLight();
+        System.out.println("4 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+
+        // Init Geometries
+        forest = new Forest(rootNode, assetManager,bulletAppState);
+   
+        System.out.println("5 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initGround(); //extrem aufwendig
+        System.out.println("6 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initHouses();
+        System.out.println("7 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        forest.initForest(); //extrem aufwendig
+        System.out.println("8 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initSky();
+        System.out.println("9 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initItems(); //relativ aufwendig
+        System.out.println("10 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        bookManager.itemsCollected = 0;
+        progman = new Progman(rootNode,guiNode, settings, assetManager, cam ,forest); //extrem aufwendig
+        progman.setAudio_progman(audioManager.audio_progman);
+        progman.setAudio_progman2(audioManager.audio_progman2);
+        System.out.println("11 "+(System.currentTimeMillis()-time));
+        time = System.currentTimeMillis();
+        initHUD();
+
+                       
+        createFog();
+        //makeItRain();
+        makeFire();
+        System.out.println("13 "+(System.currentTimeMillis()-time));
+        
+        
+        setDisplayStatView(true);
+        flyCam.setMoveSpeed(MOVEMENTSPEED);
+        camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 400f); // Camera nur bis 100 meter
+        showHUD("Finde die 9 Bücher bevor deine Zeit abläuft...");
+        
+        
+        //create Filter
+        FilterPostProcessor processor = (FilterPostProcessor) assetManager.loadAsset("Filters/noise.j3f");
+        viewPort.addProcessor(processor);
+        
+        //set Filter params
+        filter = processor.getFilter(CrossHatchFilter.class);
+        progman.setFilter(filter);
+        filter.setEnabled(true);
+        filter.setColorInfluenceLine(0.8f);
+        filter.setColorInfluencePaper(0.1f);
+        filter.setFillValue(0.1f);
+        filter.setLineDistance(1.0f);
+        filter.setLineThickness(4.0f);
+       
+    }
     
     protected void initGround() {       
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
