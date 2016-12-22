@@ -53,6 +53,7 @@ import com.jme3.terrain.geomipmap.TerrainGridLodControl;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
 import com.jme3.ui.Picture;
+import ctrl.AudioManager;
 import ctrl.PostFogFilter;
 import jme3tools.optimize.LodGenerator;
 import model.Rain;
@@ -67,6 +68,7 @@ public class Main extends SimpleApplication{
     boolean isWalkingFast;
     boolean anyKeyPressed;
     boolean lightActivated = false;
+    boolean campfireSigh = false;
     
     long startTime;
     float runFactor = 0.1f;
@@ -99,19 +101,7 @@ public class Main extends SimpleApplication{
     Spatial house;
     
     // Sounds and Audio
-    private AudioNode audio_theme;
-    private AudioNode audio_nature;
-    private AudioNode audio_foodsteps;
-    private AudioNode audio_breathing;
-    private AudioNode audio_fast_breathing;
-    private AudioNode audio_jump;
-    private AudioNode audio_flash_on;
-    private AudioNode audio_flash_off;
-    private AudioNode audio_flash_empty;
-    private AudioNode audio_item_collected;
-    private AudioNode audio_progman;
-    private AudioNode audio_progman2;
-    private AudioNode audio_rain;
+    AudioManager audioManager;
     private boolean gameOver = false;
 
     
@@ -134,7 +124,7 @@ public class Main extends SimpleApplication{
     RigidBodyControl physicsNode;
     RigidBodyControl progControl;
     RigidBodyControl flashControl;
-
+    ParticleEmitter fireEffect;
     
     // Geometries
     Forest forest = null;
@@ -214,8 +204,8 @@ public class Main extends SimpleApplication{
         time = System.currentTimeMillis();
         bookManager.itemsCollected = 0;
         progman = new Progman(rootNode,guiNode, settings, assetManager, cam ,forest); //extrem aufwendig
-        progman.setAudio_progman(audio_progman);
-        progman.setAudio_progman2(audio_progman2);
+        progman.setAudio_progman(audioManager.audio_progman);
+        progman.setAudio_progman2(audioManager.audio_progman2);
         System.out.println("11 "+(System.currentTimeMillis()-time));
         time = System.currentTimeMillis();
         initHUD();
@@ -223,7 +213,7 @@ public class Main extends SimpleApplication{
         time = System.currentTimeMillis();
         
         createFog();
-        makeItRain();
+        //makeItRain();
         makeFire();
         System.out.println("13 "+(System.currentTimeMillis()-time));
         
@@ -242,7 +232,6 @@ public class Main extends SimpleApplication{
         filter = processor.getFilter(CrossHatchFilter.class);
         progman.setFilter(filter);
         filter.setEnabled(true);
-
         filter.setColorInfluenceLine(0.8f);
         filter.setColorInfluencePaper(0.1f);
         filter.setFillValue(0.1f);
@@ -264,6 +253,7 @@ public class Main extends SimpleApplication{
         updateFlashlight();
         updateItems();
         updateItemCollision(tpf);
+        updateCampfireSound();
         updatePhysics();
         
         if (lightActivated)
@@ -375,46 +365,71 @@ public class Main extends SimpleApplication{
 
     }
     
+    public void updateCampfireSound(){
+        Vector3f firePos = fireEffect.getLocalTranslation();
+        float distance = getDistance(firePos, position);
+        if (distance < 29){
+            audioManager.audio_campfire.play();
+            audioManager.audio_campfire.setVolume((float)(0.3 * (1 - (distance/29))));
+            if (distance < 2 && campfireSigh==false){
+                audioManager.audio_sigh.play();
+                campfireSigh = true;
+            }else{
+                campfireSigh = false;
+            }
+        }
+        else{
+            audioManager.audio_campfire.stop();
+            
+        }
+    }
+    
+        public float getDistance(Vector3f item, Vector3f player){
+        // Euklidsche Distanz
+        float distance = 1000f; // Where the hell is infinty?     
+        distance = (float) Math.sqrt(Math.pow(item.x-player.x, 2) + Math.pow(item.z-player.z, 2));
+        return distance;
+    }
     
     
     // ___________________LISTENERS____________________
     private AnalogListener analogListener = new AnalogListener(){
         public void onAnalog(String name, float value, float tpf) {
             // Wird überschrieben falls er rennt
-                audio_foodsteps.setPitch(1f);
-                audio_foodsteps.setReverbEnabled(false);
+                audioManager.audio_foodsteps.setPitch(1f);
+                audioManager.audio_foodsteps.setReverbEnabled(false);
             
                if (name.equals("Move") && isRunning == true){
                    runFactor = 0.1f;
                    isWalking = true;
-                   audio_foodsteps.play();
-                   audio_breathing.play();
+                   audioManager.audio_foodsteps.play();
+                   audioManager.audio_breathing.play();
                }
                if (name.equals("Left") && isRunning == true){ 
                    runFactor = 0.05f;
                    isWalking = true;
-                   audio_foodsteps.play();
+                   audioManager.audio_foodsteps.play();
                }
                if (name.equals("Back") && isRunning == true){
                    runFactor = 0.1f;
                    isWalking = true;
-                   audio_foodsteps.play();
+                   audioManager.audio_foodsteps.play();
                }
                if (name.equals("Right") && isRunning == true){
                    runFactor = 0.05f;
                    isWalking = true;
-                   audio_foodsteps.play();
+                   audioManager.audio_foodsteps.play();
                } 
                if (name.equals("Run") && isRunning == true){
                    runFactor = 0.2f; // Double the speed
                    isWalkingFast = true;
                    
-                   audio_breathing.stop();
-                   audio_fast_breathing.play();
+                   audioManager.audio_breathing.stop();
+                   audioManager.audio_fast_breathing.play();
                    
-                   audio_foodsteps.setPitch(2.0f);
-                   audio_foodsteps.setReverbEnabled(true);
-                   audio_foodsteps.play();  
+                   audioManager.audio_foodsteps.setPitch(2.0f);
+                   audioManager.audio_foodsteps.setReverbEnabled(true);
+                   audioManager.audio_foodsteps.play();  
                }
                
         }   
@@ -428,32 +443,32 @@ public class Main extends SimpleApplication{
 
               }
             if(name.equals("Move") && isPressed == false){
-                audio_fast_breathing.stop();
-                audio_foodsteps.stop();
-                audio_breathing.stop();
+                audioManager.audio_fast_breathing.stop();
+                audioManager.audio_foodsteps.stop();
+                audioManager.audio_breathing.stop();
             } 
             if(name.equals("Jump") && isPressed == true){
-                audio_fast_breathing.stop();
-                audio_foodsteps.stop();
-                audio_breathing.stop();
+                audioManager.audio_fast_breathing.stop();
+                audioManager.audio_foodsteps.stop();
+                audioManager.audio_breathing.stop();
                 player.jump();
-                audio_jump.play();
+                audioManager.audio_jump.play();
             } 
             if(name.equals("Light") && isPressed == true){
                 if(!lightActivated){
                     if(batteryStatus > 0){
-                        audio_flash_on.play();
+                        audioManager.audio_flash_on.play();
                         rootNode.addLight(spot);
                         rootNode.attachChild(flash);
                         lightActivated = true;
                     }else{
-                        audio_flash_empty.play();
+                        audioManager.audio_flash_empty.play();
                     }
                 
                 }
                 
                 else{
-                audio_flash_off.play();
+                audioManager.audio_flash_off.play();
                 rootNode.removeLight(spot);
                 rootNode.detachChild(flash);
                 lightActivated = false;
@@ -482,7 +497,7 @@ public class Main extends SimpleApplication{
                  bookManager.detachChild(bookManager.books[index].spatial);
                  bookManager.itemsCollected++;
                  bookManager.books[index].spatial.setUserData("status", true);
-                 audio_item_collected.play();
+                 audioManager.audio_item_collected.play();
                  showHUD();
                  }
              }
@@ -497,8 +512,11 @@ public class Main extends SimpleApplication{
    
     public void foodstepsCheck(){
         if (isWalking == false){
-            audio_foodsteps.stop();
-        }   
+            audioManager.audio_foodsteps.stop();
+        }  
+        if (isWalkingFast == false){
+            audioManager.audio_fast_breathing.stop();
+        } 
     }
 
     public void showHUD(){
@@ -514,12 +532,12 @@ public class Main extends SimpleApplication{
                 guiNode.attachChild(gameOver);
                 
                 // Detach all sounds
-                audio_nature.stop();
-                audio_rain.stop();
+                audioManager.audio_nature.stop();
+                audioManager.audio_breathing.stop();
                 // Stop game
                 isRunning = false;
                 // Theme melody
-                audio_theme.play();
+                audioManager.audio_theme.play();
         }
         textField.setAlignment(BitmapFont.Align.Center);
         guiNode.attachChild(textField);
@@ -554,15 +572,7 @@ public class Main extends SimpleApplication{
      // _________________INIT METHODS_______________________
     
     
-    protected void initGround() {
-        /*
-         Spatil terrain = assetManager.loadModel("Scenes/Terrain.j3o");
-         TerrainLodControl lodControl = terrain.getChild("terrain-Scene").getControl(TerrainLodControl.class);
-         lodControl.setCamera(getCamera());
-         LodGenerator lod = new LodGenerator(terrain);
-         lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL,0.5f);
-         */
-        
+    protected void initGround() {       
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
         /*
         Box box = new Box(2.5f,5.0f,0.25f);
@@ -692,89 +702,7 @@ public class Main extends SimpleApplication{
   }   
     
     public void initAudio(){
-        // Background audio
-       audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
-       audio_theme.setPositional(false);
-       audio_theme.setLooping(false);
-       audio_theme.setVolume(0.2f);
-       
-       rootNode.attachChild(audio_theme);
-       audio_theme.play();
-       
-       // Sound FX  
-       audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
-       audio_foodsteps.setPositional(false);
-       audio_foodsteps.setLooping(true);
-       audio_foodsteps.setVolume(0.3f);
-       rootNode.attachChild(audio_foodsteps);
-       
-       audio_breathing = new AudioNode(assetManager, "Sounds/soundFX/breathing.wav", false);
-       audio_breathing.setPositional(false);
-       audio_breathing.setLooping(true);
-       audio_breathing.setVolume(0.3f);
-       rootNode.attachChild(audio_breathing);
-       
-       audio_fast_breathing = new AudioNode(assetManager, "Sounds/soundFX/fast_breath.wav", false);
-       audio_fast_breathing.setPositional(false);
-       audio_fast_breathing.setLooping(true);
-       audio_fast_breathing.setVolume(0.04f);
-       rootNode.attachChild(audio_fast_breathing);
-       
-       audio_jump = new AudioNode(assetManager, "Sounds/soundFX/sigh.wav", false);
-       audio_jump.setPositional(false);
-       audio_jump.setLooping(false);
-       audio_jump.setVolume(0.2f);
-       rootNode.attachChild(audio_jump);
-       
-       audio_flash_on = new AudioNode(assetManager, "Sounds/soundFX/flash_on.wav", false);
-       audio_flash_on.setPositional(false);
-       audio_flash_on.setLooping(false);
-       audio_flash_on.setVolume(0.2f);
-       rootNode.attachChild(audio_flash_on);
-       
-       audio_flash_off = new AudioNode(assetManager, "Sounds/soundFX/flash_off.wav", false);
-       audio_flash_off.setPositional(false);
-       audio_flash_off.setLooping(false);
-       audio_flash_off.setVolume(0.2f);
-       rootNode.attachChild(audio_flash_off);
-       
-       audio_nature = new AudioNode(assetManager, "Sounds/soundFX/thunder2.wav", false);
-       audio_nature.setPositional(false);
-       audio_nature.setLooping(true);
-       audio_nature.setVolume(0.06f);
-       rootNode.attachChild(audio_nature);
-       audio_nature.play();
-       
-       audio_flash_empty = new AudioNode(assetManager, "Sounds/soundFX/flashEmpty.wav", false);
-       audio_flash_empty.setPositional(false);
-       audio_flash_empty.setLooping(false);
-       audio_flash_empty.setVolume(0.1f);
-       rootNode.attachChild(audio_flash_empty);
-       
-       audio_item_collected = new AudioNode(assetManager, "Sounds/soundFX/item_collected.wav", false);
-       audio_item_collected.setPositional(false);
-       audio_item_collected.setLooping(false);
-       audio_item_collected.setVolume(0.1f);
-       rootNode.attachChild(audio_item_collected);
- 
-       audio_progman = new AudioNode(assetManager, "Sounds/soundFX/progman_sound.wav", false);
-       audio_progman.setPositional(false);
-       audio_progman.setLooping(true);
-       audio_progman.setVolume(0.1f);
-       rootNode.attachChild(audio_progman);
-       
-       audio_progman2 = new AudioNode(assetManager, "Sounds/soundFX/progman_sound2.wav", false);
-       audio_progman2.setPositional(false);
-       audio_progman2.setLooping(true);
-       audio_progman2.setVolume(0.1f);
-       rootNode.attachChild(audio_progman2);
-       
-       audio_rain = new AudioNode(assetManager, "Sounds/rain.wav", false);
-       audio_rain.setPositional(false);
-       audio_rain.setLooping(true);
-       audio_rain.setVolume(0.03f);
-       rootNode.attachChild(audio_rain);
-       audio_rain.play();
+       audioManager = new AudioManager(rootNode, assetManager);       
     }
       
     public void initSky(){
@@ -865,16 +793,13 @@ public class Main extends SimpleApplication{
     {      
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
         flash.scale(2f);
-        
 
-        // Cone Light
-        
         spot = new SpotLight();
-        
         spot.setSpotRange(outerRange);                           // distance
         spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
         spot.setSpotOuterAngle(20f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
-        spot.setColor(new ColorRGBA((float) 1, 1, (float) 1, 1));         // light color
+        float yellow_intensity = (float) (150.0/255.0);
+        spot.setColor(new ColorRGBA((float) 1, 1, yellow_intensity, 1));         // light color
         spot.setPosition(flash.getLocalTranslation());               // shine from camera loc
         spot.setDirection(cam.getDirection());             // shine forward from camera loc
         
@@ -916,7 +841,7 @@ public class Main extends SimpleApplication{
     }
     
     public void makeFire(){
-        ParticleEmitter fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
+        fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
         Material fireMat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
         //fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
         fireEffect.setMaterial(fireMat);
@@ -935,7 +860,7 @@ public class Main extends SimpleApplication{
     }
     
     public void makeItRain(){
-        rain = new Rain(assetManager,cam,4); // Last param is the weather intensity
+        rain = new Rain(assetManager,cam,4, rootNode); // param is the weather intensity
         rootNode.attachChild(rain);
     }
     

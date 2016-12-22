@@ -15,8 +15,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 
 /**
@@ -27,9 +26,9 @@ public class Progman {
     public Vector3f progman_pos;
     public Spatial spatial;
     public final Vector3f PROGMAN_STARTPOSITION = new Vector3f(-50,0,-50);
-    public float progman_x = -50f;
+    public float progman_x = -200f; // Somewhere outside the place...
     public float progman_y = 0f;
-    public float progman_z = -50f;
+    public float progman_z = -200f;
     public float progman_max_speed = 0.02f;
     public long startTime;
     public int moveTimeMs = 10000; // Alle 10 Sec neue Position, abnehmend!
@@ -147,8 +146,8 @@ public class Progman {
     
     public void playMusic(float dist)
     {
-        if (dist < 30){
-           audio_progman.setVolume(1.8f*(1-(dist/30)));
+        if (dist < 50){
+           audio_progman.setVolume(2f*(1-(dist/50)));
            audio_progman.play();
           
         }else{

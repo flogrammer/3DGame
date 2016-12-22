@@ -2,6 +2,7 @@ package model;
 
 
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioNode;
 import com.jme3.effect.shapes.EmitterSphereShape;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.effect.ParticleMesh.Type;
@@ -23,20 +24,21 @@ public class Rain extends Node {
 
 private ParticleEmitter points;
 //private SimpleParticleInfluenceFactory.BasicGravity gravity;
-private Node _rootNode;
+private Node rootNode;
 private AssetManager assetManager;
 private Camera cam;
 private int height=10;
 
 
 
-public Rain(AssetManager assetManager,Camera cam, int weather) {
+public Rain(AssetManager assetManager,Camera cam, int weather, Node rootNode) {
 
-super("rain");
-this.assetManager=assetManager;
-this.cam=cam;
-applyParameters(weather);
-attachChild(points);
+    super("rain");
+    this.rootNode = rootNode;
+    this.assetManager=assetManager;
+    this.cam=cam;
+    applyParameters(weather);
+    attachChild(points);
 
 }
 
@@ -50,7 +52,6 @@ public void applyParameters(int weather) {
     points.setImagesX(1);
     points.setImagesY(1);
     points.setGravity(new Vector3f(0,100f*weather,0));
-    // points.setLowLife(1626.0f);
     points.setLowLife(1f);
     points.setHighLife(3f);
     points.setStartSize(0.9f);
@@ -66,6 +67,16 @@ public void applyParameters(int weather) {
     points.setQueueBucket(Bucket.Transparent);
     points.updateLogicalState(0);
     points.updateGeometricState();
+    
+    
+    // Audio
+    
+       AudioNode audio_rain = new AudioNode(assetManager, "Sounds/rain.wav", false);
+       audio_rain.setPositional(false);
+       audio_rain.setLooping(true);
+       audio_rain.setVolume(0.03f);
+       rootNode.attachChild(audio_rain);
+       //audio_rain.play();
 
 }
 
