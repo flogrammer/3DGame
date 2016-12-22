@@ -70,7 +70,7 @@ public class AudioManager {
        audio_fast_breathing = new AudioNode(assetManager, "Sounds/soundFX/fast_breath.wav", false);
        audio_fast_breathing.setPositional(false);
        audio_fast_breathing.setLooping(true);
-       audio_fast_breathing.setVolume(0.1f);
+       audio_fast_breathing.setVolume(0.08f);
        rootNode.attachChild(audio_fast_breathing);
        
        audio_jump = new AudioNode(assetManager, "Sounds/soundFX/sigh.wav", false);

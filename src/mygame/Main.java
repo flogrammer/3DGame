@@ -346,7 +346,6 @@ public class Main extends SimpleApplication{
     
     public void updateItemCollision(float tpf){
 
-               
         for (int i = 0; i < bookManager.books.length; i++){
         
             if(bookManager.books[i].spatial.getUserData("status").equals(false)){
@@ -360,7 +359,6 @@ public class Main extends SimpleApplication{
                 }
             }
 
-     
         }
 
     }
@@ -673,32 +671,20 @@ public class Main extends SimpleApplication{
             }
             else if(s instanceof Terrain)
             {
-                
-                
                 System.out.println(s +  " V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
                 Terrain t = (Terrain) s;
                 TerrainLodControl control =  new TerrainLodControl(t, cam);
                 control.setLodCalculator( new DistanceLodCalculator(10, 0.1f) );
-
                 s.addControl(control);
-                
-      
-                
                 System.out.println(s +  " V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
             }
         }
         
-        
-        
         CollisionShape groundShape = CollisionShapeFactory.createMeshShape((Node) scenefile);
-        
         RigidBodyControl groundControl = new RigidBodyControl(groundShape, 0);
         bulletAppState.getPhysicsSpace().add(groundControl);
     
         rootNode.attachChild(scenefile);
-        
-        
-        
   }   
     
     public void initAudio(){
@@ -719,16 +705,14 @@ public class Main extends SimpleApplication{
      
     public void initHouses(){
        house = assetManager.loadModel("Models/Houses/small_house.j3o");
-       house.scale(7.0f);
+       house.scale(15.0f);
        house.setLocalTranslation(new Vector3f(10,0,10));
-       
        
        CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
        RigidBodyControl houseControl = new RigidBodyControl(houseShape, 0);
        house.addControl(houseControl);
        bulletAppState.getPhysicsSpace().add(house);
-       houseControl.setPhysicsLocation(new Vector3f(10, 0, 10));
-       
+       houseControl.setPhysicsLocation(new Vector3f(-30, 0, 10));
        forest.addObject(house.getWorldBound());
        rootNode.attachChild(house);
 
@@ -744,9 +728,8 @@ public class Main extends SimpleApplication{
         textField = new BitmapText(guiFont, false);          
         textField.setSize(2*guiFont.getCharSet().getRenderedSize()); 
         color = new ColorRGBA(ColorRGBA.White);
-        textField.setColor(color);                             // font color
-        textField.setText("");             // the text
-        //textField.setLocalTranslation(100, settings.getHeight()/2, 0); // position
+        textField.setColor(color);  
+        textField.setText("");  
         textField.setBox(new Rectangle(settings.getWidth()/2-settings.getWidth()/4, settings.getHeight()*3/4, settings.getWidth()/2, settings.getHeight()/2));
         textField.setLineWrapMode(LineWrapMode.Word);
     }
@@ -776,8 +759,6 @@ public class Main extends SimpleApplication{
         inputManager.addListener(actionListener, "Jump");
         inputManager.addListener(actionListener, "Light");
         inputManager.addListener(actionListener, "Item");
-        
-
     }
     
     public void initPlayerPhysics(){
@@ -786,23 +767,21 @@ public class Main extends SimpleApplication{
         player.setPhysicsLocation(new Vector3f(0, 2, 0));
         bulletAppState.getPhysicsSpace().add(player);
         player.setGravity(20);
-        
     }
    
     public void initFlashlight()
     {      
         flash = assetManager.loadModel("Models/Flashlight/flashlight.j3o");
         flash.scale(2f);
-
+ 
         spot = new SpotLight();
-        spot.setSpotRange(outerRange);                           // distance
-        spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD); // inner light cone (central beam)
-        spot.setSpotOuterAngle(20f * FastMath.DEG_TO_RAD); // outer light cone (edge of the light)
-        float yellow_intensity = (float) (150.0/255.0);
-        spot.setColor(new ColorRGBA((float) 1, 1, yellow_intensity, 1));         // light color
-        spot.setPosition(flash.getLocalTranslation());               // shine from camera loc
-        spot.setDirection(cam.getDirection());             // shine forward from camera loc
-        
+        spot.setSpotRange(outerRange);                           
+        spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD);
+        spot.setSpotOuterAngle(20f * FastMath.DEG_TO_RAD); 
+        float yellow_intensity = (float) (190.0/255.0); // A little bit yellow
+        spot.setColor(new ColorRGBA((float) 1, 1, yellow_intensity, 1));        
+        spot.setPosition(flash.getLocalTranslation());               
+        spot.setDirection(cam.getDirection());               
     }
     
     public void initAmbientLight(){
@@ -811,7 +790,6 @@ public class Main extends SimpleApplication{
         al.setColor(ColorRGBA.White.mult(0.1f));
         al2.setColor(ColorRGBA.Blue.mult(0.1f));
 
-        
         rootNode.addLight(al);
         rootNode.addLight(al2);
     }
@@ -822,13 +800,7 @@ public class Main extends SimpleApplication{
         // final color = (1.0 -  f) * fogColor + f * light Color
         // Rangebased technique -> Vertex to Camera
         // Vertex -> Dreiecke, Fragment -> Pixelweise
-        // Vertexshader berechnet position und übergibt sie weiter an fragemnt shader
-        /*
-         * uniform -> User defined variables (global)
-         * attribute -> Per vertex variables (position e.g)
-         * varying -> Vertex shader to fragment shader variables
-         */
-      
+        // Vertexshader berechnet position und übergibt sie weiter an fragemnt shader     
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
         fog=new PostFogFilter();
         fog.setFogColor(new ColorRGBA(0.2f,0.2f,0.2f,1f));
@@ -836,9 +808,7 @@ public class Main extends SimpleApplication{
         fog.setFogDensity(fogDensity);
         fpp.addFilter(fog);
         viewPort.addProcessor(fpp);
-        
-
-    }
+   }
     
     public void makeFire(){
         fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
@@ -862,11 +832,6 @@ public class Main extends SimpleApplication{
     public void makeItRain(){
         rain = new Rain(assetManager,cam,4, rootNode); // param is the weather intensity
         rootNode.attachChild(rain);
-    }
-    
-    public void scatterEffect(){
-        //scatter = new PostScatterFilter();
-    }
-    
+    }   
 }
 
