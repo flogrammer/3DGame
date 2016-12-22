@@ -2,7 +2,6 @@ package mygame;
 
 import view.PauseState;
 import com.jme3.app.SimpleApplication;
-import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -59,7 +58,7 @@ import jme3tools.optimize.LodGenerator;
 import model.Rain;
 
 /**
- * Progman Version 1
+ * Progman Version 1.0
  * @author Julian and Florian
  */
 public class Main extends SimpleApplication{
@@ -69,10 +68,12 @@ public class Main extends SimpleApplication{
     boolean anyKeyPressed;
     boolean lightActivated = false;
     boolean campfireSigh = false;
+    boolean ghostPlayed = false;
+    boolean fireCoughed = false;
     
     long startTime;
     float runFactor = 0.1f;
-    float fullBattery = 200;
+    float fullBattery = 1000;
     float batteryStatus = fullBattery;
     float flashRadius = 20f;
     float outerRange = 50f;
@@ -86,10 +87,7 @@ public class Main extends SimpleApplication{
     final int JUMPFACTOR = 50;
     final float WORLD_SIZE = 125.0f;
     
-    
-    
-    
-    
+
     Camera camera;
     Node cameraNode; // For the Flashlight
     Vector3f position;
@@ -182,6 +180,7 @@ public class Main extends SimpleApplication{
         updateItems();
         updateItemCollision(tpf);
         updateCampfireSound();
+        updateRandomSounds();
         updatePhysics();
         
         if (lightActivated)
@@ -292,12 +291,18 @@ public class Main extends SimpleApplication{
         if (distance < 29){
             audioManager.audio_campfire.play();
             audioManager.audio_campfire.setVolume((float)(0.3 * (1 - (distance/29))));
+           
+            if(distance < 12 && fireCoughed == false){
+                audioManager.audio_cough.play();
+                fireCoughed = true;
+            }
             if (distance < 2 && campfireSigh==false){
                 audioManager.audio_sigh.play();
                 campfireSigh = true;
             }else{
                 campfireSigh = false;
             }
+            
         }
         else{
             audioManager.audio_campfire.stop();
@@ -305,7 +310,18 @@ public class Main extends SimpleApplication{
         }
     }
     
-        public float getDistance(Vector3f item, Vector3f player){
+    public void updateRandomSounds(){
+        
+        Vector3f carLoc = new Vector3f(-100f, 0, 20f); // pos of the car
+        float distance = getDistance(position, carLoc);
+        
+        if (distance < 30 && ghostPlayed == false){
+            audioManager.audio_ghosts.play();
+            ghostPlayed = true;
+        }
+    }
+    
+    public float getDistance(Vector3f item, Vector3f player){
         // Euklidsche Distanz
         float distance = 1000f; // Where the hell is infinty?     
         distance = (float) Math.sqrt(Math.pow(item.x-player.x, 2) + Math.pow(item.z-player.z, 2));
@@ -445,12 +461,12 @@ public class Main extends SimpleApplication{
         if(bookManager.itemsCollected < bookManager.getBookCount()){
         textField.setText("Du hast " + bookManager.itemsCollected + "/" + bookManager.getBookCount() + " Bücher gesammelt.");
         } else if (bookManager.itemsCollected == bookManager.getBookCount()){
-                Picture gameOver = new Picture("gameover");
-                gameOver.setImage(assetManager, "Textures/gamewon.png", true);
-                gameOver.setWidth(settings.getWidth());
-                gameOver.setHeight(settings.getHeight());
-                gameOver.setPosition(0,0);
-                guiNode.attachChild(gameOver);
+                Picture gameWon = new Picture("gameWon");
+                gameWon.setImage(assetManager, "Textures/gamewon.png", true);
+                gameWon.setWidth(settings.getWidth());
+                gameWon.setHeight(settings.getHeight());
+                gameWon.setPosition(0,0);
+                guiNode.attachChild(gameWon);
                 
                 // Detach all sounds
                 audioManager.audio_nature.stop();
@@ -587,7 +603,7 @@ public class Main extends SimpleApplication{
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
         /*
         Box box = new Box(2.5f,5.0f,0.25f);
-        Material mat_brick = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Material mat_brick = new Material(assetManager, "Common/MatDefs/Misc/ColoredTextured.j3md");
         mat_brick.setTexture("ColorMap",assetManager.loadTexture("Textures/Terrain/BrickWall/BrickWall.jpg"));
         
         Spatial[] wall_north = new Geometry[51];
@@ -635,7 +651,7 @@ public class Main extends SimpleApplication{
             wall_west[i].setLocalTranslation(i*5.0f-126.0f,0,-126.5f);
             rootNode.attachChild(wall_west[i]);
         }
-        Box box1 = new Box(126f,2.5f,1f);
+        Box box1 = new Box(126f,5f,1f);
         Spatial north = new Geometry("wall_north", box1 );
         Spatial south = new Geometry("wall_south", box1 );
         Spatial west = new Geometry("wall_west", box1 );
@@ -777,7 +793,7 @@ public class Main extends SimpleApplication{
     public void initPlayerPhysics(){
         CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1.5f, 2f, 1);
         player = new CharacterControl(capsuleShape, 0.05f);
-        player.setPhysicsLocation(new Vector3f(0, 2, 0));
+        player.setPhysicsLocation(new Vector3f(0, 2, 100));
         bulletAppState.getPhysicsSpace().add(player);
         player.setGravity(20);
     }
@@ -791,7 +807,7 @@ public class Main extends SimpleApplication{
         spot.setSpotRange(outerRange);                           
         spot.setSpotInnerAngle(10f * FastMath.DEG_TO_RAD);
         spot.setSpotOuterAngle(20f * FastMath.DEG_TO_RAD); 
-        float yellow_intensity = (float) (190.0/255.0); // A little bit yellow
+        float yellow_intensity = (float) (201.0/255.0); // A little bit yellow
         spot.setColor(new ColorRGBA((float) 1, 1, yellow_intensity, 1));        
         spot.setPosition(flash.getLocalTranslation());               
         spot.setDirection(cam.getDirection());               

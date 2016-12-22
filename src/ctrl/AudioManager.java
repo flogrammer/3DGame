@@ -35,6 +35,9 @@ public class AudioManager {
     public AudioNode audio_progman2;
     public AudioNode audio_campfire;
     public AudioNode audio_sigh;
+    public AudioNode audio_ghosts;
+    public AudioNode audio_cough; 
+    
     
     public AudioManager(Node rootNode, AssetManager assetManager){
         this.rootNode = rootNode;
@@ -108,6 +111,7 @@ public class AudioManager {
        audio_item_collected.setPositional(false);
        audio_item_collected.setLooping(false);
        audio_item_collected.setVolume(0.1f);
+       audio_item_collected.setReverbEnabled(true);
        rootNode.attachChild(audio_item_collected);
  
        audio_progman = new AudioNode(assetManager, "Sounds/soundFX/progman_sound.wav", false);
@@ -135,6 +139,20 @@ public class AudioManager {
        audio_sigh.setVolume(0.6f);
        audio_sigh.setReverbEnabled(true);
        rootNode.attachChild(audio_sigh); 
+       
+       audio_ghosts = new AudioNode(assetManager, "Sounds/soundFX/Misc/ghosts_lp.wav", false);
+       audio_ghosts.setPositional(false);
+       audio_ghosts.setLooping(false);
+       audio_ghosts.setVolume(0.6f);
+       audio_ghosts.setReverbEnabled(true);
+       rootNode.attachChild(audio_ghosts); 
+       
+       audio_cough = new AudioNode(assetManager, "Sounds/soundFX/cough.wav", false);
+       audio_cough.setPositional(false);
+       audio_cough.setLooping(false);
+       audio_cough.setVolume(0.6f);
+       audio_cough.setReverbEnabled(true);
+       rootNode.attachChild(audio_cough); 
 }
 }
 
