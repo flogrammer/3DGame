@@ -29,10 +29,8 @@ import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.AssetLinkNode;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import com.jme3.util.SkyFactory;
 import com.jme3.texture.Texture;
@@ -48,13 +46,11 @@ import view.MenuState;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CrossHatchFilter;
 import com.jme3.terrain.Terrain;
-import com.jme3.terrain.geomipmap.TerrainGridLodControl;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
 import com.jme3.ui.Picture;
 import ctrl.AudioManager;
 import ctrl.PostFogFilter;
-import jme3tools.optimize.LodGenerator;
 import model.Rain;
 
 /**
@@ -80,8 +76,7 @@ public class Main extends SimpleApplication{
     long fadetime = 5000;
     float fogDensity = 1.8f;
     int initiationCounter = 0;
-    
-    
+    float walkingAnimPos = 0;
     
     final int MOVEMENTSPEED = 5;
     final int JUMPFACTOR = 50;
@@ -221,9 +216,11 @@ public class Main extends SimpleApplication{
     }
     
     public void updatePhysics(){
+               
+                
+        // Kamer an laufen anpassen
         camDir.set(cam.getDirection()).multLocal(runFactor);
         camLeft.set(cam.getLeft()).multLocal(runFactor);
-        
         walkDirection.set(0, 0, 0);
         
         if (left) {
@@ -323,7 +320,7 @@ public class Main extends SimpleApplication{
     
     public float getDistance(Vector3f item, Vector3f player){
         // Euklidsche Distanz
-        float distance = 1000f; // Where the hell is infinty?     
+        float distance = Float.POSITIVE_INFINITY;   
         distance = (float) Math.sqrt(Math.pow(item.x-player.x, 2) + Math.pow(item.z-player.z, 2));
         return distance;
     }
@@ -341,7 +338,22 @@ public class Main extends SimpleApplication{
                    isWalking = true;
                    audioManager.audio_foodsteps.play();
                    audioManager.audio_breathing.play();
-               }
+                   
+                    // Auf und Abwärtsbewegung beim Gehen folgt einer Sinuskurve
+                   // Die Werte hinter walkingAnimPos sind die Geschwindigkeit des Sinus
+                   // Die stärke des wertes bei mult ist die Amplitude
+                   
+                   double sinusOldValue = (walkingAnimPos) * 2*Math.PI;
+                   walkingAnimPos = (walkingAnimPos+tpf);
+                   if (walkingAnimPos > 10)
+                        walkingAnimPos = 0;
+                    
+                   double sinusValue = (walkingAnimPos) * 2*Math.PI;
+                   Vector3f addition = new Vector3f(0,(float) (Math.sin(sinusValue)-Math.sin(sinusOldValue)),0);
+                   
+                   cam.lookAtDirection(cam.getDirection().add(addition.mult(0.01f)), new Vector3f(0,1,0));
+                 }
+               
                if (name.equals("Left") && isRunning == true){ 
                    runFactor = 0.05f;
                    isWalking = true;

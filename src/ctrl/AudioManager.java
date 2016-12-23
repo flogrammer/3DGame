@@ -42,9 +42,7 @@ public class AudioManager {
     public AudioManager(Node rootNode, AssetManager assetManager){
         this.rootNode = rootNode;
         this.assetManager = assetManager;
-        
-        initAudio();
-        
+        initAudio();        
     }
     
     public void initAudio(){
