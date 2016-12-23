@@ -183,6 +183,7 @@ public class Main extends SimpleApplication{
 
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
+        isWalkingFast = false;
         fadeHUD(tpf, fadetime);
         }
     }
@@ -372,13 +373,14 @@ public class Main extends SimpleApplication{
                if (name.equals("Run") && isRunning == true){
                    runFactor = 0.2f; // Double the speed
                    isWalkingFast = true;
-                   
+                   if (isWalking){
                    audioManager.audio_breathing.stop();
                    audioManager.audio_fast_breathing.play();
                    
                    audioManager.audio_foodsteps.setPitch(2.0f);
                    audioManager.audio_foodsteps.setReverbEnabled(true);
-                   audioManager.audio_foodsteps.play();  
+                   audioManager.audio_foodsteps.play(); 
+                   }
                }
                
         }   
@@ -613,92 +615,6 @@ public class Main extends SimpleApplication{
     
     protected void initGround() {       
         scenefile = assetManager.loadModel("Models/Scenes/world.j3o");
-        /*
-        Box box = new Box(2.5f,5.0f,0.25f);
-        Material mat_brick = new Material(assetManager, "Common/MatDefs/Misc/ColoredTextured.j3md");
-        mat_brick.setTexture("ColorMap",assetManager.loadTexture("Textures/Terrain/BrickWall/BrickWall.jpg"));
-        
-        Spatial[] wall_north = new Geometry[51];
-        for(int i = 0; i < 51; i++)
-        {
-            wall_north[i] = new Geometry("wall_north", box );
-            wall_north[i].setMaterial(mat_brick);
-            
-            wall_north[i].rotate(0,(float)( Math.PI/2.0), 0);
-            wall_north[i].setLocalTranslation(126.5f,0,i*5.0f-126.0f);
-            rootNode.attachChild(wall_north[i]);
-        }
-        
-        Spatial[] wall_south = new Geometry[51];
-        for(int i = 0; i < 51; i++)
-        {
-            wall_south[i] = new Geometry("wall_south", box );
-            wall_south[i].setMaterial(mat_brick);
-            
-            wall_south[i].rotate(0,(float)( Math.PI/2.0), 0);
-            wall_south[i].setLocalTranslation(-126.5f,0,i*5.0f-126.0f);
-            rootNode.attachChild(wall_south[i]);
-        }
-        
-        Spatial[] wall_east = new Geometry[51];
-        for(int i = 0; i < 51; i++)
-        {
-            wall_east[i] = new Geometry("wall_east", box );
-           
-            wall_east[i].setMaterial(mat_brick);
-            
-            
-            wall_east[i].setLocalTranslation(i*5.0f-126.0f,0,126.5f);
-            rootNode.attachChild(wall_east[i]);
-        }
-        
-        Spatial[] wall_west = new Geometry[51];
-        for(int i = 0; i < 51; i++)
-        {
-            wall_west[i] = new Geometry("wall_west", box );
-            
-            wall_west[i].setMaterial(mat_brick);
-            
-            
-            wall_west[i].setLocalTranslation(i*5.0f-126.0f,0,-126.5f);
-            rootNode.attachChild(wall_west[i]);
-        }
-        Box box1 = new Box(126f,5f,1f);
-        Spatial north = new Geometry("wall_north", box1 );
-        Spatial south = new Geometry("wall_south", box1 );
-        Spatial west = new Geometry("wall_west", box1 );
-        Spatial east = new Geometry("wall_east", box1 );
-        
-        
-        
-        north.rotate(0,(float)( Math.PI/2.0), 0);
-        south.rotate(0,(float)( Math.PI/2.0), 0);
-        
-        north.setLocalTranslation(126.5f,0,0);
-        south.setLocalTranslation(-126.5f,0,0);
-        west.setLocalTranslation(0,0,-126.5f);
-        east.setLocalTranslation(0,0,126.5f);
-        
-        CollisionShape southShape = CollisionShapeFactory.createMeshShape((Geometry) south);
-        RigidBodyControl southControl = new RigidBodyControl(southShape, 0);
-        south.addControl(southControl);
-        bulletAppState.getPhysicsSpace().add(south);
-        
-        CollisionShape northShape = CollisionShapeFactory.createMeshShape((Geometry) north);
-        RigidBodyControl northControl = new RigidBodyControl(northShape, 0);
-        north.addControl(northControl);
-        bulletAppState.getPhysicsSpace().add(north);
-        
-        CollisionShape westShape = CollisionShapeFactory.createMeshShape((Geometry) west);
-        RigidBodyControl westControl = new RigidBodyControl(westShape, 0);
-        west.addControl(westControl);
-        bulletAppState.getPhysicsSpace().add(west);
-        
-        CollisionShape eastShape = CollisionShapeFactory.createMeshShape((Geometry) east);
-        RigidBodyControl eastControl = new RigidBodyControl(eastShape, 0);
-        east.addControl(eastControl);
-        bulletAppState.getPhysicsSpace().add(east);
-        */
         
         //Add Models in scenefile to forest object List
         Node n = (Node) scenefile;
