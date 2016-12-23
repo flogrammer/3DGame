@@ -719,7 +719,7 @@ public class Main extends SimpleApplication{
     }
     
     public void initPlayerPhysics(){
-        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1.5f, 2f, 1);
+        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1f, 2f, 1);
         player = new CharacterControl(capsuleShape, 0.05f);
         player.setPhysicsLocation(new Vector3f(0, 2, 100));
         bulletAppState.getPhysicsSpace().add(player);
