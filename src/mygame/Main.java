@@ -663,7 +663,7 @@ public class Main extends SimpleApplication{
     public void initHouses(){
        house = assetManager.loadModel("Models/Houses/small_house.j3o");
        house.scale(15.0f);
-       house.setLocalTranslation(new Vector3f(10,0,10));
+       house.setLocalTranslation(new Vector3f(-30,0,10));
        
        CollisionShape houseShape = CollisionShapeFactory.createMeshShape((Node) house);
        RigidBodyControl houseControl = new RigidBodyControl(houseShape, 0);
@@ -672,7 +672,16 @@ public class Main extends SimpleApplication{
        houseControl.setPhysicsLocation(new Vector3f(-30, 0, 10));
        forest.addObject(house.getWorldBound());
        rootNode.attachChild(house);
-
+       
+       initFreeArea(); // In the size of a house
+    }
+    
+     public void initFreeArea(){
+         // Free Area with the size of a house..
+       Spatial dummy = assetManager.loadModel("Models/Houses/small_house.j3o");
+       dummy.scale(15.0f);
+       dummy.setLocalTranslation(new Vector3f(10,0,10));
+       forest.addObject(dummy.getWorldBound());
     }
     
     public void initItems(){
@@ -719,7 +728,7 @@ public class Main extends SimpleApplication{
     }
     
     public void initPlayerPhysics(){
-        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1f, 2f, 1);
+        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(0.8f, 4f, 1);
         player = new CharacterControl(capsuleShape, 0.05f);
         player.setPhysicsLocation(new Vector3f(0, 2, 100));
         bulletAppState.getPhysicsSpace().add(player);
