@@ -30,7 +30,17 @@ public class Progman {
     public float progman_y = 0f;
     public float progman_z = -200f;
     public float progman_max_speed = 0.02f;
+    
     public long startTime;
+    
+    Picture noisePNG;
+    public long noiseBegin;
+    public long noiseEnd;
+    public double randomNoiseTime;
+    public boolean noiseAttached = false;
+    public int noiseFrameCount = 0;
+    
+    
     public int moveTimeMs = 10000; // Alle 10 Sec neue Position, abnehmend!
     public float appearanceAngle = 0;
     public Node rootNode;
@@ -169,6 +179,21 @@ public class Progman {
         else if(checkEyeContact(position))
         {
             STATE = ProgmanState.EyeContact;
+              
+            // Appearance of the noise
+            // Es sollen maximal 5 Störgeräusche auftauchen
+            // Danach soll erst bei erneutem Betrachten Noise auftreten
+            if (noiseAttached == false && noiseFrameCount < 5){
+                noiseBegin = System.currentTimeMillis();
+                noisePNG = new Picture("noise");
+                noisePNG.setImage(assetManager, "Textures/noise.png", true);
+                noisePNG.setWidth(settings.getWidth());
+                noisePNG.setHeight(settings.getHeight());
+                noisePNG.setPosition(0,0);
+                guiNode.attachChild(noisePNG); 
+                noiseAttached = true;
+            }
+            
             
             
             if(oldState != ProgmanState.EyeContact)
@@ -182,9 +207,10 @@ public class Progman {
         else if(shocking)
             STATE = ProgmanState.shocking;
         
-        else
+        else{
             STATE = ProgmanState.moving;
-        
+            noiseFrameCount = 0; // Reset the noise signal
+        }
         
         if(!oldState.equals( STATE))
             System.out.println("State changed " + STATE);
@@ -194,6 +220,25 @@ public class Progman {
             movingDistance = old_dist;
             System.out.println("recovering old dist" + old_dist);
         }
+        
+        // Update Noise Screen
+        if (noiseAttached == true)
+        updateNoiseGui();
+    }
+    
+    public void updateNoiseGui(){
+        noiseEnd = System.currentTimeMillis();
+        randomNoiseTime = 3*Math.random();
+        
+        System.out.println("noiseBeg: " + noiseBegin);
+        System.out.println("noiseEnd: " + noiseEnd);
+        System.out.println("rand: " + randomNoiseTime);
+        if (noiseEnd - noiseBegin > randomNoiseTime){
+            guiNode.detachChild(noisePNG);
+            noiseAttached = false;
+        }
+        noiseFrameCount++;
+        
     }
     
     public void checkShocking(Vector3f position)
