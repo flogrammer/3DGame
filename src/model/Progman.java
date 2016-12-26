@@ -74,7 +74,7 @@ public class Progman {
     private AudioNode audio_progman;
     private AudioNode audio_progman2;
     private AudioNode noise;
-    
+    private AudioNode noiseGUI;
     /*
      * Check for shocking
      */
@@ -192,6 +192,8 @@ public class Progman {
                 noisePNG.setPosition(0,0);
                 guiNode.attachChild(noisePNG); 
                 noiseAttached = true;
+                // Play Audio
+                noiseGUI.play();
             }
             
             
@@ -235,6 +237,7 @@ public class Progman {
         System.out.println("rand: " + randomNoiseTime);
         if (noiseEnd - noiseBegin > randomNoiseTime){
             guiNode.detachChild(noisePNG);
+            noiseGUI.stop();
             noiseAttached = false;
         }
         noiseFrameCount++;
@@ -361,7 +364,7 @@ public class Progman {
             Vector3f v = cam.getDirection().clone();//position.subtract(progman_pos).clone();
             v.y = 0;
             float length = dist;
-            length = length-0.1f;
+            length = length-0.6f; // Last param determines the speed 
             Vector3f newPosition = position.add(v.normalize().mult(length));
             newPosition.y = progman_pos.y;
             //System.out.println(position + " " + progman_pos + " " + dist + " " + length + "  " + v);
@@ -490,6 +493,15 @@ public class Progman {
        noise.setPositional(false);
        noise.setLooping(false);
        noise.setVolume(0.4f);
-       rootNode.attachChild(noise);    }
+       rootNode.attachChild(noise);   
+       
+       // Noise played while old TV effect
+       noiseGUI = new AudioNode(assetManager, "Sounds/soundFX/flash_off_bag.wav");
+       noiseGUI.setPositional(false);
+       noiseGUI.setLooping(false);
+       noise.setVolume(0.3f);
+       rootNode.attachChild(noiseGUI);
+     
+     }
 
 }

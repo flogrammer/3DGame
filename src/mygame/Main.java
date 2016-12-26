@@ -344,6 +344,7 @@ public class Main extends SimpleApplication{
                    // Die Werte hinter walkingAnimPos sind die Geschwindigkeit des Sinus
                    // Die stärke des wertes bei mult ist die Amplitude
                    
+                   if (isWalkingFast == false){
                    double sinusOldValue = (walkingAnimPos) * 2*Math.PI;
                    walkingAnimPos = (walkingAnimPos+tpf);
                    if (walkingAnimPos > 10)
@@ -353,6 +354,7 @@ public class Main extends SimpleApplication{
                    Vector3f addition = new Vector3f(0,(float) (Math.sin(sinusValue)-Math.sin(sinusOldValue)),0);
                    
                    cam.lookAtDirection(cam.getDirection().add(addition.mult(0.01f)), new Vector3f(0,1,0));
+                   }
                  }
                
                if (name.equals("Left") && isRunning == true){ 
@@ -373,13 +375,25 @@ public class Main extends SimpleApplication{
                if (name.equals("Run") && isRunning == true){
                    runFactor = 0.2f; // Double the speed
                    isWalkingFast = true;
-                   if (isWalking){
+                   if (isWalking){ // Er muss laufen & rennen. Nur Shift reicht nicht
                    audioManager.audio_breathing.stop();
                    audioManager.audio_fast_breathing.play();
                    
                    audioManager.audio_foodsteps.setPitch(2.0f);
                    audioManager.audio_foodsteps.setReverbEnabled(true);
                    audioManager.audio_foodsteps.play(); 
+                   
+                   // Auf und Ab Bewegung doppelt so schnell!
+                   double sinusOldValue = (walkingAnimPos) * 2*Math.PI;
+                   walkingAnimPos = (walkingAnimPos+tpf);
+                   if (walkingAnimPos > 10)
+                        walkingAnimPos = 0;
+                    
+                   double sinusValue = (walkingAnimPos) * 2*Math.PI;
+                   Vector3f addition = new Vector3f(0,(float) (Math.sin(sinusValue)-Math.sin(sinusOldValue)),0);
+                   
+                   cam.lookAtDirection(cam.getDirection().add(addition.mult(0.02f)), new Vector3f(0,1,0));
+                   
                    }
                }
                
