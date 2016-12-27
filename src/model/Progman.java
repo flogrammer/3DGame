@@ -190,10 +190,15 @@ public class Progman {
                 double rand = Math.random();
                 String path = "Textures/noise.png";
                 
-                if (rand < 0.5)
+                // Gleiche W'keit für jedes Bild
+                if (rand < 0.2)
                     path = "Textures/noise2.png";
-                if (rand > 0.5 & rand < 0.8)
+                if (rand > 0.2 & rand <= 0.4)
                     path = "Textures/noise3.png";
+                if (rand > 0.4 & rand <= 0.6)
+                    path = "Textures/noise4.png";
+                if (rand > 0.6 & rand <= 0.8)
+                    path = "Textures/noise5.png";
                 
                 noisePNG.setImage(assetManager, path, true);
                 noisePNG.setWidth(settings.getWidth());
@@ -239,12 +244,12 @@ public class Progman {
     
     public void updateNoiseGui(){
         noiseEnd = System.currentTimeMillis();
-        randomNoiseTime = 4*Math.random();
+        randomNoiseTime = 3*Math.random();
         
         System.out.println("noiseBeg: " + noiseBegin);
         System.out.println("noiseEnd: " + noiseEnd);
         System.out.println("rand: " + randomNoiseTime);
-        if (noiseEnd - noiseBegin > randomNoiseTime){
+        if (noiseEnd - noiseBegin > randomNoiseTime*100){ // Ms to S
             guiNode.detachChild(noisePNG);
             noiseGUI.stop();
             noiseAttached = false;
@@ -508,7 +513,7 @@ public class Progman {
        noiseGUI = new AudioNode(assetManager, "Sounds/soundFX/tvnoise.wav");
        noiseGUI.setPositional(false);
        noiseGUI.setLooping(false);
-       noise.setVolume(0.06f);
+       noise.setVolume(0.04f);
        rootNode.attachChild(noiseGUI);
      
      }
