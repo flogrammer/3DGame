@@ -186,7 +186,16 @@ public class Progman {
             if (noiseAttached == false && noiseFrameCount < 5){
                 noiseBegin = System.currentTimeMillis();
                 noisePNG = new Picture("noise");
-                noisePNG.setImage(assetManager, "Textures/noise.png", true);
+                // Different noise pictures shall be attached
+                double rand = Math.random();
+                String path = "Textures/noise.png";
+                
+                if (rand < 0.5)
+                    path = "Textures/noise2.png";
+                if (rand > 0.5 & rand < 0.8)
+                    path = "Textures/noise3.png";
+                
+                noisePNG.setImage(assetManager, path, true);
                 noisePNG.setWidth(settings.getWidth());
                 noisePNG.setHeight(settings.getHeight());
                 noisePNG.setPosition(0,0);
@@ -230,7 +239,7 @@ public class Progman {
     
     public void updateNoiseGui(){
         noiseEnd = System.currentTimeMillis();
-        randomNoiseTime = 3*Math.random();
+        randomNoiseTime = 4*Math.random();
         
         System.out.println("noiseBeg: " + noiseBegin);
         System.out.println("noiseEnd: " + noiseEnd);
@@ -496,10 +505,10 @@ public class Progman {
        rootNode.attachChild(noise);   
        
        // Noise played while old TV effect
-       noiseGUI = new AudioNode(assetManager, "Sounds/soundFX/flash_off_bag.wav");
+       noiseGUI = new AudioNode(assetManager, "Sounds/soundFX/tvnoise.wav");
        noiseGUI.setPositional(false);
        noiseGUI.setLooping(false);
-       noise.setVolume(0.3f);
+       noise.setVolume(0.06f);
        rootNode.attachChild(noiseGUI);
      
      }
