@@ -149,7 +149,7 @@ public class Main extends SimpleApplication{
     public void simpleInitApp() {
         // Hinweis: Weil keine Menuführung vorhanden, init in update verschoben!
         loadingScreen = new Picture("gameover");
-        loadingScreen.setImage(assetManager, "Textures/progman.jpg", true);
+        loadingScreen.setImage(assetManager, "Textures/progman.jpg", false);
         loadingScreen.setWidth(settings.getWidth());
         loadingScreen.setHeight(settings.getHeight());
         loadingScreen.setPosition(0,0);

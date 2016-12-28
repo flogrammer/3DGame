@@ -354,7 +354,7 @@ public class Progman {
         {
             noise.play();
             Picture gameOver = new Picture("gameover");
-            gameOver.setImage(assetManager, "Textures/gameover.png", true);
+            gameOver.setImage(assetManager, "Textures/gameover.png", false);
             gameOver.setWidth(settings.getWidth());
             gameOver.setHeight(settings.getHeight());
             gameOver.setPosition(0,0);
@@ -506,14 +506,14 @@ public class Progman {
        noise = new AudioNode(assetManager, "Sounds/soundFX/noise.wav", false);
        noise.setPositional(false);
        noise.setLooping(false);
-       noise.setVolume(0.4f);
+       noise.setVolume(0.2f);
        rootNode.attachChild(noise);   
        
        // Noise played while old TV effect
        noiseGUI = new AudioNode(assetManager, "Sounds/soundFX/tvnoise.wav");
        noiseGUI.setPositional(false);
        noiseGUI.setLooping(false);
-       noise.setVolume(0.04f);
+       noise.setVolume(0.06f);
        rootNode.attachChild(noiseGUI);
      
      }
