@@ -455,7 +455,7 @@ public class Progman {
             progman_pos = p;
                 
         }
-        if(moved && forest.checkCollision(progman_pos))
+        if(moved && STATE != ProgmanState.catching && forest.checkCollision(progman_pos))
         {
             float randomFactor = 0.1f;
             int counter = 0;
