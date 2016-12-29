@@ -50,6 +50,7 @@ import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
 import com.jme3.ui.Picture;
 import ctrl.AudioManager;
+import ctrl.FireControl;
 import ctrl.PostFogFilter;
 import model.Rain;
 
@@ -109,6 +110,7 @@ public class Main extends SimpleApplication{
     // Labels & Textfields
     BitmapText textField;
     Picture loadingScreen;
+    FireControl fireControl;
             
     // Stuff for Collision detection
     private Vector3f camDir = new Vector3f();
@@ -154,6 +156,7 @@ public class Main extends SimpleApplication{
         loadingScreen.setHeight(settings.getHeight());
         loadingScreen.setPosition(0,0);
         guiNode.attachChild(loadingScreen); 
+        
     }
     
     @Override
@@ -286,17 +289,28 @@ public class Main extends SimpleApplication{
     public void updateCampfireSound(){
         Vector3f firePos = fireEffect.getLocalTranslation();
         float distance = getDistance(firePos, position);
+        
+        // Change the Image if walking into fire
+       fireControl.updateImage();
+        
+        
+        
         if (distance < 29){
             audioManager.audio_campfire.play();
             audioManager.audio_campfire.setVolume((float)(0.3 * (1 - (distance/29))));
            
             if(distance < 12 && fireCoughed == false){
+                // Close to the fire, coughing
                 audioManager.audio_cough.play();
                 fireCoughed = true;
             }
             if (distance < 2 && campfireSigh==false){
+                // Too close, player gets wounded
                 audioManager.audio_sigh.play();
                 campfireSigh = true;
+                // Also attach the picture to warn player
+                fireControl.setFireTimer();
+                
             }else{
                 campfireSigh = false;
             }
@@ -772,6 +786,7 @@ public class Main extends SimpleApplication{
 
         rootNode.addLight(al);
         rootNode.addLight(al2);
+      
     }
     
     public void createFog(){
@@ -807,6 +822,9 @@ public class Main extends SimpleApplication{
         fireEffect.getParticleInfluencer().setVelocityVariation(0.3f);
         fireEffect.setLocalTranslation(new Vector3f(90.729515f, 0.0f, 14.6222f));
         rootNode.attachChild(fireEffect);
+        
+        // Firecontrol for Images
+        fireControl = new FireControl(guiNode, assetManager, settings);
     }
     
     public void makeItRain(){
