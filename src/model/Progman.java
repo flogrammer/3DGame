@@ -336,8 +336,8 @@ public class Progman {
         
     }
     
-    public boolean updateProgman(Vector3f position,boolean lightActivated, float collectedItems ){
-        
+    public boolean updateProgman(float tpf, Vector3f position, boolean lightActivated, float collectedItems ){
+        tpf = tpf*5.0f;
         Vector3f progman_pos_2 = progman_pos.clone();
         progman_pos_2.y = 0;
         Vector3f position_2 = position.clone();
@@ -378,10 +378,10 @@ public class Progman {
             Vector3f v = cam.getDirection().clone();//position.subtract(progman_pos).clone();
             v.y = 0;
             float length = dist;
-            length = length-0.6f; // Last param determines the speed 
+            length = length-0.6f*tpf; // Last param determines the speed 
+            System.out.println("l: " + length + " tpf: " + tpf);
             Vector3f newPosition = position.add(v.normalize().mult(length));
             newPosition.y = progman_pos.y;
-            //System.out.println(position + " " + progman_pos + " " + dist + " " + length + "  " + v);
             
             progman_pos = newPosition.clone();
         }

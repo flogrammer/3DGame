@@ -172,7 +172,7 @@ public class Main extends SimpleApplication{
         position = cam.getLocation();
      
        // Updates
-        gameOver = progman.updateProgman(position, lightActivated,(float)(bookManager.itemsCollected/bookManager.getBookCount()));
+        gameOver = progman.updateProgman(tpf, position, lightActivated,(float)(bookManager.itemsCollected/bookManager.getBookCount()));
 
         updateFlashlight();
         updateItems();
