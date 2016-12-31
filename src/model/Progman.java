@@ -57,7 +57,7 @@ public class Progman {
     
     public float movingAngle = 0;
     public float movingDistance = 100;
-
+    
     
     public enum ProgmanState {
         catching, shocking, moving, EyeContact, catched;
@@ -517,5 +517,7 @@ public class Progman {
        rootNode.attachChild(noiseGUI);
      
      }
+
+    
 
 }
