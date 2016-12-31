@@ -34,6 +34,11 @@ public class Progman {
     public long startTime;
     
     Picture noisePNG;
+    Picture noisePNG2;
+    Picture noisePNG3;
+    Picture noisePNG4;
+    Picture noisePNG5;
+    
     public long noiseBegin;
     public long noiseEnd;
     public double randomNoiseTime;
@@ -74,7 +79,9 @@ public class Progman {
     private AudioNode audio_progman;
     private AudioNode audio_progman2;
     private AudioNode noise;
-    private AudioNode noiseGUI;
+    private AudioNode noiseGUI_audio;
+  
+    
     /*
      * Check for shocking
      */
@@ -112,7 +119,8 @@ public class Progman {
         
         // Setup Audio for Progman
       initNoise(assetManager);
-        
+        // Load Pictures from disk
+      initPictures();
    }
     
     public boolean moveAllowed(){
@@ -184,30 +192,23 @@ public class Progman {
             // Es sollen maximal 5 Störgeräusche auftauchen
             // Danach soll erst bei erneutem Betrachten Noise auftreten
             if (noiseAttached == false && noiseFrameCount < 5){
-                noiseBegin = System.currentTimeMillis();
-                noisePNG = new Picture("noise");
+                noiseBegin = System.currentTimeMillis();                
                 // Different noise pictures shall be attached
                 double rand = Math.random();
-                String path = "Textures/noise.png";
                 
-                // Gleiche W'keit für jedes Bild
                 if (rand < 0.2)
-                    path = "Textures/noise2.png";
+                    guiNode.attachChild(noisePNG);
                 if (rand > 0.2 & rand <= 0.4)
-                    path = "Textures/noise3.png";
+                    guiNode.attachChild(noisePNG2);
                 if (rand > 0.4 & rand <= 0.6)
-                    path = "Textures/noise4.png";
+                    guiNode.attachChild(noisePNG3);
                 if (rand > 0.6 & rand <= 0.8)
-                    path = "Textures/noise5.png";
-                
-                noisePNG.setImage(assetManager, path, true);
-                noisePNG.setWidth(settings.getWidth());
-                noisePNG.setHeight(settings.getHeight());
-                noisePNG.setPosition(0,0);
-                guiNode.attachChild(noisePNG); 
+                    guiNode.attachChild(noisePNG4);
+                if (rand > 0.8)
+                    guiNode.attachChild(noisePNG);
                 noiseAttached = true;
                 // Play Audio
-                noiseGUI.play();
+                noiseGUI_audio.play();
             }
             
             
@@ -250,8 +251,14 @@ public class Progman {
         System.out.println("noiseEnd: " + noiseEnd);
         System.out.println("rand: " + randomNoiseTime);
         if (noiseEnd - noiseBegin > randomNoiseTime*100){ // Ms to S
+            // Detatch everything
             guiNode.detachChild(noisePNG);
-            noiseGUI.stop();
+            guiNode.detachChild(noisePNG2);
+            guiNode.detachChild(noisePNG3);
+            guiNode.detachChild(noisePNG4);
+            guiNode.detachChild(noisePNG5);
+            
+            noiseGUI_audio.stop();
             noiseAttached = false;
         }
         noiseFrameCount++;
@@ -510,12 +517,45 @@ public class Progman {
        rootNode.attachChild(noise);   
        
        // Noise played while old TV effect
-       noiseGUI = new AudioNode(assetManager, "Sounds/soundFX/tvnoise.wav");
-       noiseGUI.setPositional(false);
-       noiseGUI.setLooping(false);
+       noiseGUI_audio = new AudioNode(assetManager, "Sounds/soundFX/tvnoise.wav");
+       noiseGUI_audio.setPositional(false);
+       noiseGUI_audio.setLooping(false);
        noise.setVolume(0.06f);
-       rootNode.attachChild(noiseGUI);
+       rootNode.attachChild(noiseGUI_audio);
      
+     }
+     
+     private void initPictures(){
+        // Picture 1
+        noisePNG = new Picture("noise");
+        noisePNG.setImage(assetManager, "Textures/noise.png", true);
+        noisePNG.setWidth(settings.getWidth());
+        noisePNG.setHeight(settings.getHeight());
+        noisePNG.setPosition(0,0);
+        // Picture 2
+        noisePNG2 = new Picture("noise2");
+        noisePNG2.setImage(assetManager, "Textures/noise2.png", true);
+        noisePNG2.setWidth(settings.getWidth());
+        noisePNG2.setHeight(settings.getHeight());
+        noisePNG2.setPosition(0,0);
+        // Picture 3
+        noisePNG3 = new Picture("noise3");
+        noisePNG3.setImage(assetManager, "Textures/noise3.png", true);
+        noisePNG3.setWidth(settings.getWidth());
+        noisePNG3.setHeight(settings.getHeight());
+        noisePNG3.setPosition(0,0);
+        // Picture 4
+        noisePNG4 = new Picture("noise4");
+        noisePNG4.setImage(assetManager, "Textures/noise4.png", true);
+        noisePNG4.setWidth(settings.getWidth());
+        noisePNG4.setHeight(settings.getHeight());
+        noisePNG4.setPosition(0,0);
+        // Picture 5
+        noisePNG5 = new Picture("noise5");
+        noisePNG5.setImage(assetManager, "Textures/noise5.png", true);
+        noisePNG5.setWidth(settings.getWidth());
+        noisePNG5.setHeight(settings.getHeight());
+        noisePNG5.setPosition(0,0);
      }
 
 }
