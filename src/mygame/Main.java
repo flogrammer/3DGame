@@ -70,7 +70,7 @@ public class Main extends SimpleApplication{
     
     long startTime;
     float runFactor = 0.1f;
-    float fullBattery = 1000;
+    float fullBattery = 600;
     float batteryStatus = fullBattery;
     float flashRadius = 20f;
     float outerRange = 50f;
@@ -78,6 +78,10 @@ public class Main extends SimpleApplication{
     float fogDensity = 1.8f;
     int initiationCounter = 0;
     float walkingAnimPos = 0;
+    
+    // For Running time
+    float maxRunningTime = 15;
+    boolean runningReseted = true;
     
     final int MOVEMENTSPEED = 5;
     final int JUMPFACTOR = 50;
@@ -183,7 +187,7 @@ public class Main extends SimpleApplication{
         
         if (lightActivated)
             updateBatteryStatus(tpf);
-
+        updateRunningStatus(tpf);
         foodstepsCheck();
         isWalking = false; // Muss jedes Frame neu gesetzt werden
         isWalkingFast = false;
@@ -219,6 +223,17 @@ public class Main extends SimpleApplication{
           }
     }
     
+    public void updateRunningStatus(float tpf){
+       if (runningReseted == false){ // Reset from time to time
+           maxRunningTime = maxRunningTime + tpf; // regenerieren
+           System.out.println(maxRunningTime);
+       }
+       if (maxRunningTime >= 15){ // Stop when old value was reached
+           runningReseted = true;
+       }
+           
+    }
+    
     public void updatePhysics(){
                
                 
@@ -245,7 +260,7 @@ public class Main extends SimpleApplication{
     
     
     public void updateFlashlight(){
-          Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(flash.getWorldTranslation()));
+         Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(flash.getWorldTranslation()));
         flash.setLocalTranslation(vectorDifference.addLocal(flash.getLocalTranslation()));
 
         Quaternion worldDiff = new Quaternion(cam.getRotation().mult(flash.getWorldRotation().inverse()));
@@ -387,27 +402,35 @@ public class Main extends SimpleApplication{
                    audioManager.audio_foodsteps.play();
                } 
                if (name.equals("Run") && isRunning == true){
-                   runFactor = 0.2f; // Double the speed
-                   isWalkingFast = true;
-                   if (isWalking){ // Er muss laufen & rennen. Nur Shift reicht nicht
-                   audioManager.audio_breathing.stop();
-                   audioManager.audio_fast_breathing.play();
                    
-                   audioManager.audio_foodsteps.setPitch(2.0f);
-                   audioManager.audio_foodsteps.setReverbEnabled(true);
-                   audioManager.audio_foodsteps.play(); 
-                   
-                   // Auf und Ab Bewegung doppelt so schnell!
-                   double sinusOldValue = (walkingAnimPos) * 2*Math.PI;
-                   walkingAnimPos = (walkingAnimPos+tpf);
-                   if (walkingAnimPos > 10)
-                        walkingAnimPos = 0;
-                    
-                   double sinusValue = (walkingAnimPos) * 2*Math.PI;
-                   Vector3f addition = new Vector3f(0,(float) (Math.sin(sinusValue)-Math.sin(sinusOldValue)),0);
-                   
-                   cam.lookAtDirection(cam.getDirection().add(addition.mult(0.02f)), new Vector3f(0,1,0));
-                   
+                   if (isWalking){ // Es muss shift und rennen gedrückt sein. Nur Shift reicht nicht
+                    if (maxRunningTime > 0 && runningReseted == true){
+                        runFactor = 0.2f; // Double the speed
+                        isWalkingFast = true; // Set running
+                        audioManager.audio_breathing.stop();
+                        audioManager.audio_fast_breathing.play();
+
+                        audioManager.audio_foodsteps.setPitch(2.0f);
+                        audioManager.audio_foodsteps.setReverbEnabled(true);
+                        audioManager.audio_foodsteps.play(); 
+
+                        // Auf und Ab Bewegung doppelt so schnell!
+                        double sinusOldValue = (walkingAnimPos) * 2*Math.PI;
+                        walkingAnimPos = (walkingAnimPos+tpf);
+                        if (walkingAnimPos > 10)
+                             walkingAnimPos = 0;
+
+                        double sinusValue = (walkingAnimPos) * 2*Math.PI;
+                        Vector3f addition = new Vector3f(0,(float) (Math.sin(sinusValue)-Math.sin(sinusOldValue)),0);
+
+                        cam.lookAtDirection(cam.getDirection().add(addition.mult(0.02f)), new Vector3f(0,1,0));
+
+                        // Rennzeit abziehen
+                        maxRunningTime = maxRunningTime - tpf;
+                        System.out.println("RT: " + maxRunningTime);
+                    } else{
+                        runningReseted = false;
+                    }
                    }
                }
                
