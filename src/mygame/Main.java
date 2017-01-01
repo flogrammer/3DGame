@@ -585,7 +585,7 @@ public class Main extends SimpleApplication{
         // Physics and Collision
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+        bulletAppState.getPhysicsSpace().enableDebug(assetManager);
         
         
         // Init functionalities
