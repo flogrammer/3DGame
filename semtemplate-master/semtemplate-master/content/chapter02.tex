@@ -193,7 +193,7 @@ Bei großen rollen-basierten Spielen erzeugen die Sound-Effekte, neben den grafi
 	\item Donner-und Regensounds, welche zufällig abgespielt werden
 	\item Fußstapfen im Wald
 	\item Spezial Effekte wie beispielsweise: Knisterndes Feuer, Wolfs-Heulen, Spieler-Atmen, Herzklopfen...
-\end{enumerate} Um Audio dem Spiel hinzuzufügen sind die folgenden Code-Zeilen notwendig.
+\end{enumerate} Um Audio dem Spiel hinzuzufügen sind beispielhaft die folgenden Code-Zeilen notwendig.
 
 \begin{lstlisting}
 audio_nature = new AudioNode(assetManager,"Sound/nature.mp3", true);
@@ -207,28 +207,26 @@ audio_nature.play();
 
 
 \subsection{Physikalische Modellierung}
-Allgemeines zu Gravity, usw... wird von jme3 unterstützt.
+Die jme3 Engine erlaubt durch ihre Physik-Engine Objekten verschiedenes physikalisches Verhalten zuzuordnen. Die Kräfte, welche wirken sind dann je nach Masse verschieden.\\
+In unserem Spiel haben wir hauptsächlich von der Schwerkraft Gebrauch gemacht, welche sich durch den Befehl\emph{ setGravity()} auf Spatials anwenden lässt.
 
 \subsection{Effekte und Details}
-
+Um dem Spiel mehr Leben einzuhauchen können verschiedenste Spezialeffekte erstellt werden. Im Folgenden wird auf zwei wichtige Beispiele eingegangen und wie diese in der jMonkeyEngine umgesetzt werden können.
 \subsubsection{Nebel}
-\begin{eqnarray*} \xi  = \frac{2\pi z^2 e^4 N_{\textrm{Av}} Z \rho
-		\delta x}{m_{\textrm{e}} \beta^2 c^2 A} =  153.4 \frac{z^2}{\beta^2}
-	\frac{Z}{A}
-	\rho \delta x \quad\textrm{keV},
-\end{eqnarray*}
-\cite{Cr14}
-\bigskip
-\begin{equation}
-\kappa =\frac{\xi}{E_{\textrm{max}}} %\mathbb{ZNR}
-\end{equation}
-
+In unserem Wald haben wir zur besseren Atmosphäre einen Nebeleffekt hinzugefügt. Genaugenommen ist dies lediglich eine Erhellung der Pixel in Abhängigkeit des Abstandes vom Spieler. 
+Fog Filter... Entsprechende Berechnung kann in unter \cite{Cr14} nachvollzogen werden.
 
 \[
-E_{\textrm{max}} =\frac{2 m_{\textrm{e}} \beta^2\gamma^2 }{1 +
-	2\gamma m_{\textrm{e}}/m_{\textrm{x}} + \left ( m_{\textrm{e}}
-	/m_{\textrm{x}}\right)^2}\ ,
+FinalFogColor = (1.0-e^{db\textrm{1}}*fogColor + e^{db\textrm{1}} * lightColor
 \]
+
+\begin{figure}[h!]
+	\myfloatalign
+	\caption{Exponentieller Nebel - Ergebnis}
+	
+	\includegraphics[width=.9\linewidth, height = 200pt]{images/fog} 
+	
+\end{figure}
 
 \subsubsection{Partikeleffekte}
 Feuer, Regen... usw...
