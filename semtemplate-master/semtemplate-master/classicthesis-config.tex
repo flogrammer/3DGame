@@ -127,25 +127,27 @@
 % 5. Setup code listings
 % ****************************************************************************************************
 \usepackage{listings} 
-%\lstset{emph={trueIndex,root},emphstyle=\color{BlueViolet}}%\underbar} % for special keywords
-\lstset{language=[LaTeX]Tex,%C++,
-    morekeywords={PassOptionsToPackage,selectlanguage},
-    keywordstyle=\color{RoyalBlue},%\bfseries,
-    basicstyle=\small\ttfamily,
-    %identifierstyle=\color{NavyBlue},
-    commentstyle=\color{Green}\ttfamily,
-    stringstyle=\rmfamily,
-    numbers=none,%left,%
-    numberstyle=\scriptsize,%\tiny
-    stepnumber=5,
-    numbersep=8pt,
-    showstringspaces=false,
-    breaklines=true,
-    %frameround=ftff,
-    %frame=single,
-    belowcaptionskip=.75\baselineskip
-    %frame=L
-} 
+\usepackage{color} 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+	language=Java,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
 % ****************************************************************************************************             
 
 
@@ -243,7 +245,7 @@
 %For the colored backgrounds
 \usepackage{xcolor}
 \definecolor{grau}{gray}{.85}	
-\definecolor{grau2}{gray}{.95}
+\definecolor{grau}{gray}{.95}
 % ****************************************************************************************************
 
 
