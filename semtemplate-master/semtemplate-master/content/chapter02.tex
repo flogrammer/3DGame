@@ -159,16 +159,27 @@ Bezogen auf unser Spiel wurden folgende Aktionen durch Listener abgefangen:
 \end{enumerate} Zur Realisierung stehen in jme3 zwei wichtige Listener-Klassen zur Verfügung: Der \emph{ActionListener} und der \emph{AnalogListener}.
 Ersterer sollte verwendet werden, wenn einzelne Aktionen erfolgen wie z.B. einmaliges Drücken der Taste B, zum Aufsammeln eines Buches.\\
 Die zweite Klasse widerum, falls dauerhafte Events wie Gedrückthalten von W zur Vorwärtsbewegung abgefangen werden sollen. \\
-Im Programmcode müssen dann entsprechende Aktionen erfolgen, damit der Input auch eine Auswirkung auf das Spiel hat. Beim Drücken von W müsste etwa der Richtungsvektor sowie die aktuelle Position abgefangen werden um eine Vorwärtsbewegung um x Richtungseinheiten zu erzeugen.
+Im Programmcode müssen dann entsprechende Aktionen erfolgen, damit der Input auch eine Auswirkung auf das Spiel hat. Beim Drücken von W müsste etwa der Richtungsvektor sowie die aktuelle Position abgefangen werden um eine Vorwärtsbewegung um x = walkingSpeed Richtungseinheiten zu erzeugen.
 
 \subsection{Kollisionserkennung}
-Damit man als Charakter nicht durch die gesamte Spielwelt gehen kann, müssen entsprechende Kollisionserkennungen eingebaut werden. 
-\begin{center}
-	\fcolorbox{grau}{white}
-	{rootNode.attachChild(baum);}
-\end{center}
-Allgemeine Beschreibung mit mesh als Form für die Kollision. Dann natürlich wie die Kollision funktioniert (aufruf von Methoden overlap, dann nicht weiter...)
-Wird intern von jme3 übernommen und kann auch direkt im scene composer verwendet werden.
+Damit man als Charakter nicht durch die gesamte Spielwelt gehen kann, müssen entsprechende Kollisionserkennungen eingebaut werden. So sollte der Spieler beispielsweise stoppen, wenn er sich in einen Baum hinein bewegen würde. Dazu kann in der Engine der folgende Code realisiert werden:
+
+
+\colorbox{grau}{\parbox{\dimexpr\textwidth-8\fboxsep}{\centering
+		\begin{center}
+			\fcolorbox{grau}{white}{	CollisionShape shape = CollisionShapeFactor.createMeshShape(treeShape);}
+		\end{center}
+		\begin{center}
+			\fcolorbox{grau}{white}{baumControl = new RigidBodyControl(shape);}	
+		\end{center}
+		\begin{center}
+		\fcolorbox{grau}{white}{baum.addControl(baumControl);}	
+		\end{center}
+}}\bigskip \\Im ersten Schritt wird eine Form erstellt, welche das Modell annähert oder teilweise sogar mit ihm übereinstimmt. Bei Bäumen reichen theoretisch auch einfache Zylinder, da man mit der Baumkrone im Spiel sowieso nicht in Kontakt kommt. Im obigen Beispiel wird allerdings auf das Mesh, d.h  die tatsächliche Form zurückgegriffen.\\
+Danach wir ein Art 'Überwacher' instantiiert, welcher sich um die Kollisionsfunktionalität kümmert. Dieser "kontrolliert" wann sich Modelle überlappen und verhindert dadurch ein Bewegen durch diese. Optional kann als Parameter auch die physikalische Masse des Objekts übergeben werden.\\
+Im letzten Schritt wird dieser Control zum gewünschten Objekt hinzugefügt, damit eine entsprechende Kollisionserkennung stattfinden kann.\\
+Bei Erzeugung einer Spielumgebung im \emph{SceneComposer} werden die physikalischen Eigenschaften bereits implizit implementiert.
+
 
 \subsection{Erzeugung einer Spielumgebung}
 Terrain oder SceneComposer, sky, 
@@ -176,6 +187,24 @@ Funktionalität und allgemeines vorgehen.
 Wichtig: Beschreibung von Licht nicht vergessen (sonst dunkel)
 
 \subsection{Hinzufügen von Audio}
+Bei großen rollen-basierten Spielen erzeugen die Sound-Effekte, neben den grafischen Eigenschaften, den Hauptbestandteil der entsprechenden Atmosphäre. In unserem Spiel wurden folgende Sound-Effekte verwendet:
+\begin{enumerate}
+	\item Horror-Theme Soundtrack als Hintergrundmusik
+	\item Donner-und Regensounds, welche zufällig abgespielt werden
+	\item Fußstapfen im Wald
+	\item Spezial Effekte wie beispielsweise: Knisterndes Feuer, Wolfs-Heulen, Spieler-Atmen, Herzklopfen...
+\end{enumerate} Um Audio dem Spiel hinzuzufügen sind die folgenden Code-Zeilen notwendig.
+
+\begin{lstlisting}
+audio_nature = new AudioNode(assetManager,"Sound/Environment/Ocean Waves.ogg", true);
+audio_nature.setLooping(true);  // activate continuous playing
+audio_nature.setPositional(true);   
+audio_nature.setVolume(3);
+rootNode.attachChild(audio_nature);
+audio_nature.play();
+}
+\end{lstlisting}
+
 
 \subsection{Physikalische Modellierung}
 Allgemeines zu Gravity, usw... wird von jme3 unterstützt.
