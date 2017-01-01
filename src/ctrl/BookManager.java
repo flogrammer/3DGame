@@ -105,7 +105,7 @@ public class BookManager extends Node{
     public float getDistance(Vector3f item, Vector3f player){
         // Euklidsche Distanz
         
-        float distance = 1000f; // Dummy         
+        float distance = Float.POSITIVE_INFINITY;         
         distance = (float) Math.sqrt(Math.pow(item.x-player.x, 2) + Math.pow(item.z-player.z, 2));
         return distance;
     }

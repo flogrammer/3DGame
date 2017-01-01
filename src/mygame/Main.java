@@ -80,7 +80,7 @@ public class Main extends SimpleApplication{
     float walkingAnimPos = 0;
     
     // For Running time
-    float maxRunningTime = 15;
+    float maxRunningTime = 12;
     boolean runningReseted = true;
     
     final int MOVEMENTSPEED = 5;
@@ -228,7 +228,7 @@ public class Main extends SimpleApplication{
            maxRunningTime = maxRunningTime + tpf; // regenerieren
            System.out.println(maxRunningTime);
        }
-       if (maxRunningTime >= 15){ // Stop when old value was reached
+       if (maxRunningTime >= 12){ // Stop when old value was reached
            runningReseted = true;
        }
            
