@@ -6,8 +6,9 @@
 
 Bei 3-dimensionalen Spielen wird das Spielgeschehen in einen Raum transferiert und dem Spieler die Möglichkeit gegeben sich dort frei bewegen zu können. \newline
 Im Gegensatz zu 2-dimensionalen Spielen sind hier deutlich mehr Berechnungen auf vektorieller Ebene notwendig, was sich auf die Laufzeit niederschlägt. Daher ist es besonders wichtig ein effizientes Programm zu generieren.
-Diesbezüglich ist Java nicht die optimale Programmiersprache, da durch den Interpreter viel Zeit verloren geht.
-\linebreak
+Diesbezüglich ist Java nicht die optimale Programmiersprache, da durch den Interpreter viel Zeit verloren geht. \newline
+Dennoch können mit Java sehr schöne und funktionale Spiele erstellt werden.
+\\
 Im Allgemeinen kann man sagen, dass die meisten 3D Spiele folgende Elemente enthalten:
 \begin{itemize}
 	\item 3D-Modelle und eine räumliche Spielumgebung
@@ -18,15 +19,10 @@ Im Allgemeinen kann man sagen, dass die meisten 3D Spiele folgende Elemente enth
 
 
 \bigskip
-https://de.wikipedia.org/wiki/Spiel-Engine
-
-
-
-
 
 \section{Funktionsweise und Auswahl von Game Engines}\label{sec:jMonkeyEngine}
 Um nicht sämtliche mathematischen Berechnungen auf der Grafikkarte selber programmieren, oder beispielsweise die Lautsprecher für Audio-Effekte ansprechen zu müssen, erhält der Entwickler Unterstützung durch sogenannte "Game Engines".
-Diese beinhalten die Basisfunktionen von Spielen und ermöglichen dem Spiele-Programmierer eine gezieltere Entwicklung. Zu den Basisfunktionalitäten gehören im Allgemeinen die folgenden:
+Diese beinhalten die Basisfunktionen von Spielen und ermöglichen dem Spiele-Programmierer eine gezieltere Entwicklung. Zu den Basisfunktionalitäten gehören im Allgemeinen die folgenden \cite{BF1}:
 \begin{enumerate}
 	\item Grafik-Engine
 	\item Physiksystem
@@ -43,143 +39,141 @@ Im folgenden eine Übersicht einiger Engines:
 	\myfloatalign
 	\begin{tabularx}{\textwidth}{Xll} \toprule
 		\tableheadline{GameEngine} & \tableheadline{Vorteile} & \tableheadline{Nachteile} \\ \midrule 
-		Unity & Sehr bekannt, beliebt &  zu oberflächlich, kein Java \\
+		Unity & Viele Benutzer, beliebt &  zu oberflächlich, kein Java \\
 		jMonkeyEngine & Sehr entwicklungsnahe, Java & Schlechte Dokumentation \\
-		Wurfel Engine & Sehr benutzerfreundlich & keine Physikunterstützung \\
+		Wurfel Engine & Benutzerfreundlich & Keine Physikunterstützung \\
+		Cry Engine & Sehr schöne Grafik & Kein Java \\
 		\bottomrule
 	\end{tabularx}
-	\caption[Engines]{Vor und Nachteile einiger Game Engines}  \label{tab:example}
-\end{table}
-
-\bigskip
+	\caption[Engines]{Vor - und Nachteile einiger Game Engines \cite{GE1}}  \label{tab:example}
+\end{table} 
 Letztendlich fiel die Entscheidung auf die jMonkeyEngine, welche häufig von Java Entwicklern verwendet wird. 
-
-https://de.wikipedia.org/wiki/Spiel-Engine
-https://de.wikipedia.org/wiki/Liste-von-Spiel-Engines
 
 
 \subsection {Die jMonkeyEngine}
-Die jMonkeyEngine (jME) ist komplett in Java geschrieben und basiert auf dem Buch "3D Game Engine Design" von David Eberly.
+Die jMonkeyEngine (jME) ist komplett in Java geschrieben und basiert auf dem Buch "3D Game Engine Design" von David Eberly \cite{GE2}.
 Durch eine Abstraktionsschicht kann jedes beliebige Rendering System verwendet werden, beispielsweise die Lightweight Java Game Library (LWJGL) oder die Open Graphics Library (OpenGL).
-Die neuste Version ist jME3, welche einige hilfreiche Funktionen mit sich bringt, wie z.B. ein Partikelsystem, Frustum Culling oder 3D Sound Unterstützung.
-
-
-https://de.wikipedia.org/wiki/JMonkeyEngine
+Die neuste Version ist jME3, welche einige hilfreiche Funktionen mit sich bringt, wie beispielsweise ein Partikelsystem, Frustum Culling oder 3D Sound Unterstützung \cite{JM1}.
+\begin{description}
+	\item[Frustum Culling:] "Frustum Culling ist eine Optimierungsmethode, bei der all die Objekte vom Zeichnen ausgeschlossen werden, die außerhalb des Sichtbereichs (des Frustums) liegen." \cite{FC1}
+\end{description}
 
 
 \section{Umsetzung in Programmcode}\label{sec:code}
-Im folgenden wird beschrieben wie einzelne Elemente in der jMonkeyEngine programmiert werden können und was dabei zu beachten ist.
-
-https://docs.jmonkeyengine.org/beginner/beginner-intro.html
+Im folgenden wird beschrieben wie einzelne Elemente in der jMonkeyEngine programmiert werden können und was dabei zu beachten ist. Die Erklärungen orientieren sich hierbei an dem jme3 Online-Beginners-Guide \cite{BG1} und der entsprechenden Dokumentation.
 
 \subsection{Erzeugung der Application-Klasse: SimpleApplication}
 Die Main-Klasse jedes jME3 Spieles erbt von der Klasse SimpleApplication, welche ein Spiel darstellt.
 In der main-Methode wird dann eine neue Instanz erstellt und anschließend gestartet.
 
-Jede Unterklasse der SimpleApplication beinhaltet diese Methoden:
+Jede Unterklasse der SimpleApplication beinhaltet die folgenden Methoden:
 \begin{enumerate}
 	\item simpleInitApp():
 	Sorgt für das Laden von Modellen, der Erstellung einer räumlichen Umgebung sowie jegliche Initiierungen.
 	\item simpleUpdate(float tpf):
-	Wird jedes frame per second (fps) ausgeführt und kümmert sich um gegebenenfalls neue Zustände.
+	Wird für jedes frame per second (fps) ausgeführt und kümmert sich um gegebenenfalls geänderte Spielzustände.
 	\item simpleRender(RenderManager rm):
-	Wird stets nach simpleUpdate aufgerufen und zeichnet das Sichtbild des Spielers neu. Dazu bekommt die Methode einen RenderManager übergeben, welcher Präferenzen beim Zeichnen berücksichtigt (z.B. welche Ebene vorne oder hinten ist).
-\end{enumerate}
-
-Die erste der drei Methoden wird stets zu Beginn ausgeführt um alle benötigten Elemente bereit zu stellen.
+	Wird stets nach simpleUpdate aufgerufen und zeichnet das Sichtbild des Spielers neu. Dazu bekommt die Methode einen RenderManager übergeben, welcher Präferenzen beim Zeichnen berücksichtigt (z.B. welche Ebene vorne oder hinten gezeichnet werden soll).
+\end{enumerate} Die erste der drei Methoden wird stets zu Beginn ausgeführt um alle benötigten Elemente bereit zu stellen.
 
 \subsection{Funktionsweise von Nodes}
-Um Elemente zum Renderingprozess hinzuzufügen, um sie also sichtbar zu machen, müssen diese an ensprechende "Nodes" (Knoten) angehängt werden.
-Hierbei gibt es je nach Verwendungszweck verschiedene Arten zum Beispiel audioNode für Soundobjekte oder guiNode für Elemente auf der Benutzeroberfläche.
-Zuletzt werden alle Nodes an die rootNode, also die Wurzel, angehängt. Im  Programmcode funktioniert dies mit der Methode attach() bzw. detach() zum entfernen.
-Selbstverständlich können Objekte auch direkt an die rootNode angehängt werden.
-Allerdings ist es empfehlenswert eine geeignete Baumstruktur zu erstellen um so bestimmte Elemente in Gruppen anzusprechen.
-\bigskip
-Beispiel: Erzeugung einer eigenen Node durch:
+Um Elemente zum Renderingprozess hinzuzufügen, um sie also sichtbar zu machen, müssen diese an ensprechende "Nodes" (engl. Knoten) angehängt werden.
+Hierbei gibt es je nach Verwendungszweck verschiedene Arten zum Beispiel die \emph{audioNode} für Soundobjekte oder die \emph{guiNode} für Elemente auf der Benutzeroberfläche.\\
+Final werden alle Nodes an die rootNode, also die Wurzel, angehängt. Im  Programmcode funktioniert dies mit der Methode \emph{attachChild()} bzw. \emph{detachChild()} zum entfernen.\\
+Selbstverständlich können Objekte auch direkt an die rootNode angehängt werden, weshalb die Methodenparameter Modelle, Nodes, Bilder aber auch beispielsweise Audio-Files sind.
+Allerdings ist es empfehlenswert eine geeignete Baumstruktur zu erstellen um so bestimmte Elemente in Gruppen anzusprechen.\\
+
+\colorbox{grau}{\parbox{\dimexpr\textwidth-8\fboxsep}{\centering
+\underline{\smash{Beispiel:}} Erzeugung einer eigenen Node durch:
 \begin{center}
-	\fcolorbox{grau}{grau}{Node myNode = new Node();}
+	\fcolorbox{grau}{white}{Node myNode = new Node();}
 \end{center}
 
 Wird nun beispielsweise die folgende Funktion auf dem Konten ausgeführt,
 \begin{center}
-	\fcolorbox{grau}{grau}{myNode.doSomething();}	
+	\fcolorbox{grau}{white}{myNode.doSomething();}	
 \end{center}
 
 so wird diese auch für sämtliche Kinder des Knotens ausgeführt.
-
+}}
 
 \subsection{Modelle und Assets}
-Sämtliche externe Gegenstände des Spiels werden im assets Ordner im jME3 Projekt gesammelt. Dies sind multi-media Dateien wie 3D-Modelle, Soundfiles, Texturen, Shader und was sonst noch benötigt wird.
-Um diese dann aus dem Ordner ins Spiel zu laden wird der sogenannte AssetManager benötigt, welcher einfach eine Instanz der Klasse mit entsprechenden Funktionalitäten ist.
-Modelle sind dreidimensionale Gebilde welche verschiedenste Elemente in einem Spiel sein können. Hierbei verwendet jME3 die Klasse Spatial (engl. für "räumlich"). 
-
-Zum Laden eines Objektes wird die entsprechende Funktion loadTexture() aufgerufen und der entsprechende Pfad zum Modell übergeben.
-
+Sämtliche externe Gegenstände des Spiels werden im \emph{assets}-Ordner im jME3 Projekt gesammelt. Dies sind multi-media Dateien wie 3D-Modelle, Soundfiles, Texturen, Shader und was sonst noch benötigt wird.
+Um diese aus dem Ordner ins Spiel zu laden wird der sogenannte \emph{AssetManager} benötigt, welcher einfach eine Instanz der Klasse mit entsprechenden Funktionalitäten ist. \\Modelle sind dreidimensionale Gebilde welche verschiedenste Elemente in einem Spiel sein können. Hierbei verwendet jME3 die Klasse Spatial (engl. für "räumlich"). \\Zum Laden eines Objektes wird die entsprechende Funktion \emph{loadTexture(String path)} bzw. \emph{loadModel(String path)} aufgerufen und der entsprechende Pfad zum Modell übergeben:
 \begin{center}
-\fcolorbox{grau}{grau}
+\fcolorbox{grau}{white}
 {Spatial baum = assetManager.loadTexture("Models/Baum.j3o");}
-\end{center}
-
-Für Modelle gibt es viele verschiedene Datentypen. Neben dem jMonkey-eigenen Dateiformat j3o existieren unter anderem folgende wichtige Vertreter:
+\end{center} Für Modelle gibt es viele verschiedene Datentypen. Neben dem jMonkey-eigenen Dateiformat .j3o existieren einige weitere. Selbstverständlich ist meist eine Konversion zwischen den Formaten möglich. Die häufigsten von uns angetroffenen Vertreter für Modell-Deklarationen sind die folgenden:
 \begin{enumerate}
-	\item XML-Dateien: Aus mesh.xml Daten wird ein Objekt erzeugt. 
-	\item OBJ-Dateien: Die allgemeine Darstellung für Objekte.
+	\item XML-Dateien: Aus einer mesh.xml Datei wird ein Objekt erzeugt. 
+	\item OBJ-Dateien: Ein von \emph{Wavefront Technologies} entwickeltes Dateiformat für geometrische Formen. \cite{OBJ1}
 	\item Blender-Dateien: Dies sind Dateien aus der Blender-Software, mit welcher Modelle erzeugt werden können.
-\end{enumerate}
+\end{enumerate} Wie bereits unter \emph{Funktionsweise von Nodes} beschrieben müssen die Spatials nun lediglich zur rootNode, bzw. einer anderen Node welche mit der rootNode verknüpft ist, hinzugefügt werden. Damit werden die Modelle und Texturen sichtbar und sind Teil des Rendering-Prozesses.
 
-\bigskip
-Um Modelle sichtbar zu machen müssen diese nun nur noch zu einer Node z.B. der rootNode hinzugefügt werden. 
 
 \begin{center}
-	\fcolorbox{grau}{grau}
+	\fcolorbox{grau}{white}
 	{rootNode.attachChild(baum);}
-\end{center}
-
-
-Neben dem Polygonzug und dem Material gibt es noch das Skelett. Dieses kann ebenfalls in einem entsprechenden Programm wie Blender erzeugt werden und daraus bestimmte Bewegungsabläufe in Spielen bestimmt werden.
-Das Skelett ist notwendig für Animationen von Modellen wie beispielsweise Gehen, Springen oder Ähnliches.
-In unserem Spiel haben wir uns für eine First-Person Perspektive entschieden, wodurch keine Animationen für den Spieler notwendig waren.
+\end{center} Der Aufbau von Modellen erfolgt durch entsprechende Software mit Polygonzügen oder Punktwolken. Dies definiert die allgemeine Struktur von Objekten.\\
+Neben dieser und dem Material (vgl. \emph{Materialien}) gibt es noch das Skelett. Dieses kann ebenfalls in einem entsprechenden Programm wie Blender erzeugt und daraus bestimmte Bewegungsabläufe in Spielen bestimmt werden.
+Das Skelett ist notwendig für Animationen von Modellen wie beispielsweise Gehen, Springen oder Ähnlichem.\\
+In unserem Progman-Spiel haben wir uns für eine First-Person Perspektive entschieden, wodurch keine Animationen für den Spieler notwendig waren. Darüber hinaus haben wir uns auf Grund des Zeitaufwandes gegen eine Implementierung eines Skeletts beim Progman entschieden. Dieser ist daher nur eine starre Figur.
 
 
 
 \subsection{Materialien}
-Ein Modell besteht im Allgemeinen aus drei wichtigen Elementen.
-Die Hauptstruktur (Polygonzug), das Skelett (Bewegungsapparat) und dann noch das Material.
-Letzteres bestimmt wie das Modell aussieht, d.h. welche Farben und Strukturen das Modell an den entsprechenden Stellen bekommt.
-Dateien für das Material sind meist test.material aber auch Bilddateien wie test.jpg oder test.png sind gängig.
+Da in Modell-Software vorerst nur die Form von Figuren bestimmt wird, muss anschließend noch die Farbe, die Oberflächenstruktur und das Lichtverhalten bestimmt werden. Dies funktioniert über sogenannte \emph{'materials'}.\\
+Die Datei für das Material kann in jme3 mit der Endung .mtl identifiziert werden. Diese bildet die entsprechenden Farbwerte von Bilddateien auf das Modell ab. Als Farbgeber sind beispielsweise mat.jpg oder mat.png gängig. Darüber hinaus können durch eine \emph{bump-map} und \emph{normalen}-Formate die Struktur der Oberfläche sowie das Verhalten bei Lichteinstrahlung (bspw. spiegelnd / schattierend /...) festgelegt werden. \\ Mit diesen Werkzeugen können sehr detaillierte Modellgenerierungen erfolgen, die nahezu realitätsgetreu sind.
 
 
-\begin{figure}[h]
+
+\begin{figure}[h!]
 	\myfloatalign
 	\subfloat[Modell ohne Material]
-	{\includegraphics[width=.45\linewidth]{images/modelmat}} \quad
+	{
+	\includegraphics[width=.3\linewidth, height = 70pt]{images/modelmat}} \quad
 	\subfloat[Modell mit Material]
 	{\label{fig:example-b}%
-		\includegraphics[width=.45\linewidth]{images/modelmat2}} \\
-	\caption[Bilder.]{Modell mit und ohne Material}\label{fig:example}
+	\includegraphics[width=.3\linewidth, height = 70pt]{images/modelmat2}} \\
+	\caption[Materials auf Modellen]{Modell mit und ohne Material \cite{Fig1}}\label{fig:example}
+	
 \end{figure}
 
-\bigskip
 
-https://hub.jmonkeyengine.org/t/changes-to-animations-loading-in-blender-importer-important-for-importer-users/28304/10
+
+
 
 
 
 \subsection{User-Input}
 
 Aus einem 3-dimensionalen Gebilde wird erst dann ein Spiel, wenn Interaktion mit dem Spieler stattfindet. Dazu müssen Tasteneingaben, Mauseingaben oder gegebenfalls auch Toucheingaben abgefangen und verarbeitet werden.
-Hierbei werden die bekannten Listener-Klassen verwendet.
-TODO:
-Welche möglichkeiten zur Spiel/Shoot/Jump usw Bewegung abgefangen werden sollten.
-Dann natürlich Listener Klassen und wie FirstPerson gesteuert werden kann.
+Hierbei werden die aus der ProkSy-Vorlesung bekannten Listener-Klassen verwendet.
+Bezogen auf unser Spiel wurden folgende Aktionen durch Listener abgefangen:
+\begin{enumerate}
+	\item W/A/S/D: Dient zur Bewegung innerhalb des Spielraumes.
+	\item Pfeiltasten/Maus: Zur Rundumsicht entsprechend einer Kopf-Bewegung.
+	\item Taste "B": Aufnahme eines gefundenen Buches.
+	\item Taste "L": Ein-/Ausschalten der Taschenlampe.
+	\item Leertaste: Sprung
+\end{enumerate} Zur Realisierung stehen in jme3 zwei wichtige Listener-Klassen zur Verfügung: Der \emph{ActionListener} und der \emph{AnalogListener}.
+Ersterer sollte verwendet werden, wenn einzelne Aktionen erfolgen wie z.B. einmaliges Drücken der Taste B, zum Aufsammeln eines Buches.\\
+Die zweite Klasse widerum, falls dauerhafte Events wie Gedrückthalten von W zur Vorwärtsbewegung abgefangen werden sollen. \\
+Im Programmcode müssen dann entsprechende Aktionen erfolgen, damit der Input auch eine Auswirkung auf das Spiel hat. Beim Drücken von W müsste etwa der Richtungsvektor sowie die aktuelle Position abgefangen werden um eine Vorwärtsbewegung um x Richtungseinheiten zu erzeugen.
 
 \subsection{Kollisionserkennung}
+Damit man als Charakter nicht durch die gesamte Spielwelt gehen kann, müssen entsprechende Kollisionserkennungen eingebaut werden. 
+\begin{center}
+	\fcolorbox{grau}{white}
+	{rootNode.attachChild(baum);}
+\end{center}
 Allgemeine Beschreibung mit mesh als Form für die Kollision. Dann natürlich wie die Kollision funktioniert (aufruf von Methoden overlap, dann nicht weiter...)
 Wird intern von jme3 übernommen und kann auch direkt im scene composer verwendet werden.
 
 \subsection{Erzeugung einer Spielumgebung}
 Terrain oder SceneComposer, sky, 
 Funktionalität und allgemeines vorgehen.
+Wichtig: Beschreibung von Licht nicht vergessen (sonst dunkel)
 
 \subsection{Hinzufügen von Audio}
 
@@ -194,6 +188,7 @@ Allgemeines zu Gravity, usw... wird von jme3 unterstützt.
 	\frac{Z}{A}
 	\rho \delta x \quad\textrm{keV},
 \end{eqnarray*}
+\cite{Cr14}
 \bigskip
 \begin{equation}
 \kappa =\frac{\xi}{E_{\textrm{max}}} %\mathbb{ZNR}
@@ -223,51 +218,6 @@ In der jMonkeyEngine ist es grundsätzlich vorgesehen, dass man seinen Modellen 
 GRAFIK generateLOD.png
 
 Ein alternativer Weg wäre, dass man der Geometry eines vorhandenen Spatials während der Laufzeit einen neuen LOD zuweist. 
-
-
-
-Das ist ein Zitat. \cite{Wa14b}.
-\begin{description}
-	\item[Begriff A:] Und so funktioniert eine Begriffsbeschreibung.
-\end{description}
-
-
-
-
-
-
-
-
-
-\begin{table}
-	\myfloatalign
-	\begin{tabularx}{\textwidth}{Xll} \toprule
-	\tableheadline{jMonkeyEngine} & \tableheadline{Vorteile} & \tableheadline{Nachteile} \\ \midrule 
-    Dokumentation & viele Beispiele &  oft deprecated \\
-	Noch ein Punkt & Julian & Florian \\
-	\bottomrule
-	\end{tabularx}
-	\caption[Kurzer Titel Tabelle.]{Beispiel für eine Tabelle}  \label{tab:example}
-\end{table}
-
-
-
-\begin{figure}[bth]
-        \myfloatalign
-        \subfloat[Asia personas duo.]
-        {\includegraphics[width=.45\linewidth]{images/example_1}} \quad
-        \subfloat[Pan ma signo.]
-        {\label{fig:example-b}%
-         \includegraphics[width=.45\linewidth]{images/example_2}} \\
-        \subfloat[Methodicamente o uno.]
-        {\includegraphics[width=.45\linewidth]{images/example_3}} \quad
-        \subfloat[Titulo debitas.]
-        {\includegraphics[width=.45\linewidth]{images/example_4}}
-        \caption[Bilder.]{Beispielbilder von jMonkey.}\label{fig:example}
-\end{figure}
-
-
-
 
 
 
