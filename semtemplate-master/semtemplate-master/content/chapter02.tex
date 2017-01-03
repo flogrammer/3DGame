@@ -14,11 +14,16 @@ Im Allgemeinen kann man sagen, dass die meisten 3D Spiele folgende Elemente enth
 	\item 3D-Modelle und eine räumliche Spielumgebung
 	\item Eine sog. "Kamera", welche nur den relevanten Teil des Bildes abbildet
 	\item Möglichkeiten der Interaktion
+	\item Soundeffekte und Musik
 \end{itemize}
 
+\begin{figure}[h!]
+		\includegraphics[width=1\linewidth, height = 200pt]{images/3dgame}
+		\caption[Beispiel eines 3D Spiels]{Ausschnitt eines 3D Spiels in Java von ThinMatrix \cite{Fig2}}
+	
+\end{figure}
 
-
-\bigskip
+\clearpage
 
 \section{Funktionsweise und Auswahl von Game Engines}\label{sec:jMonkeyEngine}
 Um nicht sämtliche mathematischen Berechnungen auf der Grafikkarte selber programmieren, oder beispielsweise die Lautsprecher für Audio-Effekte ansprechen zu müssen, erhält der Entwickler Unterstützung durch sogenannte "Game Engines".
@@ -35,7 +40,7 @@ Zur Auswahl stehen eine Vielzahl von verschiedenen Engines, welche jeweils vor u
 Im folgenden eine Übersicht einiger Engines:
 
 
-\begin{table}
+\begin{table}[h!]
 	\myfloatalign
 	\begin{tabularx}{\textwidth}{Xll} \toprule
 		\tableheadline{GameEngine} & \tableheadline{Vorteile} & \tableheadline{Nachteile} \\ \midrule 
@@ -240,7 +245,9 @@ rootNode.attachChild(pm);
 
 
 \section{Optimierung des Programms}\label{sec:optimizing}
-Wenn man wie oben beschrieben einige Modelle und Effekte in seine Spielumgebung einbindet, kann das sehr schnell für ein Laptop zu aufwendig werden, dieses Spiel zu rendern. Dabei spielt die Anzahl der Vertexes bzw. Triangles eine zentrale Rolle. Jedes Modell hat unter Umständen einige tausend Triangles, sodass sich das in einem Spiel sehr leicht addieren kann. In unserem Spiel gibt es zum Beispiel knapp 2000 Bäume, welche alle gerendert werden müssen: Vereinfacht man dort das Modell des Baumes, hat dies viel Potenzial, das gesamte Spiel zu beschleunigen. Mit Hilfe von F5 kann man in jMonkey während des Spiels anzeigen lassen, wie viele Triangles und Vertexes gerade zu rendern sind. Es versteht sich von selbst, dass ein Spiel mit einigen Millionen Vertexes viel zu aufwendig wird zu rendern, weshalb die Framerate auf nahezu 0 sinken kann. Um dies zu verhindern, muss man also die Anzahl an Triangles und Vertexes verringern. Dies ist grundsätzlich durch die Minimierung der Anzahl von Modellen oder durh die Minimierung der Anzahl an Triangles und Vertexes innerhalb eines Modells möglich. Diese haben damit ein sogenanntes LevelOfDetail (kurz LOD). Interessant zu beobachten ist zudem, dass ein Terrain selbst (also der Ground) sehr viele Triangles besitzen kann. Das liegt daran, dass diese Terrains dafür ausgelegt sind, dass sie aufwendige Umgebungen darstellen müssen. So können Gebirge oder sonstige Unebenheiten sehr fein dargestellt werden. Der Nachteil dabei ist jedoch, dass es dadurch sehr aufwendig wird die Texture selbst ohne Models zu rendern, obwohl diese wie in unserem Beispiel einfach nur gerade sein kann. Es ist also unbedingt notwendig bei der Programmierung eines 3D-Spiels auf die Framerate und Komplexität der Welt zu achten.
+Wenn man wie oben beschrieben einige Modelle und Effekte in seine Spielumgebung einbindet, können der Prozessor bzw. die Grafikkarte sehr schnell an Grenzen stoßen. Dabei spielt die Anzahl der Vertexes bzw. Triangles eine zentrale Rolle. Jedes Modell hat unter Umständen einige tausend Triangles, sodass sich dies in einem Spiel sehr leicht aufsummieren kann. In unserem Spiel gibt es zum Beispiel knapp 2000 Bäume, welche alle gerendert werden müssen: Vereinfacht man dort das Modell des Baumes, hat dies viel Potenzial, das gesamte Spiel zu beschleunigen. Mit Hilfe von \emph{F5} kann man in jMonkey während des Spiels anzeigen lassen, wie viele Triangles und Vertexes gerade zu rendern sind. Es versteht sich von selbst, dass ein Spiel mit einigen Millionen Vertexes viel zu aufwendig wird, weshalb die Framerate meist auf nahezu null sinkt. Um dies zu verhindern, muss man also die Anzahl an Triangles und Vertexes verringern. Dies ist grundsätzlich durch die Minimierung der Anzahl von Modellen oder durch die Minimierung der Anzahl an Triangles und Vertexes innerhalb eines Modells möglich. Diese haben dafür ein sogenanntes LevelOfDetail (kurz LOD), welches abhängig von der Nähe Texturen und Modelle immer genauer zeichnet.
+
+Interessanterweise fiel uns auf, dass das Terrain selbst (also der Untergrund des Spielers) sehr viele Triangles besitzt. Das liegt daran, dass das Terrain dafür ausgelegt ist aufwendige Umgebungen darzustellen (sog. \emph{heightmaps}). So können Gebirge oder sonstige Unebenheiten sehr fein erstellt werden. Der Nachteil dabei ist jedoch, dass es sehr aufwendig wird die Textur selbst ohne Models zu rendern, obwohl diese wie in unserem Beispiel einfach nur gerade sein kann. Es ist also unbedingt notwendig bei der Programmierung eines 3D-Spiels auf die Framerate und Komplexität der Welt zu achten.
 
 
 
@@ -249,9 +256,15 @@ Wenn man wie oben beschrieben einige Modelle und Effekte in seine Spielumgebung 
 \subsubsection{Level of Detail (LOD)}
 In der jMonkeyEngine ist es grundsätzlich vorgesehen, dass man seinen Modellen eigene LODs gibt. Damit kann man anhand dieser LODs die Komplexität des Models im Laufe des Spiels bzw. vor dem Spiel verändern. Dabei gilt es noch zu beachten, dass die Modelle selbst keine LODs haben, sondern die Geometrys, welchen sie zugrunde liegene. Man kann innerhalb des SceneExplorers die einzelnen Modelle und deren Geometries auswählen, und eigene LODs generieren:
 
+\begin{lstlisting}
+Hier bitte Code erstellen Julian (wird zu Java formatiert)
 GRAFIK generateLOD.png
+\end{lstlisting}
 
-Ein alternativer Weg wäre, dass man der Geometry eines vorhandenen Spatials während der Laufzeit einen neuen LOD zuweist. 
 
+Ein alternativer Weg ist, dass man der Geometry eines vorhandenen Spatials während der Laufzeit einen neuen LOD-Wert zuweist. 
+
+
+\section{Kritik an der jMonkeyEngine3}
 
 
