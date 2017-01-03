@@ -674,17 +674,14 @@ public class Main extends SimpleApplication{
         {
             if(s instanceof AssetLinkNode)
             {
-                System.out.println(s + "V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
                 forest.addObject(s.getWorldBound());
             }
             else if(s instanceof Terrain)
             {
-                System.out.println(s +  " V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
                 Terrain t = (Terrain) s;
                 TerrainLodControl control =  new TerrainLodControl(t, cam);
                 control.setLodCalculator( new DistanceLodCalculator(10, 0.1f) );
                 s.addControl(control);
-                System.out.println(s +  " V: " + s.getVertexCount()+ " T: " + s.getTriangleCount());
             }
         }
         

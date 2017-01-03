@@ -52,12 +52,13 @@ public class Forest {
     } 
     public void initForest()
     {
+        //TODO
         Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
-        makeLoDLevel(tree);
         
+        makeLoDLevel(tree);
+        //TODO
         tree.scale(1.0f, 4.0f, 1.0f);
         
-        CollisionShape treeShape = new BoxCollisionShape(new Vector3f (0.3f, 10, 0.3f));
 
         //Creating positions for Forest
         for( int i = 0; i < trees.length; i++)
@@ -84,7 +85,8 @@ public class Forest {
                     }
                 }
         }
-        
+        //TODO
+        CollisionShape treeShape = new BoxCollisionShape(new Vector3f (0.3f, 10, 0.3f));
         
         //Add Collision and attachChild to rootNode
         for( int i = 0; i < trees.length; i++)
@@ -93,11 +95,16 @@ public class Forest {
             {
                 if(!o[i][j])
                 {
+                    
                     trees[i][j] = tree.clone();
                     trees[i][j].setLocalTranslation(trees_position[i][j]);
+                    
+                    //TODO
                     rootNode.attachChild(trees[i][j]);
                     RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);
                     trees[i][j].addControl(treeNode);
+                    
+                                        
                     bulletAppState.getPhysicsSpace().add(trees[i][j]);
                     treeNode.setPhysicsLocation(trees[i][j].getLocalTranslation());  
                 }
