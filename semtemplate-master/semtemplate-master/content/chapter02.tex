@@ -81,21 +81,16 @@ Um Elemente zum Renderingprozess hinzuzufügen, um sie also sichtbar zu machen, 
 Hierbei gibt es je nach Verwendungszweck verschiedene Arten zum Beispiel die \emph{audioNode} für Soundobjekte oder die \emph{guiNode} für Elemente auf der Benutzeroberfläche.\\
 Final werden alle Nodes an die rootNode, also die Wurzel, angehängt. Im  Programmcode funktioniert dies mit der Methode \emph{attachChild()} bzw. \emph{detachChild()} zum entfernen.\\
 Selbstverständlich können Objekte auch direkt an die rootNode angehängt werden, weshalb die Methodenparameter Modelle, Nodes, Bilder aber auch beispielsweise Audio-Files sind.
-Allerdings ist es empfehlenswert eine geeignete Baumstruktur zu erstellen um so bestimmte Elemente in Gruppen anzusprechen.\\
+Allerdings ist es empfehlenswert eine geeignete Baumstruktur zu erstellen um so bestimmte Elemente in Gruppen anzusprechen.\\ \underline{\smash{Beispiel:}} Erzeugung einer eigenen Node durch:
+\begin{lstlisting}
+Node myNode = new Node();
+myNode.doSomething();
+\end{lstlisting}
+Wird nun beispielsweise die folgende Funktion auf dem Konten ausgeführt, so wird diese auch für sämtliche Kinder des Knotens ausgeführt.
 
-\colorbox{grau}{\parbox{\dimexpr\textwidth-8\fboxsep}{\centering
-\underline{\smash{Beispiel:}} Erzeugung einer eigenen Node durch:
-\begin{center}
-	\fcolorbox{grau}{white}{Node myNode = new Node();}
-\end{center}
 
-Wird nun beispielsweise die folgende Funktion auf dem Konten ausgeführt,
-\begin{center}
-	\fcolorbox{grau}{white}{myNode.doSomething();}	
-\end{center}
 
-so wird diese auch für sämtliche Kinder des Knotens ausgeführt.
-}}
+
 
 \subsection{Modelle und Assets}
 Sämtliche externe Gegenstände des Spiels werden im \emph{assets}-Ordner im jME3 Projekt gesammelt. Dies sind multi-media Dateien wie 3D-Modelle, Soundfiles, Texturen, Shader und was sonst noch benötigt wird.
@@ -165,17 +160,11 @@ Im Programmcode müssen dann entsprechende Aktionen erfolgen, damit der Input au
 Damit man als Charakter nicht durch die gesamte Spielwelt gehen kann, müssen entsprechende Kollisionserkennungen eingebaut werden. So sollte der Spieler beispielsweise stoppen, wenn er sich in einen Baum hinein bewegen würde. Dazu kann in der Engine der folgende Code realisiert werden:
 
 
-\colorbox{grau}{\parbox{\dimexpr\textwidth-8\fboxsep}{\centering
-		\begin{center}
-			\fcolorbox{grau}{white}{	CollisionShape shape = CollisionShapeFactor.createMeshShape(treeShape);}
-		\end{center}
-		\begin{center}
-			\fcolorbox{grau}{white}{baumControl = new RigidBodyControl(shape);}	
-		\end{center}
-		\begin{center}
-		\fcolorbox{grau}{white}{baum.addControl(baumControl);}	
-		\end{center}
-}}\bigskip \\Im ersten Schritt wird eine Form erstellt, welche das Modell annähert oder teilweise sogar mit ihm übereinstimmt. Bei Bäumen reichen theoretisch auch einfache Zylinder, da man mit der Baumkrone im Spiel sowieso nicht in Kontakt kommt. Im obigen Beispiel wird allerdings auf das Mesh, d.h  die tatsächliche Form zurückgegriffen.\\
+\begin{lstlisting}
+CollisionShape shape = CollisionShapeFactor.createMeshShape(treeShape);
+baumControl = new RigidBodyControl(shape);
+baum.addControl(baumControl);
+\end{lstlisting} Im ersten Schritt wird eine Form erstellt, welche das Modell annähert oder teilweise sogar mit ihm übereinstimmt. Bei Bäumen reichen theoretisch auch einfache Zylinder, da man mit der Baumkrone im Spiel sowieso nicht in Kontakt kommt. Im obigen Beispiel wird allerdings auf das Mesh, d.h  die tatsächliche Form zurückgegriffen.\\
 Danach wir ein Art 'Überwacher' instantiiert, welcher sich um die Kollisionsfunktionalität kümmert. Dieser "kontrolliert" wann sich Modelle überlappen und verhindert dadurch ein Bewegen durch diese. Optional kann als Parameter auch die physikalische Masse des Objekts übergeben werden.\\
 Im letzten Schritt wird dieser Control zum gewünschten Objekt hinzugefügt, damit eine entsprechende Kollisionserkennung stattfinden kann.\\
 Bei Erzeugung einer Spielumgebung im \emph{SceneComposer} werden die physikalischen Eigenschaften bereits implizit implementiert.
@@ -193,16 +182,15 @@ Bei großen rollen-basierten Spielen erzeugen die Sound-Effekte, neben den grafi
 	\item Donner-und Regensounds, welche zufällig abgespielt werden
 	\item Fußstapfen im Wald
 	\item Spezial Effekte wie beispielsweise: Knisterndes Feuer, Wolfs-Heulen, Spieler-Atmen, Herzklopfen...
-\end{enumerate} Um Audio dem Spiel hinzuzufügen sind beispielhaft die folgenden Code-Zeilen notwendig.
+\end{enumerate} Um Audio dem Spiel hinzuzufügen sind beispielhaft die folgenden Code-Zeilen notwendig (bei bereits existierender Instanz-Variable).
 
 \begin{lstlisting}
-audio_nature = new AudioNode(assetManager,"Sound/nature.mp3", true);
-audio_nature.setLooping(true);  // activate continuous playing
-audio_nature.setPositional(true);   
-audio_nature.setVolume(3);
-rootNode.attachChild(audio_nature);
-audio_nature.play();
-}
+audio_nature = new AudioNode(assetManager,"Sound/nature.mp3", true); // Laden
+audio_nature.setLooping(true);  // Aktiviere wiederholendes Abspielen
+audio_nature.setPositional(true); // Raeumliche Audio-Effekte  
+audio_nature.setVolume(3); // Lautstaerke festlegen
+rootNode.attachChild(audio_nature); 
+audio_nature.play(); // Abspielen des Sounds
 \end{lstlisting}
 
 
@@ -213,12 +201,20 @@ In unserem Spiel haben wir hauptsächlich von der Schwerkraft Gebrauch gemacht, 
 \subsection{Effekte und Details}
 Um dem Spiel mehr Leben einzuhauchen können verschiedenste Spezialeffekte erstellt werden. Im Folgenden wird auf zwei wichtige Beispiele eingegangen und wie diese in der jMonkeyEngine umgesetzt werden können.
 \subsubsection{Nebel}
-In unserem Wald haben wir zur besseren Atmosphäre einen Nebeleffekt hinzugefügt. Genaugenommen ist dies lediglich eine Erhellung der Pixel in Abhängigkeit des Abstandes vom Spieler. 
-Fog Filter... Entsprechende Berechnung kann in unter \cite{Cr14} nachvollzogen werden.
+In unserem Wald haben wir zur besseren Atmosphäre einen Nebeleffekt hinzugefügt. Genaugenommen ist dies lediglich eine Erhellung der Pixel in Abhängigkeit des Abstandes vom Spieler. Es gibt zwei Möglichkeiten im Code Nebel zu erzeugen:
+\begin{enumerate}
+	\item[1.] Programieren eines Shaders 
+	\item[2.] Verwendung des FogFilters in jme3
+\end{enumerate}
+Da wir uns für die Theorie dahinter interessierten haben wir uns über das allgemeine Vorgehen für 1. informiert aber letztendlich den FogFilter verwendet.
+Die Berechnung des Nebels erfolgt exponentiell mit Berücksichtigung von Lichteffekten, abhängig vom Abstand zum Spieler. Entsprechende Erklärungen können unter \cite{Cr14} nachgeschlagen werden.
 
-\[
-FinalFogColor = (1.0-e^{db\textrm{1}}*fogColor + e^{db\textrm{1}} * lightColor
-\]
+\begin{equation}
+	FinalFogColor = (1.0-e^{db\textrm{1}})*fogColor + e^{db\textrm{2}} * lightColor \\
+\end{equation} Wobei \\ \emph{
+	d = Abstand zum Spieler} \\
+	\emph{b = Nebeldichte je nach Lichteffekt} sind.
+
 
 \begin{figure}[h!]
 	\myfloatalign
@@ -229,7 +225,18 @@ FinalFogColor = (1.0-e^{db\textrm{1}}*fogColor + e^{db\textrm{1}} * lightColor
 \end{figure}
 
 \subsubsection{Partikeleffekte}
-Feuer, Regen... usw...
+In fast jeder 3D-Game-Engine existieren Partikeleffekte. Dabei werden Partikel verschiedenster Formen und Größen mit unterschiedlichen Geschwindigkeiten in den Raum gezeichnet. Dadurch lassen sich beispielsweise Effekte wie ein brennendes Feuer, Schnee, Regen oder Explosionen erstellen. In jme3 existiert hierfür die Klasse \emph{ParticleEmitter}, welche sich um das Verhalten der Partikel kümmert.\\
+In unserem Progman-Spiel kam diese in zwei Fällen zur Anwendung: Leichter Regen, sowie ein kleines Feuerchen in der nähe eines Hauses.\\ Im Folgenden ein Code-Beispiel wie Partikeleffekte erzeugt werden können, sowie Ausschnitte aus unserem Spiel.
+
+\begin{lstlisting}
+ParticleEmitter pm = new ParticleEmitter("effect", Type.Triangle, 60);
+Material pmMat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
+pmMat.setTexture("Texture", assetManager.loadTexture("Effects/rain.png"));
+pm.setMaterial(pmMat);
+pm.setImagesX(1);
+pm.setImagesY(1);
+rootNode.attachChild(pm);
+\end{lstlisting}
 
 
 \section{Optimierung des Programms}\label{sec:optimizing}
