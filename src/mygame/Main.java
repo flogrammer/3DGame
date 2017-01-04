@@ -585,7 +585,7 @@ public class Main extends SimpleApplication{
         // Physics and Collision
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+        //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
         
         
         // Init functionalities
@@ -642,7 +642,6 @@ public class Main extends SimpleApplication{
         System.out.println("13 "+(System.currentTimeMillis()-time));
         
         
-        setDisplayStatView(true);
         flyCam.setMoveSpeed(MOVEMENTSPEED);
         camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 400f); // Camera nur bis 100 meter
         showHUD("Finde die 9 Bücher bevor deine Zeit abläuft...");
