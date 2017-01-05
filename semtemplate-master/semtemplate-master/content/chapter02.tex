@@ -252,23 +252,23 @@ Interessanterweise fiel uns auf, dass das Terrain selbst (also der Untergrund de
 
 
 \subsubsection{Minimierung der Anzahl von Modellen}
-Um eine hohe Spielgeschwindigkeit zu gewährleisten bietet sich vorerst an, das Spiel möglichst simpel zu halten. Dies kann zum Beispiel erreicht werden, indem die Anzahl der benutzten Modelle reduziert wird. Also sollte man keine unnötigen Modelle verwenden, die nicht gebraucht werden. Man könnte zum Beispiel Modelle, welche von der Kameraposition im Spiel weit entfernt sind ausblenden, da diese sowieso nicht gesehen werden. In jMonkey kann man die Distanz einstellen, ab welcher die Modelle nicht mehr gerendert werden. 
+Um eine hohe Spielgeschwindigkeit zu gewährleisten bietet sich vorerst an, das Spiel möglichst simpel zu halten. Dies kann zum Beispiel erreicht werden, indem die Anzahl der benutzten Modelle reduziert wird. Also sollte man keine unnötigen Modelle verwenden, die nicht gebraucht werden. Man könnte zum Beispiel Modelle, welche von der Kameraposition im Spiel weit entfernt sind ausblenden, da diese sowieso nicht gesehen werden. In jMonkey kann man die Distanz einstellen, ab welcher die Modelle nicht mehr gerendert werden. Hier ein Beispiel aus unserem Code
 
-%\includegraphics[width=1\linewidth, height = 200pt]{images/CameraDistance.png}
+
+\begin{lstlisting}
+camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(),1f,400f); //nur bis 100 Meter
+\end{lstlisting}
+
 
 Somit muss in unserem Beispiel nicht jeder der fast 2000 Bäume gerendert werden, sondern nur in der Nähe des Spielers. Auf diesem Weg kann sehr einfach die Komplexität der darzustellenden Welt reduziert werden.
 
 \subsubsection{Level of Detail (LOD)}
-In der jMonkeyEngine ist es grundsätzlich vorgesehen, dass man seinen Modellen eigene LODs gibt. Damit kann man anhand dieser LODs die Komplexität des Models im Laufe des Spiels bzw. vor dem Spiel verändern. Dabei gilt es noch zu beachten, dass die Modelle selbst keine LODs haben, sondern die Geometries, welchen sie zugrunde liegen. Man kann innerhalb des SceneExplorers die einzelnen Modelle und deren Geometries auswählen, und eigene LODs generieren:
+In der jMonkeyEngine ist es grundsätzlich vorgesehen, dass man seinen Modellen eigene LODs gibt. Damit kann man anhand dieser LODs die Komplexität des Models im Laufe des Spiels bzw. vor dem Spiel verändern. Dabei gilt es noch zu beachten, dass die Modelle selbst keine LODs haben, sondern die Geometries, welchen sie zugrunde liegen. Man kann innerhalb des SceneExplorers die einzelnen Modelle und deren Geometries auswählen, und eigene LODs generieren:\\
+\includegraphics[width=1\linewidth]{images/generateLOD.png}
 
-\begin{lstlisting}
-Hier bitte Code erstellen Julian (wird zu Java formatiert)
-GRAFIK generateLOD.png
-\end{lstlisting}
 
 
 Ein alternativer Weg ist, dass man der Geometry eines vorhandenen Spatials während der Laufzeit einen neuen LOD-Wert zuweist. 
-
 
 \section{Kritik an der jMonkeyEngine3}
 
