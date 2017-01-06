@@ -14,6 +14,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.LodControl;
 
 import java.util.List;
 import jme3tools.optimize.LodGenerator;
@@ -37,7 +38,7 @@ public class Forest {
     final int anzahlBaueme = 42;
     final float MAX_X_RANDOM = 2.0f;
     final float MAX_Z_RANDOM = 2.0f;
-    final float REDUCTION_TREES = 0.95f;
+    final float [] REDUCTION_TREES = {0.15f,0.3f,0.45f,0.6f,0.75f,0.9f,0.95f};
     Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
     public Vector3f [][] trees_position = new Vector3f[anzahlBaueme][anzahlBaueme];
     boolean [][] o = new boolean[anzahlBaueme][anzahlBaueme];
@@ -123,14 +124,18 @@ public class Forest {
         Node t = (Node)tree;
         Geometry geom1 = (Geometry)t.getChild(0);
         Geometry geom2 = (Geometry)t.getChild(1);
-        
+       
         LodGenerator lod = new LodGenerator(geom1);
         lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL, REDUCTION_TREES);
-        geom1.setLodLevel(1);
-        
         lod = new LodGenerator(geom2);
         lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL, REDUCTION_TREES);
-        geom2.setLodLevel(1);
+        LodControl lc1 = new LodControl();
+        LodControl lc2 = new LodControl();
+        lc1.setTrisPerPixel(0.2f);
+        lc2.setTrisPerPixel(0.2f);
+        geom1.addControl(lc1);
+        geom2.addControl(lc2);
+        
     }
     public boolean checkCollision(Vector3f position)
     {

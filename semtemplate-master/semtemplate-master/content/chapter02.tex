@@ -263,13 +263,30 @@ camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(),1f,400
 Somit muss in unserem Beispiel nicht jeder der fast 2000 Bäume gerendert werden, sondern nur in der Nähe des Spielers. Auf diesem Weg kann sehr einfach die Komplexität der darzustellenden Welt reduziert werden.
 
 \subsubsection{Level of Detail (LOD)}
-In der jMonkeyEngine ist es grundsätzlich vorgesehen, dass man seinen Modellen eigene LODs gibt. Damit kann man anhand dieser LODs die Komplexität des Models im Laufe des Spiels bzw. vor dem Spiel verändern. Dabei gilt es noch zu beachten, dass die Modelle selbst keine LODs haben, sondern die Geometries, welchen sie zugrunde liegen. Man kann innerhalb des SceneExplorers die einzelnen Modelle und deren Geometries auswählen, und eigene LODs generieren:\\
-\includegraphics[width=1\linewidth]{images/generateLOD.png}
+In der jMonkeyEngine ist es grundsätzlich vorgesehen, dass man seinen Modellen eigene LODs gibt. Damit kann man anhand dieser LODs die Komplexität des Models im Laufe des Spiels bzw. vor dem Spiel verändern, indem man das Level of Detail ändert. Dabei gilt es noch zu beachten, dass die Modelle selbst keine LODs haben, sondern die Geometries, welchen sie zugrunde liegen. Man kann innerhalb des SceneExplorers die einzelnen Geometries in den Modellen auswählen, und so eigene LODs generieren:
 
+\begin{center}
+	\includegraphics[width=0.7\linewidth]{images/generateLOD.png}
+\end{center}
 
+Ein alternativer Weg ist, dass man der Geometry eines vorhandenen Spatials während der Laufzeit über den Java-Code neue LODs zuweist. Dies hat den Vorteil, dass man die LODs dynamisch während der Laufzeit neu erstellen kann. Ein anderer Grund kann sein, dass man das Modell, das man benutzen will, nicht bearbeiten kann. Bei den Bäumen die wir in unseren Spiel benutzt haben kann man zum Beispiel über den SceneComposer keine LODs hinzufügen, da das Modell des Baums nur in der Testdata Library von jMonkey enthalten ist. 
+Als Erstes muss für jede Geometry ein LodGenerator erstellt werden. Danach muss die bakeLods Methode aufgerufen werden, welcher man die ReductionMethod und den reductionValue übergeben muss. Es gibt drei verschiedene Methoden: Die am häufigsten benutzte Methode ist die PROPORTIONAL Methode, welche die Polygone um einen gewissen Prozentsatz reduziert. Die COLLAPSE\_COST Methode reduziert die Anzahl der Ecken solange, bis die Reduktionskosten den übergebenen Wert erreichen. Die CONSTANT Methode entfernt die gegebene Anzahl an Polygonen.
+\begin{lstlisting}
+LodGenerator lod = new LodGenerator(geometry);
+lod.bakeLods(reductionMethod,reductionValue);
+\end{lstlisting}
 
-Ein alternativer Weg ist, dass man der Geometry eines vorhandenen Spatials während der Laufzeit einen neuen LOD-Wert zuweist. 
+Der Methode bakeLods kann man auch mehr als nur ein reductionValue übergeben und somit mehrere LODs erstellen. Die LODs sind so gedacht, dass sie das Spiel vereinfachen, nicht, dass die Welt verunstaltet wird. Ein stark vereinfachtes Modell kann dem Spieler leicht negativ auffallen. Deshalb ist es sinnvoll, das Level of Detail während des Spiels automatisch anzupassen. Dafür gibt es die vorgefertigte LodControl Klasse, welche sicherstellt, dass das Level of Detail ausgehend von der Distanz zwischen Kamera und dem Modell gesetzt wird, hier ein Beispiel:
+
+\begin{lstlisting}
+LodControl lc = new LodControl();
+lc.setTrisPerPixel(trisPerPixel);
+myPrettyGeo.addControl(lc);
+rootNode.attachChild(myPrettyGeo);
+\end{lstlisting}
+
 
 \section{Kritik an der jMonkeyEngine3}
-
+Wir haben die jMonkeyEngine ausgewählt, weil sie komplett Java basiert ist, und weil sie eine gute SDK hat, in der man sehr einfach und schnell sein erstes 3D Spiel erstellen kann. Die Funktionen, die die jMonkeyEngine hat sind vielfältig. Wir möchten in diesem Abschnitt nun darauf eingehen, was wir für Erfahrungen mit der jMonkeyEngine gemacht haben. Die Grundlagen eines Spiels zu legen fiel uns leicht, denn dazu konnte man die Tutorials gut zu Rate ziehen, jedoch sind wir mit der Programmierung mit der jMonkeyEngine schnell an Grenzen unseres Wissens gestoßen, und haben auch im Internet wenig hilfreiches gefunden. Glaubt man jmonkeyengine.org, hat die jMonkeyEngine eine sehr gute Community und viele Probleme sind bereits geklärt worden. Doch als wir beim Programmieren einige Probleme hatten, war eben dies nicht gegeben. Man findet zwar oft einen entsprechenden Foreneintrag, der jedoch das Thema nicht genau trifft. Liest man den Eintrag nun durch, versteht man als Anfänger wenig, da sich dort häufig Experten unterhalten. Dazu komm, dass sehr viele Foreneinträge bereits einige Jahre alt sind und damit auch deren Links und Verweise auf andere Foreneinträge nicht mehr existieren. Man hat den Eindruck, als sei die Community vor einigen Jahren aktiv gewesen, jedoch nicht mehr heute. Sucht man bei Google das Wort "jMonkey", so findet man 113.000 Ergebnisse, sucht man stattdessen andere Engines wie "unity engine", so findet man 15.100.000, oder "cry engine" 11.600.000. Neben der nicht überzeugenden Dokumentation gibt es viele Fehler innerhalb von jMonkey oder der SDK. Das Erstellen eigener LODs hat zum Beispiel nur bei einem von uns beiden funktioniert, bei dem anderen ist einfach nichts passiert. Oder beim Arbeiten mit einer großen Scene Datei konnte der SceneComposer die Datei plötzich nicht mehr öffnen. Außerdem gibt es Fehler in den jMonkeyLibraries: In der SpotLight Klasse aus dem Paket com.jme3.light gibt es ein unnötiges System.out.println. Dort wird im Konstruktoraufruf ein berechneter Winkel in der Konsole ausgegeben. Sucht man dieses Problem, so stößt man darauf, dass das wohl jemand vergessen hat zu entfernen und den Bug nun beseitigt hat. Doch die letzte stabile Version hat dieses Problem immernoch. Beim benutzen eigener (bzw. online öffentlich verfügbarer) Modelle kann es sehr schnell zu Problemen führen, die auch oft nicht weiter spezifiziert werden. Beim transformieren und exportieren von 3D Modellen in jMonkey gab es oft Probleme, die nicht leicht zu beheben waren. Selbst die enge Zusammenarbeit mit Blender hat nicht wirklich gut funktioniert.
+Zusammengefasst kann man sagen, dass die jMonkeyEngine eine sehr gute Engine ist, die viele Funktionen beinhaltet und dazu sehr variabel anpassbar ist, jedoch auch ihre Schwächen und längst nicht die riesige Community hat, wie sie es angeben. Gerade als Anfänger in der Spieleprogrammierung kann dies schnell zum Stocken führen.
 
