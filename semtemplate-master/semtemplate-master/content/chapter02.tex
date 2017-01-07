@@ -176,7 +176,18 @@ Bei Erzeugung einer Spielumgebung im \emph{SceneComposer} werden die physikalisc
 
 
 \subsection{Erzeugung einer Spielumgebung}
-Terrain oder SceneComposer, sky, 
+Um die Welt, in der wir uns im Spiel befinden vorher genau zu definieren, kann man über den SceneComposer in der jMonkey SDK eine eigene Scene erstellen. Hat man eine neue "Empty jME3 Scene" erstellt, so erscheint der SceneComposer, in welchem man die Scene betrachten kann. Nun kann man der Scene vorerst ein Terrain hinzufügen. Ein Terrain ist ein Gelände, welches man nach seinen Vorzügen gestalten kann. Somit sind Gebirge und Hügel vorstellbar. Man kann dieses Terrain in dem Terrain Editor bearbeiten und nach seinen Wünschen anpassen. 
+\begin{figure}[h!]
+	
+	\caption{New Empty jME3 Scene mit erstelltem Terrain}
+	
+	\includegraphics[width=.8\linewidth]{images/EmptySceneWithTerrain} 
+	
+\end{figure}
+Nun kann man der Spielumgebung noch einige Modelle hinzufügen, sodass eine Welt entsteht, in der man sich während des Spiels bewegen kann. Modelle bekommt man relativ schnell und einfach über das Internet, wobei diese meistens nicht für die jMonkeyEngine konstruiert sind, sodass man diese noch konvertieren muss. Man kann diese 3D-Modelle in einem 3D-Tool importieren und für die jMonkeyEngine exportieren. Dies ist jedoch leichter gesagt als getan, denn viele Modelle verwenden Features, die nicht mit der jMonkeyEngine kompatibel sind. So benutzen viele Designer statt einer Lamp eine Sun als Lichtquelle, oder Modifiers, welche das Modell leicht verändern. Es war nicht immer einfach gute Modelle zu finden, die man in der jMonkeyEngine ohne viel Aufwand benutzen kann. Um ein eigenes Spiel wirklich komplett zu programmieren empfiehlt es sich, sich mit dem Design von 3D-Modellen auseinander zu setzen, wodurch man diese Mechanismen des Imports besser verstehen kann. Auf dieser Basis kann man zusätzlich sich eigene Modelle erstellen, welche wirklich zu dem eigenen Spiel passen. 
+
+Möchte man der Welt neben ein paar Modellen außerdem eine realistische Umgebung geben, so darf man den Himmel nicht vergessen. Auch hier hat die jMonkeyEngine vorgefertigte Libraries und in der 
+Terrain oder SceneComposer, sky,  
 Funktionalität und allgemeines vorgehen.
 Wichtig: Beschreibung von Licht nicht vergessen (sonst dunkel)
 
@@ -245,9 +256,9 @@ rootNode.attachChild(pm);
 
 
 \section{Optimierung des Programms}\label{sec:optimizing}
-Wenn man wie oben beschrieben einige Modelle und Effekte in seine Spielumgebung einbindet, können der Prozessor bzw. die Grafikkarte sehr schnell an Grenzen stoßen. Dabei spielt die Anzahl der Vertexes bzw. Triangles eine zentrale Rolle. Jedes Modell hat unter Umständen einige tausend Triangles, sodass sich dies in einem Spiel sehr leicht aufsummieren kann. In unserem Spiel gibt es zum Beispiel knapp 2000 Bäume, welche alle gerendert werden müssen: Vereinfacht man dort das Modell des Baumes, hat dies viel Potenzial, das gesamte Spiel zu beschleunigen. Mit Hilfe von \emph{F5} kann man in jMonkey während des Spiels anzeigen lassen, wie viele Triangles und Vertexes gerade zu rendern sind. Es versteht sich von selbst, dass ein Spiel mit einigen Millionen Vertexes viel zu aufwendig wird, weshalb die Framerate meist auf nahezu null sinkt. Um dies zu verhindern, muss man also die Anzahl an Triangles und Vertexes verringern. Dies ist grundsätzlich durch die Minimierung der Anzahl von Modellen oder durch die Minimierung der Anzahl an Triangles und Vertexes innerhalb eines Modells möglich. Diese haben dafür oft ein sogenanntes LevelOfDetail (kurz LOD), welches abhängig von der Nähe Texturen und Modelle immer genauer zeichnet.
+Wenn man wie oben beschrieben einige Modelle und Effekte in seine Spielumgebung einbindet, können der Prozessor bzw. die Grafikkarte sehr schnell an Grenzen stoßen. Dabei spielt die Anzahl der Vertexes bzw. Triangles eine zentrale Rolle. Jedes Modell hat unter Umständen einige tausend Triangles, sodass sich dies in einem Spiel sehr leicht aufsummieren kann. In unserem Spiel gibt es zum Beispiel knapp 2000 Bäume, welche alle gerendert werden müssen: Vereinfacht man dort das Modell des Baumes, hat dies viel Potenzial, das gesamte Spiel zu beschleunigen. Mit Hilfe von \emph{F5} kann man in jMonkey während des Spiels anzeigen lassen, wie viele Triangles und Vertexes gerade zu rendern sind. Es versteht sich von selbst, dass ein Spiel mit einigen Millionen Vertexes viel zu aufwendig wird, weshalb die Framerate meist auf nahezu null sinkt. Um dies zu verhindern, muss man also die Anzahl an Triangles und Vertexes verringern. Dies ist grundsätzlich durch die Minimierung der Anzahl von Modellen oder durch die Minimierung der Anzahl an Triangles und Vertexes innerhalb eines Modells möglich. Diese haben dafür oft ein sogenanntes LevelOfDetail (kurz LOD), welches je nach Level ein Modell genauer zeichnet. Hier könnte man implementieren, dass das Modell genauer gezeichnet wird, wenn die Distanz zu dem Modell klein ist.
 
-Interessanterweise fiel uns auf, dass das Terrain selbst (also der Untergrund des Spielers) sehr viele Triangles besitzt. Das liegt daran, dass das Terrain dafür ausgelegt ist aufwendige Umgebungen darzustellen (sog. \emph{heightmaps}). So können Gebirge oder sonstige Unebenheiten sehr fein erstellt werden. Der Nachteil dabei ist jedoch, dass es sehr aufwendig wird das Terrain selbst ohne Models zu rendern, obwohl diese wie in unserem Beispiel einfach nur gerade sein kann. Es ist also unbedingt notwendig bei der Programmierung eines 3D-Spiels auf die Framerate und Komplexität der Welt zu achten.
+Interessanterweise fiel uns auf, dass das Terrain selbst (also der Untergrund des Spielers) sehr viele Triangles besitzt. Das liegt daran, dass das Terrain dafür ausgelegt ist, aufwendige Umgebungen darzustellen (sog. \emph{heightmaps}). So können Gebirge oder sonstige Unebenheiten sehr fein erstellt werden. Der Nachteil dabei ist jedoch, dass es sehr aufwendig wird das Terrain selbst ohne Models zu rendern, obwohl diese wie in unserem Beispiel einfach nur gerade sein kann. Es ist also unbedingt notwendig bei der Programmierung eines 3D-Spiels auf die Framerate und Komplexität der Welt zu achten.
 
 
 

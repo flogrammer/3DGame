@@ -131,8 +131,8 @@ public class Forest {
         lod.bakeLods(LodGenerator.TriangleReductionMethod.PROPORTIONAL, REDUCTION_TREES);
         LodControl lc1 = new LodControl();
         LodControl lc2 = new LodControl();
-        lc1.setTrisPerPixel(0.2f);
-        lc2.setTrisPerPixel(0.2f);
+        lc1.setTrisPerPixel(0.02f);
+        lc2.setTrisPerPixel(0.02f);
         geom1.addControl(lc1);
         geom2.addControl(lc2);
         
