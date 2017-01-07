@@ -10,6 +10,7 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -38,9 +39,10 @@ public class Forest {
     final int anzahlBaueme = 42;
     final float MAX_X_RANDOM = 2.0f;
     final float MAX_Z_RANDOM = 2.0f;
-    final float [] REDUCTION_TREES = {0.15f,0.3f,0.45f,0.6f,0.75f,0.9f,0.95f};
+    final float [] REDUCTION_TREES = {0.8f, 0.9f, 0.95f};
     Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
     public Vector3f [][] trees_position = new Vector3f[anzahlBaueme][anzahlBaueme];
+    public double [][] trees_rotation = new double[anzahlBaueme][anzahlBaueme];
     boolean [][] o = new boolean[anzahlBaueme][anzahlBaueme];
     
     
@@ -58,7 +60,7 @@ public class Forest {
         
         makeLoDLevel(tree);
         //TODO
-        tree.scale(1.0f, 4.0f, 1.0f);
+        tree.scale(2.0f, 3.0f, 2.0f);
         
 
         //Creating positions for Forest
@@ -69,6 +71,7 @@ public class Forest {
                 float xrandom = (float)(Math.random()-0.5)*2.0f*MAX_X_RANDOM;
                 float zrandom = (float)(Math.random()-0.5)*2.0f*MAX_Z_RANDOM;
                 trees_position[i][j] = new Vector3f((i-anzahlBaueme/2+0.3f)*6f + xrandom,0f,(j-anzahlBaueme/2)*6f+zrandom);
+                trees_rotation[i][j] = 2*Math.PI * Math.random(); // Bogenmaß
             }
         }
         
@@ -99,7 +102,8 @@ public class Forest {
                     
                     trees[i][j] = tree.clone();
                     trees[i][j].setLocalTranslation(trees_position[i][j]);
-                    
+                    trees[i][j].setLocalRotation(
+                    new Quaternion(new float [] {0,(float)trees_rotation[i][j],0}));
                     //TODO
                     rootNode.attachChild(trees[i][j]);
                     RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);

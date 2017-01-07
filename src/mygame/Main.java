@@ -643,7 +643,7 @@ public class Main extends SimpleApplication{
         
         
         flyCam.setMoveSpeed(MOVEMENTSPEED);
-        camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 400f); // Camera nur bis 100 meter
+        camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(), 1f, 70f); // Camera nur bis 70 meter
         showHUD("Finde die 9 Bücher bevor deine Zeit abläuft...");
         
         
