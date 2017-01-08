@@ -187,7 +187,6 @@ public class Main extends SimpleApplication{
                 audioManager.audio_nature.stop();
                 audioManager.audio_breathing.stop();
                 audioManager.audio_theme.stop();
-                audioManager.audio_nature.stop();
                 Picture gameOverPicture = new Picture("gameover");
                 gameOverPicture.setImage(assetManager, "Textures/gameover.png", false);
                 gameOverPicture.setWidth(settings.getWidth());
@@ -300,20 +299,11 @@ public class Main extends SimpleApplication{
     
     public void updateItemCollision(float tpf){
 
-        for (int i = 0; i < bookManager.books.length; i++){
-        
-            if(bookManager.books[i].spatial.getUserData("status").equals(false)){
-                float distance = bookManager.books[i].spatial.getLocalTranslation().distance(position);
-                bookManager.findNextBook(position);
-                bookManager.minItemDistance = distance;
-                
-                if (distance < 3){
-                showHUD("Du hast ein Buch über " + bookManager.books[i].name + " gefunden. " +
+        bookManager.findNextBook(position);
+        if (bookManager.minItemDistance < 3){
+                showHUD("Du hast ein Buch über " + bookManager.books[bookManager.minItemIndex].name + " gefunden. " +
                         "Drücke B um es aufzunehmen.");
                 }
-            }
-
-        }
 
     }
     
