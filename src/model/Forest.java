@@ -64,7 +64,7 @@ public class Forest {
         
         makeLoDLevel(tree);
         //TODO: Skaliere den Baum um 2 Einheiten in x, 3 Einheiten in y- und 2 Einheiten in z-Richtung
-        tree.scale(2.0f, 3.0f, 2.0f);
+        tree.scale(2.0f, 4.0f, 2.0f);
         
 
         //Creating positions for Forest

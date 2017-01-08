@@ -46,7 +46,7 @@ public class AudioManager {
     }
     
     public void initAudio(){
-// Background audio
+       // Background audio
        audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
        audio_theme.setPositional(false);
        audio_theme.setLooping(false);
