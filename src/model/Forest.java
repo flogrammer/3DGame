@@ -42,7 +42,6 @@ public class Forest {
     final float MAX_Z_RANDOM = 2.0f;
     Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
     public Vector3f [][] trees_position = new Vector3f[anzahlBaueme][anzahlBaueme];
-    public double [][] trees_rotation = new double[anzahlBaueme][anzahlBaueme];
     boolean [][] o = new boolean[anzahlBaueme][anzahlBaueme];
     
     
@@ -63,7 +62,7 @@ public class Forest {
         Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
         
         makeLoDLevel(tree);
-        //TODO: Skaliere den Baum um 2 Einheiten in x, 3 Einheiten in y- und 2 Einheiten in z-Richtung
+        //TODO: Skaliere den Baum um 2 Einheiten in x, 4 Einheiten in y- und 2 Einheiten in z-Richtung
         tree.scale(2.0f, 4.0f, 2.0f);
         
 
@@ -75,7 +74,6 @@ public class Forest {
                 float xrandom = (float)(Math.random()-0.5)*2.0f*MAX_X_RANDOM;
                 float zrandom = (float)(Math.random()-0.5)*2.0f*MAX_Z_RANDOM;
                 trees_position[i][j] = new Vector3f((i-anzahlBaueme/2+0.3f)*6f + xrandom,0f,(j-anzahlBaueme/2)*6f+zrandom);
-                trees_rotation[i][j] = 2*Math.PI * Math.random(); // Bogenmaß
             }
         }
         
@@ -103,11 +101,10 @@ public class Forest {
             {
                 if(!o[i][j])
                 {
-                    
+                    float tree_rotation = (float)(2*Math.PI * Math.random()); // Bogenmaß
                     trees[i][j] = tree.clone();
                     trees[i][j].setLocalTranslation(trees_position[i][j]);
-                    trees[i][j].setLocalRotation(
-                    new Quaternion(new float [] {0,(float)trees_rotation[i][j],0}));
+                    trees[i][j].setLocalRotation(new Quaternion(new float [] {0,(float)tree_rotation,0}));
                     
                     
                     //TODO: füge den Baum der rootNode hinzu, erzeuge eine neue RigidBodyControl und füge die Control dem Baum hinzu

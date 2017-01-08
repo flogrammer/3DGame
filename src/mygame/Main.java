@@ -1,6 +1,5 @@
 package mygame;
 
-import view.PauseState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
@@ -40,11 +39,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Forest;
 import model.Progman;
-import view.GameFinishedState;
-import view.GameOverState;
-import view.MenuState;
 import com.jme3.post.FilterPostProcessor;
-import com.jme3.post.filters.CrossHatchFilter;
 import com.jme3.terrain.Terrain;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
@@ -59,39 +54,50 @@ import model.Rain;
  * @author Julian and Florian
  */
 public class Main extends SimpleApplication{
+    
+    //Walking
     boolean isWalking;
     boolean isRunning;
     boolean isWalkingFast;
+    float runFactor = 0.1f;
+    float walkingAnimPos = 0;
+    
+    //booleans for functions
     boolean anyKeyPressed;
     boolean lightActivated = false;
     boolean campfireSigh = false;
     boolean ghostPlayed = false;
     boolean fireCoughed = false;
     
+    //Time
     long startTime;
-    float runFactor = 0.1f;
+    //Flashlight
     float fullBattery = 600;
     float batteryStatus = fullBattery;
     float flashRadius = 20f;
     float outerRange = 50f;
-    long fadetime = 5000;
-    float fogDensity = 1.8f;
-    int initiationCounter = 0;
-    float walkingAnimPos = 0;
+    
+    
     
     // For Running time
     float maxRunningTime = 12;
     boolean runningReseted = true;
     
+    //Scene Variables
     final int MOVEMENTSPEED = 5;
     final int JUMPFACTOR = 50;
     final float WORLD_SIZE = 125.0f;
     
 
+    //System variables
     Camera camera;
-    Node cameraNode; // For the Flashlight
+    Node cameraNode; 
     Vector3f position;
+    int initiationCounter = 0;
+    
+    //HUD
     ColorRGBA color;
+    long fadetime = 5000;
     
     // Figures and Textures
     BookManager bookManager;
@@ -108,8 +114,7 @@ public class Main extends SimpleApplication{
     
     //Filters
     PostFogFilter fog;
-    CrossHatchFilter filter;
-    //PostScatterFilter scatter;
+    float fogDensity = 1.8f;
     
     // Labels & Textfields
     BitmapText textField;
@@ -121,31 +126,29 @@ public class Main extends SimpleApplication{
     private Vector3f walkDirection = new Vector3f(0,0,0);
     private Vector3f camLeft = new Vector3f();
     private boolean left = false, right = false, move = false, back = false;
-       
     BulletAppState bulletAppState;
     CharacterControl player;
     RigidBodyControl physicsNode;
     RigidBodyControl progControl;
     RigidBodyControl flashControl;
+    
+    //Fire
     ParticleEmitter fireEffect;
     
     // Geometries
     Forest forest = null;
     Rain rain = null;
     
-   // States
-    PauseState pState;
-    GameFinishedState gfState;
-    GameOverState goState;
-    MenuState mState;
             
     public static void main(String[] args) {
         //Hide some Information in Output
         Logger.getLogger("de.lessvoid").setLevel(Level.SEVERE);
         Logger.getLogger("com.jme3").setLevel(Level.SEVERE);
         
+        //Set AppSettings
         AppSettings aS = new AppSettings(true);
         aS.setSettingsDialogImage("Models/Images/progman.png");
+        //Start App
         Main app = new Main();
         app.setSettings(aS);
         app.start();
@@ -155,7 +158,7 @@ public class Main extends SimpleApplication{
     public void simpleInitApp() {
         setDisplayStatView(false);
         // Hinweis: Weil keine Menuführung vorhanden, init in update verschoben!
-        loadingScreen = new Picture("gameover");
+        loadingScreen = new Picture("GameLoading");
         loadingScreen.setImage(assetManager, "Textures/progman.jpg", false);
         loadingScreen.setWidth(settings.getWidth());
         loadingScreen.setHeight(settings.getHeight());
@@ -174,25 +177,25 @@ public class Main extends SimpleApplication{
         
         
         if (isRunning){
-        position = cam.getLocation();
-     
-       // Updates
-        gameOver = progman.updateProgman(tpf, position, lightActivated,(float)(bookManager.itemsCollected/bookManager.getBookCount()));
+            position = cam.getLocation();
 
-        updateFlashlight();
-        updateItems();
-        updateItemCollision(tpf);
-        updateCampfireSound();
-        updateRandomSounds();
-        updatePhysics();
-        
-        if (lightActivated)
-            updateBatteryStatus(tpf);
-        updateRunningStatus(tpf);
-        foodstepsCheck();
-        isWalking = false; // Muss jedes Frame neu gesetzt werden
-        isWalkingFast = false;
-        fadeHUD(tpf, fadetime);
+           // Updates
+            gameOver = progman.updateProgman(tpf, position, lightActivated,(float)(bookManager.itemsCollected/bookManager.getBookCount()));
+
+            updateFlashlight();
+            updateItems();
+            updateItemCollision(tpf);
+            updateCampfireSound();
+            updateRandomSounds();
+            updatePhysics();
+
+            if (lightActivated)
+                updateBatteryStatus(tpf);
+            updateRunningStatus(tpf);
+            foodstepsCheck();
+            isWalking = false; // Muss jedes Frame neu gesetzt werden
+            isWalkingFast = false;
+            fadeHUD(tpf, fadetime);
         }
     }
    
@@ -257,7 +260,6 @@ public class Main extends SimpleApplication{
         player.setWalkDirection(walkDirection);
         cam.setLocation(player.getPhysicsLocation());
     }
-    
     
     public void updateFlashlight(){
          Vector3f vectorDifference = new Vector3f(cam.getLocation().subtract(flash.getWorldTranslation()));
@@ -438,11 +440,7 @@ public class Main extends SimpleApplication{
     
     private ActionListener actionListener = new ActionListener(){
         public void onAction(String name, boolean isPressed, float tpf) {
-            if(name.equals("Pause") && isPressed){
-                /*pState = new PauseState(flyCam, stateManager, assetManager, inputManager, audioRenderer, guiViewPort);
-                stateManager.attach(pState); */
-
-              }
+            
             if(name.equals("Move") && isPressed == false){
                 audioManager.audio_fast_breathing.stop();
                 audioManager.audio_foodsteps.stop();
@@ -711,7 +709,6 @@ public class Main extends SimpleApplication{
         inputManager.addMapping("Back", new KeyTrigger(KeyInput.KEY_S));
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
-        inputManager.addMapping("Pause", new KeyTrigger(KeyInput.KEY_P));
         inputManager.addMapping("Light", new KeyTrigger(KeyInput.KEY_L));
         inputManager.addMapping("Run", new KeyTrigger(KeyInput.KEY_LSHIFT));
         inputManager.addMapping("Item", new KeyTrigger(KeyInput.KEY_B));
@@ -722,7 +719,6 @@ public class Main extends SimpleApplication{
         inputManager.addListener(analogListener, "Right");
         inputManager.addListener(analogListener, "Run");
 
-        inputManager.addListener(actionListener, "Pause");
         inputManager.addListener(actionListener, "Move");
         inputManager.addListener(actionListener, "Left");
         inputManager.addListener(actionListener, "Back");
@@ -785,7 +781,7 @@ public class Main extends SimpleApplication{
     public void makeFire(){
         fireEffect = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
         Material fireMat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
-        //fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
+        fireMat.setTexture("Texture", assetManager.loadTexture("Effects/Explosion/flame.png"));
         fireEffect.setMaterial(fireMat);
         fireEffect.setImagesX(2); fireEffect.setImagesY(2); // 2x2 texture animation
         fireEffect.setEndColor( new ColorRGBA(1f, 0f, 0f, 1f) );   // red
