@@ -181,7 +181,21 @@ public class Main extends SimpleApplication{
 
            // Updates
             gameOver = progman.updateProgman(tpf, position, lightActivated,(float)(bookManager.itemsCollected/bookManager.getBookCount()));
-
+            if(gameOver)
+            {
+                audioManager.noise.play();
+                audioManager.audio_nature.stop();
+                audioManager.audio_breathing.stop();
+                audioManager.audio_theme.stop();
+                audioManager.audio_nature.stop();
+                Picture gameOverPicture = new Picture("gameover");
+                gameOverPicture.setImage(assetManager, "Textures/gameover.png", false);
+                gameOverPicture.setWidth(settings.getWidth());
+                gameOverPicture.setHeight(settings.getHeight());
+                gameOverPicture.setPosition(0,0);
+                guiNode.attachChild(gameOverPicture);
+                isRunning = false;
+            }
             updateFlashlight();
             updateItems();
             updateItemCollision(tpf);

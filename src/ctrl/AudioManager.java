@@ -37,6 +37,7 @@ public class AudioManager {
     public AudioNode audio_sigh;
     public AudioNode audio_ghosts;
     public AudioNode audio_cough; 
+    public AudioNode noise;
     
     
     public AudioManager(Node rootNode, AssetManager assetManager){
@@ -151,6 +152,13 @@ public class AudioManager {
        audio_cough.setVolume(0.6f);
        audio_cough.setReverbEnabled(true);
        rootNode.attachChild(audio_cough); 
+       
+       //Progman Noise catched
+       noise = new AudioNode(assetManager, "Sounds/soundFX/noise.wav", false);
+       noise.setPositional(false);
+       noise.setLooping(false);
+       noise.setVolume(0.2f);
+       rootNode.attachChild(noise);   
 }
 }
 

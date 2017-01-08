@@ -86,7 +86,6 @@ public class Progman {
      */
     private AudioNode audio_progman;
     private AudioNode audio_progman2;
-    private AudioNode noise;
     private AudioNode noiseGUI_audio;
   
     
@@ -335,14 +334,6 @@ public class Progman {
         
         if(STATE == ProgmanState.catched)
         {
-            noise.play();
-            Picture gameOver = new Picture("gameover");
-            gameOver.setImage(assetManager, "Textures/gameover.png", false);
-            gameOver.setWidth(settings.getWidth());
-            gameOver.setHeight(settings.getHeight());
-            gameOver.setPosition(0,0);
-            guiNode.attachChild(gameOver);
-            
             return true;
         }
         else if(STATE == ProgmanState.catching)
@@ -485,17 +476,13 @@ public class Progman {
     }
    
      private void initNoise(AssetManager assetManager) {
-       noise = new AudioNode(assetManager, "Sounds/soundFX/noise.wav", false);
-       noise.setPositional(false);
-       noise.setLooping(false);
-       noise.setVolume(0.2f);
-       rootNode.attachChild(noise);   
+  
        
        // Noise played while old TV effect
        noiseGUI_audio = new AudioNode(assetManager, "Sounds/soundFX/tvnoise.wav");
        noiseGUI_audio.setPositional(false);
        noiseGUI_audio.setLooping(false);
-       noise.setVolume(0.06f);
+       noiseGUI_audio.setVolume(0.06f);
        rootNode.attachChild(noiseGUI_audio);
      
      }
