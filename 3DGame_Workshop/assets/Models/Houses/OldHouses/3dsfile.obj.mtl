@@ -1,0 +1,78 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.187496374)
+
+newmtl Material #7695
+Kd 0.584314 0.584314 0.584314
+Ka 0.584314 0.584314 0.584314
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+illum 1
+map_Kd wall_def.tga
+bump wall_def.tga
+map_bump Wall_Norm.tga
+
+newmtl Material #7693
+Kd 0.584314 0.584314 0.584314
+Ka 0.584314 0.584314 0.584314
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+illum 1
+map_Kd Roof_Def.tga
+bump Roof_Def.tga
+map_bump Roof_Norm.tga
+
+newmtl Material #7696
+Kd 0.584314 0.584314 0.584314
+Ka 0.584314 0.584314 0.584314
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+illum 1
+map_Kd Floor_Def.tga
+bump Floor_Def.tga
+map_bump Floor_Norm.tga
+
+newmtl JoinedMaterial_#4
+Kd 0.584314 0.584314 0.584314
+Ka 0.584314 0.584314 0.584314
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+illum 1
+map_Kd Frame_Def.tga
+bump Frame_Def.tga
+map_bump Frame_Norm.tga
+
+newmtl Material #7699
+Kd 0.584314 0.584314 0.584314
+Ka 0.584314 0.584314 0.584314
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+illum 1
+map_Kd Steel_Def.tga
+bump Steel_Def.tga
+map_bump Steel_Norm.tga
+
+newmtl Material #7697
+Kd 0.584314 0.584314 0.584314
+Ka 0.584314 0.584314 0.584314
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+illum 1
+map_Kd Glasses.tga
+
+newmtl Material #7701
+Kd 0.584314 0.584314 0.584314
+Ka 0.584314 0.584314 0.584314
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+illum 1
+map_Kd door_def.tga
+bump door_def.tga
+map_bump door_norm.tga
+

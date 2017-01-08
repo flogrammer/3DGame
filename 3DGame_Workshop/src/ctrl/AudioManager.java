@@ -1,0 +1,172 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ctrl;
+
+import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioNode;
+import com.jme3.scene.Node;
+
+/**
+ *
+ * @author Florian
+ */
+
+
+public class AudioManager {
+    
+   Node rootNode;
+   AssetManager assetManager;
+    
+    
+    // Audio
+    public AudioNode audio_theme;
+    public AudioNode audio_nature;
+    public AudioNode audio_foodsteps;
+    public AudioNode audio_breathing;
+    public AudioNode audio_fast_breathing;
+    public AudioNode audio_jump;
+    public AudioNode audio_flash_on;
+    public AudioNode audio_flash_off;
+    public AudioNode audio_flash_empty;
+    public AudioNode audio_item_collected;
+    public AudioNode audio_progman;
+    public AudioNode audio_progman2;
+    public AudioNode audio_campfire;
+    public AudioNode audio_sigh;
+    public AudioNode audio_ghosts;
+    public AudioNode audio_cough; 
+    public AudioNode noise;
+    
+    
+    public AudioManager(Node rootNode, AssetManager assetManager){
+        this.rootNode = rootNode;
+        this.assetManager = assetManager;
+        initAudio();        
+    }
+    
+    public void initAudio(){
+       // Background audio
+       audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
+       audio_theme.setPositional(false);
+       audio_theme.setLooping(false);
+       audio_theme.setVolume(0.2f);
+       rootNode.attachChild(audio_theme);
+       audio_theme.play();
+       
+       //TODO: 3.1 Erstelle den Sound audio_nature und spiele ihn ab
+      
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       audio_breathing = new AudioNode(assetManager, "Sounds/soundFX/breathing.wav", false);
+       audio_breathing.setPositional(false);
+       audio_breathing.setLooping(true);
+       audio_breathing.setVolume(0.5f);
+       rootNode.attachChild(audio_breathing);
+       audio_breathing.play();
+              
+       audio_fast_breathing = new AudioNode(assetManager, "Sounds/soundFX/fast_breath.wav", false);
+       audio_fast_breathing.setPositional(false);
+       audio_fast_breathing.setLooping(true);
+       audio_fast_breathing.setVolume(0.08f);
+       rootNode.attachChild(audio_fast_breathing);
+       
+       audio_jump = new AudioNode(assetManager, "Sounds/soundFX/sigh.wav", false);
+       audio_jump.setPositional(false);
+       audio_jump.setLooping(false);
+       audio_jump.setVolume(0.2f);
+       rootNode.attachChild(audio_jump);
+       
+       audio_flash_on = new AudioNode(assetManager, "Sounds/soundFX/flash_on.wav", false);
+       audio_flash_on.setPositional(false);
+       audio_flash_on.setLooping(false);
+       audio_flash_on.setVolume(0.2f);
+       rootNode.attachChild(audio_flash_on);
+       
+       audio_flash_off = new AudioNode(assetManager, "Sounds/soundFX/flash_off.wav", false);
+       audio_flash_off.setPositional(false);
+       audio_flash_off.setLooping(false);
+       audio_flash_off.setVolume(0.2f);
+       rootNode.attachChild(audio_flash_off);
+       
+       //TODO: 3.2.1 und 3.2.2 Erstelle den foodsteps Sound
+       
+       
+       
+       
+       
+       
+       
+       
+       audio_flash_empty = new AudioNode(assetManager, "Sounds/soundFX/flashEmpty.wav", false);
+       audio_flash_empty.setPositional(false);
+       audio_flash_empty.setLooping(false);
+       audio_flash_empty.setVolume(0.1f);
+       rootNode.attachChild(audio_flash_empty);
+       
+       audio_item_collected = new AudioNode(assetManager, "Sounds/soundFX/item_collected.wav", false);
+       audio_item_collected.setPositional(false);
+       audio_item_collected.setLooping(false);
+       audio_item_collected.setVolume(0.1f);
+       audio_item_collected.setReverbEnabled(true);
+       rootNode.attachChild(audio_item_collected);
+ 
+       audio_progman = new AudioNode(assetManager, "Sounds/soundFX/progman_sound.wav", false);
+       audio_progman.setPositional(false);
+       audio_progman.setLooping(true);
+       audio_progman.setVolume(0.3f);
+       rootNode.attachChild(audio_progman);
+       
+       audio_progman2 = new AudioNode(assetManager, "Sounds/soundFX/progman_sound2.wav", false);
+       audio_progman2.setPositional(false);
+       audio_progman2.setLooping(true);
+       audio_progman2.setVolume(0.1f);
+       rootNode.attachChild(audio_progman2);
+       
+   
+       audio_campfire = new AudioNode(assetManager, "Sounds/soundFX/campfire.wav", false);
+       audio_campfire.setPositional(false);
+       audio_campfire.setLooping(true);
+       audio_campfire.setVolume(0.25f);
+       rootNode.attachChild(audio_campfire);     
+       
+       audio_sigh = new AudioNode(assetManager, "Sounds/soundFX/heavySigh.wav", false);
+       audio_sigh.setPositional(false);
+       audio_sigh.setLooping(false);
+       audio_sigh.setVolume(0.6f);
+       audio_sigh.setReverbEnabled(true);
+       rootNode.attachChild(audio_sigh); 
+       
+       audio_ghosts = new AudioNode(assetManager, "Sounds/soundFX/Misc/ghosts_lp.wav", false);
+       audio_ghosts.setPositional(false);
+       audio_ghosts.setLooping(false);
+       audio_ghosts.setVolume(0.6f);
+       audio_ghosts.setReverbEnabled(true);
+       rootNode.attachChild(audio_ghosts); 
+       
+       audio_cough = new AudioNode(assetManager, "Sounds/soundFX/cough.wav", false);
+       audio_cough.setPositional(false);
+       audio_cough.setLooping(false);
+       audio_cough.setVolume(0.6f);
+       audio_cough.setReverbEnabled(true);
+       rootNode.attachChild(audio_cough); 
+       
+       //Progman Noise catched
+       noise = new AudioNode(assetManager, "Sounds/soundFX/noise.wav", false);
+       noise.setPositional(false);
+       noise.setLooping(false);
+       noise.setVolume(0.2f);
+       rootNode.attachChild(noise);   
+}
+}
+
+
+

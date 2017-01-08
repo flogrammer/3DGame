@@ -1,0 +1,62 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.187496374)
+
+newmtl JoinedMaterial_#5
+Kd 0.690196 0.690196 0.690196
+Ka 0 0 0
+Ks 0.0862745 0.0862745 0.0862745
+Ke 0 0 0
+d 1
+Ns 21
+illum 2
+map_Kd PLANKS04.JPG
+
+newmtl metall
+Kd 0.0352941 0.0352941 0.0352941
+Ka 0 0 0
+Ks 0.0784314 0.0784314 0.0784314
+Ke 0 0 0
+d 1
+Ns 43
+illum 2
+
+newmtl holzsenkrecht1
+Kd 0.690196 0.690196 0.690196
+Ka 0 0 0
+Ks 0.0862745 0.0862745 0.0862745
+Ke 0 0 0
+d 1
+Ns 14
+illum 2
+map_Kd PLANKS04.JPG
+
+newmtl JoinedMaterial_#8
+Kd 0.603922 0.603922 0.603922
+Ka 0 0 0
+Ks 0.0862745 0.0862745 0.0862745
+Ke 0 0 0
+d 1
+Ns 21
+illum 2
+map_Kd PLANKS04.JPG
+
+newmtl Default
+Kd 0.698039 0.698039 0.698039
+Ka 0.698039 0.698039 0.698039
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 50
+illum 2
+map_Kd PLANKS04.JPG
+
+newmtl turbalken
+Kd 0.721569 0.662745 0.431373
+Ka 0 0 0
+Ks 0.101961 0.0941176 0.0588235
+Ke 0 0 0
+d 1
+Ns 21
+illum 2
+map_Kd PLANKS04.JPG
+
