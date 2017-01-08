@@ -19,46 +19,58 @@ import com.jme3.ui.Picture;
  * @author Florian and Julian
  */
 public class Progman {
-    public Vector3f progman_pos;
+    
+    //System variables
+    public Node rootNode;
+    public Node guiNode;
+    public Camera cam;
+    public AssetManager assetManager;
+    public AppSettings settings;
+    Forest forest = null;
     public Spatial spatial;
+    
+    //Position
+    public Vector3f progman_pos;
     public final Vector3f PROGMAN_STARTPOSITION = new Vector3f(-50,0,-50);
     public float progman_x = -200f; // Somewhere outside the place...
     public float progman_y = 0f;
     public float progman_z = -200f;
     public float progman_max_speed = 0.02f;
     
-    public long startTime;
     
+    //Pictures
     Picture noisePNG;
     Picture noisePNG2;
     Picture noisePNG3;
     Picture noisePNG4;
     Picture noisePNG5;
     
+    //Noise
     public long noiseBegin;
     public long noiseEnd;
     public double randomNoiseTime;
     public boolean noiseAttached = false;
     public int noiseFrameCount = 0;
     
-    
+    //moving
     public int moveTimeMs = 10000; // Alle 10 Sec neue Position, abnehmend!
-    public float appearanceAngle = 0;
-    public Node rootNode;
-    public Node guiNode;
-    public Camera cam;
-    public AssetManager assetManager;
-    public AppSettings settings;
-    public boolean shocking = false;
-    public boolean catching = false;
-    Forest forest = null;
-    private ProgmanState STATE = ProgmanState.moving;
-    ProgmanState oldState;
-    public final float SHOCKING_DISTANCE = 25;
-    
-    
     public float movingAngle = 0;
     public float movingDistance = 100;
+    public float appearanceAngle = 0;public long startTime;
+    
+    
+    //Catching
+    public boolean catching = false;
+    
+    //States
+    private ProgmanState STATE = ProgmanState.moving;
+    ProgmanState oldState;
+    
+    //Shocking
+    public final float SHOCKING_DISTANCE = 25;
+    public boolean shocking = false;
+    
+    
 
     
     public enum ProgmanState {
@@ -254,9 +266,10 @@ public class Progman {
         
     }
     
-    public void checkShocking(Vector3f position)
+    public void checkShocking(Vector3f position, float fps)
     {
-        if(++averageCounter > 7)
+        int time = (int)(7*40*fps);
+        if(++averageCounter > time)
         {
             averageCounter = 0;
 
@@ -273,7 +286,7 @@ public class Progman {
                     meanZ += i; 
                 meanZ /= averageZ.length;
                 meanX /= averageX.length;
-                if(movingAllowed&&(Math.abs(meanX) >= 2.0 || Math.abs(meanZ) >= 2.0)) //shocking wird aktiviert, wenn der Spieler einmal losgelaufen ist
+                if(movingAllowed&&(Math.abs(meanX) >= 3.0 || Math.abs(meanZ) >= 3.0)) //shocking wird aktiviert, wenn der Spieler einmal losgelaufen ist
                     shock_enabled = true;
             }
             if(averageZ_counter >= averageZ.length)
@@ -316,7 +329,7 @@ public class Progman {
         float dist = progman_pos_2.distance(position_2);
         
         playMusic(dist);
-        checkShocking(position);
+        checkShocking(position,tpf);
         updateSTATE(position);
         boolean moved = false;
         
