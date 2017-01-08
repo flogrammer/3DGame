@@ -176,39 +176,36 @@ Bei Erzeugung einer Spielumgebung im \emph{SceneComposer} werden die physikalisc
 
 
 \subsection{Erzeugung einer Spielumgebung}
-Um die Welt in der wir uns im Spiel befinden vorher genau zu definieren, kann man in der jMonkey SDK eine eigene Scene erstellen. Hat man eine neue \glqq{Empty jME3 Scene} erstellt, so erscheint der SceneComposer, in welchem man die Scene betrachten kann. Nun sollte man der Scene vorerst ein Terrain hinzufügen. Ein Terrain ist ein Gelände, welches man nach seinen Vorzügen gestalten kann. Somit sind Gebirge und Hügel vorstellbar. Man kann dieses Terrain in dem Terrain Editor bearbeiten und nach seinen Wünschen anpassen. 
+Um die Welt in der wir uns im Spiel befinden vorher genau zu definieren, kann man in der jMonkey SDK eine eigene Scene erstellen. Hat man eine neue \enquote{Empty jME3 Scene} erstellt, so erscheint der SceneComposer, in welchem man die Scene betrachten kann. Nun sollte man der Scene vorerst ein Terrain hinzufügen. Ein Terrain ist ein Gelände, welches man nach seinen Vorzügen gestalten kann. Somit sind Gebirge und Hügel vorstellbar. Man kann dieses Terrain in dem Terrain Editor bearbeiten und nach seinen Wünschen anpassen. 
 \begin{figure}[h!]
 	
 	\caption{New Empty jME3 Scene mit erstelltem Terrain}
 	
-	\includegraphics[width=.8\linewidth]{images/EmptySceneWithTerrain} 
+	\centering\includegraphics[width=.8\linewidth]{images/EmptySceneWithTerrain} 
 	
 \end{figure}
-Nun kann man der Spielumgebung noch einige Modelle hinzufügen, sodass eine Welt entsteht, in der man sich während des Spiels bewegen kann. Modelle bekommt man relativ schnell und einfach über das Internet, wobei diese meistens nicht für die jMonkeyEngine konstruiert sind, sodass man diese noch konvertieren muss. Man kann diese 3D-Modelle in einem 3D-Tool wie Blender importieren und für die jMonkeyEngine exportieren. Dies ist jedoch leichter gesagt als getan, denn viele Modelle verwenden Features, die nicht mit der jMonkeyEngine kompatibel sind. So benutzen viele Designer statt einer Lamp eine Sun als Lichtquelle, oder Modifiers, welche das Modell leicht verändern. Es war nicht immer einfach gute Modelle zu finden, die man in der jMonkeyEngine ohne viel Aufwand benutzen kann. Um ein eigenes Spiel wirklich komplett zu programmieren, empfiehlt es sich, sich mit dem Design von 3D-Modellen auseinander zu setzen, wodurch man diese Mechanismen des Imports besser verstehen kann. Auf dieser Basis kann man sich zusätzlich eigene Modelle erstellen, welche perfekt zu dem eigenen Spiel passen. 
+Nun kann man der Spielumgebung noch einige Modelle hinzufügen, sodass eine Welt entsteht, in der man sich während des Spiels bewegen kann. Modelle bekommt man relativ schnell und einfach über das Internet, wobei diese meistens nicht für die jMonkeyEngine konstruiert sind, sodass man diese noch konvertieren muss. Man kann diese 3D-Modelle in einem 3D-Tool wie Blender importieren und für die jMonkeyEngine exportieren. Dies ist jedoch leichter gesagt als getan, denn viele Modelle verwenden Features, die nicht mit der jMonkeyEngine kompatibel sind. So benutzen viele Designer statt einer Lamp eine Sun als Lichtquelle, oder Modifiers, welche das Modell leicht verändern. Es war nicht immer einfach gute Modelle zu finden, die man in der jMonkeyEngine ohne viel Aufwand benutzen kann. Um ein eigenes Spiel wirklich komplett zu programmieren, empfiehlt es sich daher, dass man sich mit dem Design von 3D-Modellen auseinander setzt, wodurch man diese Mechanismen des Imports besser verstehen kann. Auf dieser Basis kann man sich zusätzlich eigene Modelle erstellen, welche perfekt zu dem eigenen Spiel passen. 
 
 Möchte man der Welt neben ein paar Modellen außerdem eine realistische Umgebung geben, so darf man den Himmel und den Horizont nicht vergessen. Auch hier hat die jMonkeyEngine vorgefertigte Libraries und in dem SceneComposer ist es relativ einfach, einen geeigneten Himmel hinzuzufügen. Nach einer kleinen Suche im Internet findet man schnell einen passenden Himmel, welchen man gegebenenfalls aber auch selbst erstellen kann. Ein Himmel, auch Skybox genannt, besteht entweder immer aus sechs verschiedenen Bildern, welche die einzelnen Richtungen (Norden, Süden, Osten, Westen, Oben, Unten) ausmachen, oder aus einem einzelnen, der diese verschiedenen Bilder zusammenfasst. Hier ein Beispiel wie eine Skybox im SceneComposer mit unserem Terrain aussieht:
-\begin{center}
-	\begin{figure}[h!]
-		
-		
+
+\begin{figure}[h!]
 		\caption{Terrain mit Skybox}
 		
-		\includegraphics[width=.8\linewidth]{images/Skybox} 
+		\centering\includegraphics[width=.8\linewidth]{images/Skybox} 
 		
-	\end{figure}  
-\end{center}
+\end{figure} 
 
 %Quelle: https://docs.jmonkeyengine.org/advanced/light_and_shadow.html
 
 Um jedoch in der Scene beim Spielen die geeignete Atmosphäre zu erstellen, ist die Benutzung von Licht unbedingt notwendig. Verzichtet man darauf, kann man nur wenig erkennen. Es gibt dazu in dem com.jme3.light Paket verschiedene Lichttypen, die man verwenden kann:
 \begin{itemize}
-	\item SpotLight
 	\item PointLight
-	\item AmbientLight
 	\item DirectionalLight
+	\item AmbientLight
+	\item SpotLight
 \end{itemize}
 
-Grundsätzlich kann man jedem Licht eine Farbe zuweisen, um der Welt eine bestimmte Atmosphäre zu verleihen. Ein PointLight scheint von einem Punkt aus in alle Richtungen, und nimmt mit der Entfernung zu dem Lichtpunkt an Intensität ab, hier ein kleines Beispiel:
+Grundsätzlich kann man jedem Licht eine Farbe zuweisen, um der Welt eine bestimmte Atmosphäre zu verleihen. Nachdem man das Licht nach seinen Wünschen erstellt hat, muss es nun der rootNode mit der addLight Methode bekannt gemacht werden. Ein PointLight scheint von einem Punkt aus in alle Richtungen, und nimmt mit der Entfernung zu dem Lichtpunkt an Intensität ab, hier ein kleines Beispiel:
 \begin{lstlisting}
 PointLight p = new PointLight();
 p.setRadius(20f);
@@ -216,16 +213,16 @@ p.setColor(ColorRGBA.Yellow);
 p.setPosition(Vector3f.ZERO);
 rootNode.addLight(p);
 \end{lstlisting}
-\begin{center}
-	\begin{figure}[h!]
-		
-		
-		\caption{PointLight}
-		
-		\includegraphics[width=.5\linewidth]{images/pointlight} 
-		
-	\end{figure}  
-\end{center}
+
+\begin{figure}[h!]
+	
+	
+	\caption{PointLight}
+	
+	\centering\includegraphics[width=.5\linewidth]{images/pointlight} 
+	
+\end{figure}
+
 Das PointLight kann sehr gut bei Lampen oder sonstigen Lichtquellen verwendet werden, bei denen ein Licht in alle Richtungen ausstrahlt. Im Gegensatz dazu gibt es das DirectionalLight, welches nur in eine Richtung ein Licht ausstrahlt. Das DirectionalLight wird in der Regel nur einmal in einer Scene verwendet, da es keinen Radius und keine Position hat, es scheint überall in eine Richtung. Hier ein kleines Codebeispiel:
 \begin{lstlisting}
 DirectionalLight d = new DirectionalLight();
@@ -233,50 +230,56 @@ d.setColor(ColorRGBA.White);
 d.setDirection(new Vector3f(-.5f,-.5f,-.5f).normalizeLocal());
 rootNode.addLight(d);
 \end{lstlisting}
-\begin{center}
-	\begin{figure}[h!]
-		
-		
-		\caption{DirectionalLight}
-		
-		\includegraphics[width=.5\linewidth]{images/directionallight} 
-		
-	\end{figure}  
-\end{center}
+
+\begin{figure}[h!]
+	
+	
+	\caption{DirectionalLight}
+	
+	\centering\includegraphics[width=.5\linewidth]{images/directionallight} 
+	
+\end{figure}
+
 Möchte man jedoch, dass in der gesamten Scene ein Licht herrscht, das jedoch nicht in eine Richtung geht, so kann man das AmbientLight verwenden. Das AmbientLight hat wie das DirectionalLight weder eine Position, noch eine Richtung, beim AmbientLight geht es vielmehr darum, überall in der Scene ein Licht zu erstellen, das eine gewissen Grundstimmung bringt. Hier ein kleines Beispiel:
 
 \begin{lstlisting}
 AmbientLight al = new AmbientLight();
-al.setColor(ColorRGBA.White.mult(1.3f));
+al.setColor(ColorRGBA.White.mult(1.3f)); //Der Faktor betimmt die Intensitaet des Lichts  
 rootNode.addLight(al);
 \end{lstlisting}
 
-Um der Scene jedoch ein Licht einer Taschenlampe zum Beispiel zu geben, also ein Licht, welches in eine Richtung geht und eine Position und einen Radius hat, muss man das SpotLight verwenden. Das SpotLight erzeugt einen Lichtkegel in eine bestimmte Richtung mit einer gewissen Intensität. Zusätzlich gibt es noch die Möglichkeit, dem Lichtkegel zwei verschiedene Winkel zu geben: Den inneren Winkel, welcher den hellen Bereich eines Lichtkegels beschreibt und den äußeren Winkel, der den äußeren Kreis des Kegels zeichnet. Hier ein kleines Beispiel:
+Um der Scene jedoch ein Licht, das in eine Richtung geht und eine Position und einen Radius hat, muss man das SpotLight verwenden. Man kann sich dieses Licht ähnlich wie bei einer Taschenlampe vorstellen, die in eine Richtung scheint und eine Position hat. Das SpotLight erzeugt einen Lichtkegel in eine bestimmte Richtung mit einer gewissen Intensität. Zusätzlich gibt es noch die Möglichkeit, dem Lichtkegel zwei verschiedene Winkel zu geben: Den inneren Winkel, welcher den hellen Bereich eines Lichtkegels beschreibt und den äußeren Winkel, der den äußeren Kreis des Kegels zeichnet. Hier ein kleines Beispiel:
 \begin{lstlisting}
 SpotLight s = new SpotLight();
 s.setSpotRange(100f);                           
 s.setSpotInnerAngle(5f * FastMath.DEG_TO_RAD); 
 s.setSpotOuterAngle(20f * FastMath.DEG_TO_RAD); 
-s.setColor(ColorRGBA.White.mult(1.3f));         
+s.setColor(ColorRGBA.White.mult(1.3f)); // Der Faktor betimmt die Intensitaet des Lichts         
 s.setPosition(cam.getLocation());         
 s.setDirection(cam.getDirection());     
 rootNode.addLight(s);
 \end{lstlisting}
-\begin{center}
-	\begin{figure}[h!]
-		
-		
-		\caption{SpotLight}
-		
-		\includegraphics[width=.5\linewidth]{images/spotlight} 
-		
-	\end{figure}  
-\end{center}
-In diesem Beispiel zeigt das Licht von der Kamera Position in Richtung der Kamera. Hierbei ist es sinnvoll, diese Position während des Spiels zu aktualisieren (zum Beispiel in der simpleUpdate Methode). 
 
-Terrain oder SceneComposer, sky,  
-Funktionalität und allgemeines vorgehen.
-Wichtig: Beschreibung von Licht nicht vergessen (sonst dunkel)
+\begin{figure}[h!]
+	
+	
+	\caption{SpotLight}
+	
+	\centering\includegraphics[width=.5\linewidth]{images/spotlight} 
+	
+\end{figure}
+
+In diesem Beispiel zeigt das Licht von der Kamera Position in die Blickrichtung der Kamera. Hierbei ist es sinnvoll, diese Position während des Spiels zu aktualisieren (zum Beispiel in der simpleUpdate Methode), sodass die Taschenlampe sich mit dem Spieler bewegt, als hätte er sie in der Hand. Alternativ dazu kann man ein LightControl verwenden, das dafür sorgt, dass ein SpotLight oder PointLight einem Spatial zugehörig ist, sodass es der Position des Spatials folgt. In unserem Beispiel also das Licht der Taschenlampe, das dem Spieler folgt. Hier sind auch leicht andere Einsatzmöglichkeiten denkbar, zum Beispiel bei einem Auto, welches Scheinwerfer besitzt. Folgend ein kleines Beispiel mit einem PointLight, das Spatial könnte eine Kerze sein, welche vob dem Spieler getragen wird.
+
+\begin{lstlisting}
+PointLight p = new PointLight();
+p.setRadius(20f);
+p.setColor(ColorRGBA.Yellow);
+p.setPosition(Vector3f.ZERO);
+rootNode.addLight(p);
+LightControl lightControl = new LightControl(p);
+spatial.addControl(lightControl); 
+\end{lstlisting}
 
 \subsection{Hinzufügen von Audio}
 Bei großen rollen-basierten Spielen erzeugen die Sound-Effekte, neben den grafischen Eigenschaften, den Hauptbestandteil der entsprechenden Atmosphäre. In unserem Spiel wurden folgende Sound-Effekte verwendet:
@@ -343,37 +346,40 @@ rootNode.attachChild(pm);
 
 
 \section{Optimierung des Programms}\label{sec:optimizing}
-Wenn man wie oben beschrieben einige Modelle und Effekte in seine Spielumgebung einbindet, können der Prozessor bzw. die Grafikkarte sehr schnell an Grenzen stoßen. Dabei spielt die Anzahl der Vertexes bzw. Triangles eine zentrale Rolle. Jedes Modell hat unter Umständen einige tausend Triangles, sodass sich dies in einem Spiel sehr leicht aufsummieren kann. In unserem Spiel gibt es zum Beispiel knapp 2000 Bäume, welche alle gerendert werden müssen: Vereinfacht man dort das Modell des Baumes, hat dies viel Potenzial, das gesamte Spiel zu beschleunigen. Mit Hilfe von \emph{F5} kann man in jMonkey während des Spiels anzeigen lassen, wie viele Triangles und Vertexes gerade zu rendern sind. Es versteht sich von selbst, dass ein Spiel mit einigen Millionen Vertexes viel zu aufwendig wird, weshalb die Framerate meist auf nahezu null sinkt. Um dies zu verhindern, muss man also die Anzahl an Triangles und Vertexes verringern. Dies ist grundsätzlich durch die Minimierung der Anzahl von Modellen oder durch die Minimierung der Anzahl an Triangles und Vertexes innerhalb eines Modells möglich. Diese haben dafür oft ein sogenanntes LevelOfDetail (kurz LOD), welches je nach Level ein Modell genauer zeichnet. Hier könnte man implementieren, dass das Modell genauer gezeichnet wird, wenn die Distanz zu dem Modell klein ist.
+Wenn man wie oben beschrieben einige Modelle und Effekte in seine Spielumgebung einbindet, können der Prozessor bzw. die Grafikkarte sehr schnell an Grenzen stoßen. Dabei spielt die Anzahl der Vertexes bzw. Triangles eine zentrale Rolle. Jedes Modell hat unter Umständen einige tausend Triangles, sodass sich dies in einem Spiel sehr leicht aufsummieren kann. In unserem Spiel gibt es zum Beispiel knapp 2000 Bäume, welche alle gerendert werden müssen: Vereinfacht man dort das Modell des Baumes, hat dies viel Potenzial, das gesamte Spiel zu beschleunigen. Mit Hilfe von \emph{F5} kann man in jMonkey während des Spiels anzeigen lassen, wie viele Triangles und Vertexes gerade zu rendern sind. Es versteht sich von selbst, dass ein Spiel mit einigen Millionen Vertexes viel zu aufwendig wird, weshalb die Framerate meist auf nahezu null sinkt. Um dies zu verhindern, muss man also die Anzahl an Triangles und Vertexes verringern. Dies ist grundsätzlich durch die Minimierung der Anzahl von Modellen oder durch die Minimierung der Anzahl an Triangles und Vertexes innerhalb eines Modells möglich. Diese haben dafür oft ein sogenanntes LevelOfDetail (kurz LOD), welches je nach Level ein Modell genauer zeichnet. Hier könnte man implementieren, dass das Modell genauer gezeichnet wird, wenn die Distanz zu dem Modell klein ist, sodass die naheliegenden Modelle detalliert, die weit entfernten Modelle jedoch nur grob gezeichnet werden.
 
-Interessanterweise fiel uns auf, dass das Terrain selbst (also der Untergrund des Spielers) sehr viele Triangles besitzt. Das liegt daran, dass das Terrain dafür ausgelegt ist, aufwendige Umgebungen darzustellen (sog. \emph{heightmaps}). So können Gebirge oder sonstige Unebenheiten sehr fein erstellt werden. Der Nachteil dabei ist jedoch, dass es sehr aufwendig wird das Terrain selbst ohne Models zu rendern, obwohl diese wie in unserem Beispiel einfach nur gerade sein kann. Es ist also unbedingt notwendig bei der Programmierung eines 3D-Spiels auf die Framerate und Komplexität der Welt zu achten.
+Interessanterweise fiel uns auf, dass das Terrain selbst (also der Untergrund des Spielers) sehr viele Triangles besitzt. Das liegt daran, dass das Terrain dafür ausgelegt ist, aufwendige Umgebungen darzustellen (sog. \emph{heightmaps}). So können Gebirge oder sonstige Unebenheiten sehr fein erstellt werden. Der Nachteil dabei ist jedoch, dass es sehr aufwendig wird das Terrain selbst ohne Models zu rendern, obwohl diese wie in unserem Beispiel einfach nur gerade sein kann. Es ist möglich diese Feinheit des Terrains auch setzen, wordurch schnell viele tausend Triangles gespart werden können. Es ist also unbedingt notwendig bei der Programmierung eines 3D-Spiels auf die Framerate und Komplexität der Welt zu achten, um das Spiel flüssig zu gestalten.
 
 
 
 \subsubsection{Minimierung der Anzahl von Modellen}
-Um eine hohe Spielgeschwindigkeit zu gewährleisten bietet sich vorerst an, das Spiel möglichst simpel zu halten. Dies kann zum Beispiel erreicht werden, indem die Anzahl der benutzten Modelle reduziert wird. Also sollte man keine unnötigen Modelle verwenden, die nicht gebraucht werden. Man könnte zum Beispiel Modelle, welche von der Kameraposition im Spiel weit entfernt sind ausblenden, da diese sowieso nicht gesehen werden. In jMonkey kann man die Distanz einstellen, ab welcher die Modelle nicht mehr gerendert werden. Hier ein Beispiel aus unserem Code
+Um eine hohe Spielgeschwindigkeit zu gewährleisten bietet sich vorerst an, das Spiel möglichst simpel zu halten. Dies kann zum Beispiel erreicht werden, indem die Anzahl der benutzten Modelle reduziert wird. Also sollte man keine unnötigen Modelle verwenden, die nicht gebraucht werden. Man könnte zum Beispiel Modelle, welche von der Kameraposition im Spiel weit entfernt sind ausblenden, da diese sowieso nicht gesehen werden (Stichwort Culling). In jMonkey kann man die Distanz einstellen, ab welcher die Modelle nicht mehr gerendert werden. Hier ein Beispiel aus unserem Code:
 
 
 \begin{lstlisting}
-camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(),1f,400f); //nur bis 100 Meter
+camera.setFrustumPerspective(45f, (float)cam.getWidth() / cam.getHeight(),1f,400f); //nur bis 400 Meter
 \end{lstlisting}
 
 
-Somit muss in unserem Beispiel nicht jeder der fast 2000 Bäume gerendert werden, sondern nur in der Nähe des Spielers. Auf diesem Weg kann sehr einfach die Komplexität der darzustellenden Welt reduziert werden.
+Somit muss in unserem Beispiel nicht jeder der fast 2000 Bäume gerendert werden, sondern nur in der Nähe und im Sichtbereich des Spielers. Auf diesem Weg kann sehr einfach die Komplexität der darzustellenden Welt reduziert werden.
 
 \subsubsection{Level of Detail (LOD)}
-In der jMonkeyEngine ist es grundsätzlich vorgesehen, dass man seinen Modellen eigene LODs gibt. Damit kann man anhand dieser LODs die Komplexität des Models im Laufe des Spiels bzw. vor dem Spiel verändern, indem man das Level of Detail ändert. Dabei gilt es noch zu beachten, dass die Modelle selbst keine LODs haben, sondern die Geometries, welchen sie zugrunde liegen. Man kann innerhalb des SceneExplorers die einzelnen Geometries in den Modellen auswählen, und so eigene LODs generieren:
-
-\begin{center}
-	\begin{figure}[h!]
-		
-		
-		\caption{Möglichkeit neue LODs mit der SDK im SceneExplorer zu erstellen}
-		
-		\includegraphics[width=0.7\linewidth]{images/generateLOD.png}
-		
-	\end{figure}  
-\end{center}
-
+\begin{figure}[h!]
+	
+	
+	\caption{Die jMonkey Figur in verschiedenen LODs}
+	
+	\centering\includegraphics[width=\linewidth]{images/LOD.jpeg}
+	
+\end{figure}  
+In der jMonkeyEngine ist es grundsätzlich vorgesehen, dass man seinen Modellen eigene LODs gibt. Damit kann man anhand dieser LODs die Komplexität des Modells im Laufe des Spiels bzw. vor dem Spiel verändern, indem man das Level of Detail ändert. Dabei gilt es noch zu beachten, dass die Modelle selbst keine LODs haben, sondern die Geometries, welchen sie zugrunde liegen. Man kann innerhalb des SceneExplorers die einzelnen Geometries in den Modellen auswählen, und so eigene LODs generieren:
+\begin{figure}[h!]
+	
+	\caption{Möglichkeit neue LODs mit der SDK im SceneExplorer zu erstellen}
+	
+	\centering\includegraphics[width=0.4\linewidth]{images/generateLOD.png}
+	
+\end{figure} 
 Ein alternativer Weg ist, dass man der Geometry eines vorhandenen Spatials während der Laufzeit über den Java-Code neue LODs zuweist. Dies hat den Vorteil, dass man die LODs dynamisch während der Laufzeit neu erstellen kann. Ein anderer Grund kann sein, dass man das Modell, das man benutzen will, nicht bearbeiten kann. Bei den Bäumen die wir in unseren Spiel benutzt haben kann man zum Beispiel über den SceneComposer keine LODs hinzufügen, da das Modell des Baums nur in der Testdata Library von jMonkey enthalten ist. 
 Als Erstes muss für jede Geometry ein LodGenerator erstellt werden. Danach muss die bakeLods Methode aufgerufen werden, welcher man die ReductionMethod und den reductionValue übergeben muss. Es gibt drei verschiedene Methoden: Die am häufigsten benutzte Methode ist die PROPORTIONAL Methode, welche die Polygone um einen gewissen Prozentsatz reduziert. Die COLLAPSE\_COST Methode reduziert die Anzahl der Ecken solange, bis die Reduktionskosten den übergebenen Wert erreichen. Die CONSTANT Methode entfernt die gegebene Anzahl an Polygonen.
 \begin{lstlisting}
@@ -392,6 +398,6 @@ rootNode.attachChild(myPrettyGeo);
 
 
 \section{Kritik an der jMonkeyEngine3}
-Wir haben die jMonkeyEngine ausgewählt, weil sie komplett Java basiert ist, und weil sie eine gute SDK hat, in der man sehr einfach und schnell sein erstes 3D Spiel erstellen kann. Die Funktionen, die die jMonkeyEngine hat sind vielfältig. Wir möchten in diesem Abschnitt nun darauf eingehen, was wir für Erfahrungen mit der jMonkeyEngine gemacht haben. Die Grundlagen eines Spiels zu legen fiel uns leicht, denn dazu konnte man die Tutorials gut zu Rate ziehen, jedoch sind wir mit der Programmierung mit der jMonkeyEngine schnell an Grenzen unseres Wissens gestoßen, und haben auch im Internet wenig hilfreiches gefunden. Glaubt man jmonkeyengine.org, hat die jMonkeyEngine eine sehr gute Community und viele Probleme sind bereits geklärt worden. Doch als wir beim Programmieren einige Probleme hatten, war eben dies nicht gegeben. Man findet zwar oft einen entsprechenden Foreneintrag, der jedoch das Thema nicht genau trifft. Liest man den Eintrag nun durch, versteht man als Anfänger wenig, da sich dort häufig Experten unterhalten. Dazu komm, dass sehr viele Foreneinträge bereits einige Jahre alt sind und damit auch deren Links und Verweise auf andere Foreneinträge nicht mehr existieren. Man hat den Eindruck, als sei die Community vor einigen Jahren aktiv gewesen, jedoch nicht mehr heute. Sucht man bei Google das Wort \glqq{jMonkey}, so findet man 113.000 Ergebnisse, sucht man stattdessen andere Engines wie \glqq{unity engine}, so findet man 15.100.000, oder \glqq{cry engine} 11.600.000. Neben der nicht überzeugenden Dokumentation gibt es viele Fehler innerhalb von jMonkey oder der SDK. Das Erstellen eigener LODs hat zum Beispiel nur bei einem von uns beiden funktioniert, bei dem anderen ist einfach nichts passiert. Oder beim Arbeiten mit einer großen Scene Datei konnte der SceneComposer die Datei plötzich nicht mehr öffnen. Außerdem gibt es Fehler in den jMonkeyLibraries: In der SpotLight Klasse aus dem Paket com.jme3.light gibt es ein unnötiges System.out.println. Dort wird im Konstruktoraufruf ein berechneter Winkel in der Konsole ausgegeben. Sucht man dieses Problem, so stößt man darauf, dass das wohl jemand vergessen hat zu entfernen und den Bug nun beseitigt hat. Doch die letzte stabile Version hat dieses Problem immernoch. Beim benutzen eigener (bzw. online öffentlich verfügbarer) Modelle kann es sehr schnell zu Problemen führen, die auch oft nicht weiter spezifiziert werden. Beim transformieren und exportieren von 3D Modellen in jMonkey gab es oft Probleme, die nicht leicht zu beheben waren. Selbst die enge Zusammenarbeit mit Blender hat nicht wirklich gut funktioniert.
+Wir haben die jMonkeyEngine ausgewählt, weil sie komplett Java basiert ist, und weil sie eine gute SDK hat, in der man sehr einfach und schnell sein erstes 3D Spiel erstellen kann. Die Funktionen, die die jMonkeyEngine hat sind vielfältig. Wir möchten in diesem Abschnitt nun darauf eingehen, was wir für Erfahrungen mit der jMonkeyEngine gemacht haben. Die Grundlagen eines Spiels zu legen fiel uns leicht, denn dazu konnte man die Tutorials gut zu Rate ziehen, jedoch sind wir mit der Programmierung mit der jMonkeyEngine schnell an Grenzen unseres Wissens gestoßen, und haben auch im Internet wenig hilfreiches gefunden. Glaubt man jmonkeyengine.org, hat die jMonkeyEngine eine sehr gute Community und viele Probleme sind bereits geklärt worden. Doch als wir beim Programmieren einige Probleme hatten, war eben dies nicht gegeben. Man findet zwar oft einen entsprechenden Foreneintrag, der jedoch das Thema nicht genau trifft. Liest man den Eintrag nun durch, versteht man als Anfänger wenig, da sich dort häufig Experten unterhalten. Dazu komm, dass sehr viele Foreneinträge bereits einige Jahre alt sind und damit auch deren Links und Verweise auf andere Foreneinträge nicht mehr existieren. Man hat den Eindruck, als sei die Community vor einigen Jahren aktiv gewesen, jedoch nicht mehr heute. Sucht man bei Google das Wort \enquote{jMonkey}, so findet man 113.000 Ergebnisse, sucht man stattdessen andere Engines wie \enquote{unity engine}, so findet man 15.100.000, oder \enquote{cry engine} 11.600.000. Neben der nicht überzeugenden Dokumentation gibt es viele Fehler innerhalb von jMonkey oder der SDK. Das Erstellen eigener LODs hat zum Beispiel nur bei einem von uns beiden funktioniert, bei dem anderen ist einfach nichts passiert. Oder beim Arbeiten mit einer großen Scene Datei konnte der SceneComposer die Datei plötzich nicht mehr öffnen. Außerdem gibt es Fehler in den jMonkeyLibraries: In der SpotLight Klasse aus dem Paket com.jme3.light gibt es ein unnötiges System.out.println. Dort wird im Konstruktoraufruf ein berechneter Winkel in der Konsole ausgegeben. Sucht man dieses Problem, so stößt man darauf, dass das wohl jemand vergessen hat zu entfernen und den Bug nun beseitigt hat. Doch die letzte stabile Version hat dieses Problem immernoch. Beim benutzen eigener (bzw. online öffentlich verfügbarer) Modelle kann es sehr schnell zu Problemen führen, die auch oft nicht weiter spezifiziert werden. Beim transformieren und exportieren von 3D Modellen in jMonkey gab es oft Probleme, die nicht leicht zu beheben waren. Selbst die enge Zusammenarbeit mit Blender hat nicht wirklich gut funktioniert.
 Zusammengefasst kann man sagen, dass die jMonkeyEngine eine sehr gute Engine ist, die viele Funktionen beinhaltet und dazu sehr variabel anpassbar ist, jedoch auch ihre Schwächen und längst nicht die riesige Community hat, wie sie es angeben. Gerade als Anfänger in der Spieleprogrammierung kann dies schnell zum Stocken führen.
 

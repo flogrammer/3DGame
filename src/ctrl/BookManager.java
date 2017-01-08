@@ -62,18 +62,7 @@ public class BookManager extends Node{
             
             books[i].spatial.setLocalTranslation(pos);
             attachChild(books[i].spatial);
-            
-          /*  
-            
-            
-            SpotLight itemShine = new SpotLight();
-            
-            itemShine.setSpotRange(5f);
-            itemShine.setColor(ColorRGBA.Magenta.mult(1.2f));
-            itemShine.setPosition(books[i].spatial.getLocalTranslation());
-            itemShine.setSpotInnerAngle(0.5f);
-            itemShine.setSpotInnerAngle(3f);
-            addLight(itemShine);*/
+          
        }
       
     }
@@ -82,6 +71,12 @@ public class BookManager extends Node{
         return books.length;
     }
     
+    /*
+     * Diese Methode sucht das nächstgelegene Buch abhängig von der übergebenen Position.
+     * Dabei wird der Index des Buches in minItemIndex und die Distanz in minItemDistance gespeichert.
+     * Achtung: Es dürfen nur Bücher mit dem "status" (UserData) false betrachtet werden.
+     *
+     */
     public void findNextBook(Vector3f position){
         minItemIndex = 0;
         minItemDistance = getDistance(position, books[0].spatial.getLocalTranslation());

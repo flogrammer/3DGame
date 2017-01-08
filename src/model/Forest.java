@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package model;
 
 import com.jme3.asset.AssetManager;
@@ -31,15 +28,18 @@ public class Forest {
     AssetManager assetManager = null;
     BulletAppState bulletAppState = null;
     
-    //object List
+    //object List for Collision with Trees
     private List<BoundingVolume> objects = new ArrayList<BoundingVolume>(); 
     
     
-    //
+   
+    //LOD Variable
+    final float [] REDUCTION_TREES = {0.8f, 0.9f, 0.95f};
+    
+    //Variables to set Trees 
     final int anzahlBaueme = 42;
     final float MAX_X_RANDOM = 2.0f;
     final float MAX_Z_RANDOM = 2.0f;
-    final float [] REDUCTION_TREES = {0.8f, 0.9f, 0.95f};
     Spatial [][] trees = new Spatial[anzahlBaueme][anzahlBaueme];
     public Vector3f [][] trees_position = new Vector3f[anzahlBaueme][anzahlBaueme];
     public double [][] trees_rotation = new double[anzahlBaueme][anzahlBaueme];
@@ -53,13 +53,17 @@ public class Forest {
         bulletAppState = bAS;
         
     } 
+    /**
+     * Diese Methode erstellt den Wald. Dabei soll auf die Kollision mit anderen Objekten aus der Scene geachtet werden
+     * 
+     */
     public void initForest()
     {
-        //TODO
+        //TODO: Erstelle ein Spatial tree, welches das Baummodell zugewiesen bekommt
         Spatial tree = assetManager.loadModel("Models/Tree/Tree.mesh.j3o");
         
         makeLoDLevel(tree);
-        //TODO
+        //TODO: Skaliere den Baum um 2 Einheiten in x, 3 Einheiten in y- und 2 Einheiten in z-Richtung
         tree.scale(2.0f, 3.0f, 2.0f);
         
 
@@ -89,7 +93,7 @@ public class Forest {
                     }
                 }
         }
-        //TODO
+        //TODO: Erzeuge ein Collisionshape
         CollisionShape treeShape = new BoxCollisionShape(new Vector3f (0.3f, 10, 0.3f));
         
         //Add Collision and attachChild to rootNode
@@ -104,7 +108,9 @@ public class Forest {
                     trees[i][j].setLocalTranslation(trees_position[i][j]);
                     trees[i][j].setLocalRotation(
                     new Quaternion(new float [] {0,(float)trees_rotation[i][j],0}));
-                    //TODO
+                    
+                    
+                    //TODO: füge den Baum der rootNode hinzu, erzeuge eine neue RigidBodyControl und füge die Control dem Baum hinzu
                     rootNode.attachChild(trees[i][j]);
                     RigidBodyControl treeNode = new RigidBodyControl(treeShape, 0);
                     trees[i][j].addControl(treeNode);
