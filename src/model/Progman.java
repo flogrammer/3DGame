@@ -6,7 +6,6 @@ import com.jme3.audio.AudioNode;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.Vector3f;
-import com.jme3.post.filters.CrossHatchFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -54,6 +53,7 @@ public class Progman {
     public boolean catching = false;
     Forest forest = null;
     private ProgmanState STATE = ProgmanState.moving;
+    ProgmanState oldState;
     public final float SHOCKING_DISTANCE = 25;
     
     
@@ -66,7 +66,6 @@ public class Progman {
     }
     
     private float old_dist;
-    CrossHatchFilter filter;
     
     
     
@@ -129,7 +128,6 @@ public class Progman {
         if(!movingAllowed&&t > 50000)
         {
             movingAllowed=true;
-            System.out.println("allowed");
         }
         if (movingAllowed && t > moveTimeMs){
           startTime = System.currentTimeMillis();
@@ -172,7 +170,7 @@ public class Progman {
     
     public void updateSTATE(Vector3f position)
     {
-        ProgmanState oldState = STATE;
+        oldState = STATE;
         float dist = progman_pos.distance(position);
         if(dist < 6){
                 
@@ -226,13 +224,10 @@ public class Progman {
             noiseFrameCount = 0; // Reset the noise signal
         }
         
-        if(!oldState.equals( STATE))
-            System.out.println("State changed " + STATE);
         
         //remembering old movingDistance before EyeContact
         if(oldState.equals(ProgmanState.EyeContact) && !STATE.equals(ProgmanState.EyeContact)){
             movingDistance = old_dist;
-            System.out.println("recovering old dist" + old_dist);
         }
         
         // Update Noise Screen
@@ -244,10 +239,7 @@ public class Progman {
         noiseEnd = System.currentTimeMillis();
         randomNoiseTime = 3*Math.random();
         
-        System.out.println("noiseBeg: " + noiseBegin);
-        System.out.println("noiseEnd: " + noiseEnd);
-        System.out.println("rand: " + randomNoiseTime);
-        if (noiseEnd - noiseBegin > randomNoiseTime*100){ // Ms to S
+       if (noiseEnd - noiseBegin > randomNoiseTime*100){ // Ms to S
             // Detatch everything
             guiNode.detachChild(noisePNG);
             guiNode.detachChild(noisePNG2);
@@ -307,37 +299,12 @@ public class Progman {
                 
                 if(distance < 2.5 && dist > SHOCKING_DISTANCE)
                 {
-                    System.out.println("NOT MOVING ANYMORE");
                     shocking = true;
                     shock_enabled = false;
                 }
                 
             }
         }
-    }
-    
-    public void updateFilter(Vector3f position)
-    {
-        float dist = progman_pos.distance(position);
-        if(dist < 30)
-        {
-            //System.out.println("filter");
-            filter.setEnabled(false);
-            /*for(int i = 0; i < 10; i++){
-                filter.setLineThickness(0f);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Progman.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            System.out.println("filter: " + filter.getLineThickness());
-            }*/
-        }
-        else
-        {
-            filter.setEnabled(false);
-        }
-        
     }
     
     public boolean updateProgman(float tpf, Vector3f position, boolean lightActivated, float collectedItems ){
@@ -351,7 +318,6 @@ public class Progman {
         playMusic(dist);
         checkShocking(position);
         updateSTATE(position);
-        updateFilter(position);
         boolean moved = false;
         
         if(STATE == ProgmanState.catched)
@@ -368,26 +334,29 @@ public class Progman {
         }
         else if(STATE == ProgmanState.catching)
         {
-            /*
-             * moved = true;
-            Vector3f diff = position.subtract(progman_pos).clone();
-            diff.y = 0;
-            float length = diff.length();
-            length = 0.05f;
-            diff = diff.normalize();
-            diff = diff.mult(length);
-            progman_pos = progman_pos.add(diff);
-             */
             moved = true;
-            Vector3f v = cam.getDirection().clone();//position.subtract(progman_pos).clone();
-            v.y = 0;
-            float length = dist;
-            length = length-0.6f*tpf; // Last param determines the speed 
-            System.out.println("l: " + length + " tpf: " + tpf);
-            Vector3f newPosition = position.add(v.normalize().mult(length));
-            newPosition.y = progman_pos.y;
+            if(oldState == ProgmanState.catching)
+            {
+                Vector3f diff = position.subtract(progman_pos).clone();
+                diff.y = 0;
+                float length = diff.length();
+                length = 0.6f*tpf;
+                diff = diff.normalize();
+                diff = diff.mult(length);
+                progman_pos = progman_pos.add(diff);
+             
+            }
+            else{
+                Vector3f v = cam.getDirection().clone();//position.subtract(progman_pos).clone();
+                v.y = 0;
+                float length = dist;
+                length = length-0.6f*tpf; // Last param determines the speed 
+                Vector3f newPosition = position.add(v.normalize().mult(length));
+                newPosition.y = progman_pos.y;
+
+                progman_pos = newPosition.clone();    
+            }
             
-            progman_pos = newPosition.clone();
         }
         else if(STATE == ProgmanState.shocking)
         {
@@ -436,7 +405,6 @@ public class Progman {
             n = n.add(position);
             n.y = progman_pos.y;
             progman_pos = n.clone();
-            System.out.println("mD" + movingDistance);
             
             
         }
@@ -502,10 +470,7 @@ public class Progman {
     {
         audio_progman2 = aN;
     }
-    public void setFilter(CrossHatchFilter f)
-    {
-        filter = f;
-    }
+   
      private void initNoise(AssetManager assetManager) {
        noise = new AudioNode(assetManager, "Sounds/soundFX/noise.wav", false);
        noise.setPositional(false);

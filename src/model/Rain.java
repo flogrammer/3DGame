@@ -92,7 +92,6 @@ public void updateLogicalState(float tpf){
     Ray ray=new Ray(loc,cam.getDirection());
     Vector3f intersection= new Vector3f(cam.getLocation());
     ray.intersectsWherePlane(piano, intersection);
-    //System.out.println(intersection);
     intersection.y=cam.getLocation().y+height;
 
     this.setLocalTranslation(intersection);

@@ -153,6 +153,7 @@ public class Main extends SimpleApplication{
  
     @Override
     public void simpleInitApp() {
+        setDisplayStatView(false);
         // Hinweis: Weil keine Menuführung vorhanden, init in update verschoben!
         loadingScreen = new Picture("gameover");
         loadingScreen.setImage(assetManager, "Textures/progman.jpg", false);
@@ -226,7 +227,6 @@ public class Main extends SimpleApplication{
     public void updateRunningStatus(float tpf){
        if (runningReseted == false){ // Reset from time to time
            maxRunningTime = maxRunningTime + tpf; // regenerieren
-           System.out.println(maxRunningTime);
        }
        if (maxRunningTime >= 12){ // Stop when old value was reached
            runningReseted = true;
@@ -427,7 +427,6 @@ public class Main extends SimpleApplication{
 
                         // Rennzeit abziehen
                         maxRunningTime = maxRunningTime - tpf;
-                        System.out.println("RT: " + maxRunningTime);
                     } else{
                         runningReseted = false;
                     }
@@ -589,57 +588,29 @@ public class Main extends SimpleApplication{
         
         
         // Init functionalities
-        Long time = System.currentTimeMillis();
         initListeners();
-        System.out.println("0 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         initAudio();
-        
-        System.out.println("1 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         initPlayerPhysics();
-        System.out.println("2 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         initFlashlight();
-        System.out.println("3 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         initAmbientLight();
-        System.out.println("4 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
-
+        
         // Init Geometries
         forest = new Forest(rootNode, assetManager,bulletAppState);
-   
-        System.out.println("5 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         initGround(); //extrem aufwendig
-        System.out.println("6 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         initHouses();
-        System.out.println("7 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         forest.initForest(); //extrem aufwendig
-        System.out.println("8 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         initSky();
-        System.out.println("9 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         initItems(); //relativ aufwendig
-        System.out.println("10 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         bookManager.itemsCollected = 0;
         progman = new Progman(rootNode,guiNode, settings, assetManager, cam ,forest); //extrem aufwendig
         progman.setAudio_progman(audioManager.audio_progman);
         progman.setAudio_progman2(audioManager.audio_progman2);
-        System.out.println("11 "+(System.currentTimeMillis()-time));
-        time = System.currentTimeMillis();
         initHUD();
 
                        
         createFog();
         //makeItRain();
         makeFire();
-        System.out.println("13 "+(System.currentTimeMillis()-time));
         
         
         flyCam.setMoveSpeed(MOVEMENTSPEED);
@@ -647,20 +618,7 @@ public class Main extends SimpleApplication{
         showHUD("Finde die 9 Bücher bevor deine Zeit abläuft...");
         
         
-        //create Filter
-        FilterPostProcessor processor = (FilterPostProcessor) assetManager.loadAsset("Filters/noise.j3f");
-        viewPort.addProcessor(processor);
         
-        //set Filter params
-        filter = processor.getFilter(CrossHatchFilter.class);
-        progman.setFilter(filter);
-        filter.setEnabled(true);
-        filter.setColorInfluenceLine(0.8f);
-        filter.setColorInfluencePaper(0.1f);
-        filter.setFillValue(0.1f);
-        filter.setLineDistance(1.0f);
-        filter.setLineThickness(4.0f);
-       
     }
     
     protected void initGround() {       

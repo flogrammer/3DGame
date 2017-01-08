@@ -62,7 +62,6 @@ public class BookManager extends Node{
             
             books[i].spatial.setLocalTranslation(pos);
             attachChild(books[i].spatial);
-            System.out.println(pos);
             
           /*  
             
@@ -116,7 +115,6 @@ public class BookManager extends Node{
            // TODO
             
         }
-        System.out.println();
     }
     
     public void setForest(Forest f)
