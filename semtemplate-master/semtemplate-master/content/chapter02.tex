@@ -194,6 +194,8 @@ Möchte man der Welt neben ein paar Modellen außerdem eine realistische Umgebun
 		\centering\includegraphics[width=.8\linewidth]{images/Skybox} 
 		
 \end{figure} 
+\newpage
+
 
 %Quelle: https://docs.jmonkeyengine.org/advanced/light_and_shadow.html
 
@@ -239,6 +241,8 @@ rootNode.addLight(d);
 	\centering\includegraphics[width=.5\linewidth]{images/directionallight} 
 	
 \end{figure}
+
+\newpage
 
 Möchte man jedoch, dass in der gesamten Scene ein Licht herrscht, das jedoch nicht in eine Richtung geht, so kann man das AmbientLight verwenden. Das AmbientLight hat wie das DirectionalLight weder eine Position, noch eine Richtung, beim AmbientLight geht es vielmehr darum, überall in der Scene ein Licht zu erstellen, das eine gewissen Grundstimmung bringt. Hier ein kleines Beispiel:
 
@@ -395,7 +399,7 @@ lc.setTrisPerPixel(trisPerPixel);
 myPrettyGeo.addControl(lc);
 rootNode.attachChild(myPrettyGeo);
 \end{lstlisting}
-
+\newpage
 
 \section{Kritik an der jMonkeyEngine3}
 Wir haben die jMonkeyEngine ausgewählt, weil sie komplett Java basiert ist, und weil sie eine gute SDK hat, in der man sehr einfach und schnell sein erstes 3D Spiel erstellen kann. Die Funktionen, die die jMonkeyEngine hat sind vielfältig. Wir möchten in diesem Abschnitt nun darauf eingehen, was wir für Erfahrungen mit der jMonkeyEngine gemacht haben. Die Grundlagen eines Spiels zu legen fiel uns leicht, denn dazu konnte man die Tutorials gut zu Rate ziehen, jedoch sind wir mit der Programmierung mit der jMonkeyEngine schnell an Grenzen unseres Wissens gestoßen, und haben auch im Internet wenig hilfreiches gefunden. Glaubt man jmonkeyengine.org, hat die jMonkeyEngine eine sehr gute Community und viele Probleme sind bereits geklärt worden. Doch als wir beim Programmieren einige Probleme hatten, war eben dies nicht gegeben. Man findet zwar oft einen entsprechenden Foreneintrag, der jedoch das Thema nicht genau trifft. Liest man den Eintrag nun durch, versteht man als Anfänger wenig, da sich dort häufig Experten unterhalten. Dazu komm, dass sehr viele Foreneinträge bereits einige Jahre alt sind und damit auch deren Links und Verweise auf andere Foreneinträge nicht mehr existieren. Man hat den Eindruck, als sei die Community vor einigen Jahren aktiv gewesen, jedoch nicht mehr heute. Sucht man bei Google das Wort \enquote{jMonkey}, so findet man 113.000 Ergebnisse, sucht man stattdessen andere Engines wie \enquote{unity engine}, so findet man 15.100.000, oder \enquote{cry engine} 11.600.000. Neben der nicht überzeugenden Dokumentation gibt es viele Fehler innerhalb von jMonkey oder der SDK. Das Erstellen eigener LODs hat zum Beispiel nur bei einem von uns beiden funktioniert, bei dem anderen ist einfach nichts passiert. Oder beim Arbeiten mit einer großen Scene Datei konnte der SceneComposer die Datei plötzich nicht mehr öffnen. Außerdem gibt es Fehler in den jMonkeyLibraries: In der SpotLight Klasse aus dem Paket com.jme3.light gibt es ein unnötiges System.out.println. Dort wird im Konstruktoraufruf ein berechneter Winkel in der Konsole ausgegeben. Sucht man dieses Problem, so stößt man darauf, dass das wohl jemand vergessen hat zu entfernen und den Bug nun beseitigt hat. Doch die letzte stabile Version hat dieses Problem immernoch. Beim benutzen eigener (bzw. online öffentlich verfügbarer) Modelle kann es sehr schnell zu Problemen führen, die auch oft nicht weiter spezifiziert werden. Beim transformieren und exportieren von 3D Modellen in jMonkey gab es oft Probleme, die nicht leicht zu beheben waren. Selbst die enge Zusammenarbeit mit Blender hat nicht wirklich gut funktioniert.
