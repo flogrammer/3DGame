@@ -370,16 +370,15 @@ public class Main extends SimpleApplication{
     private AnalogListener analogListener = new AnalogListener(){
         public void onAnalog(String name, float value, float tpf) {
             // Wird überschrieben falls er rennt
+                if(audioManager.audio_foodsteps!= null){ // Für das Tutorium
                 audioManager.audio_foodsteps.setPitch(1f);
                 audioManager.audio_foodsteps.setReverbEnabled(false);
-            
+                }
                if (name.equals("Move") && isRunning == true){
                    runFactor = 0.1f;
                    isWalking = true;
-                   
-                   
+                  
                    //TODO 3.2.3 Abspielen des Sounds aus dem audioManager
-                   
                    
                    
                    
@@ -412,16 +411,19 @@ public class Main extends SimpleApplication{
                if (name.equals("Left") && isRunning == true){ 
                    runFactor = 0.05f;
                    isWalking = true;
+                   if(audioManager.audio_foodsteps!= null) // Für das Tutorium
                    audioManager.audio_foodsteps.play();
                }
                if (name.equals("Back") && isRunning == true){
                    runFactor = 0.1f;
                    isWalking = true;
+                   if(audioManager.audio_foodsteps!= null) // Für das Tutorium
                    audioManager.audio_foodsteps.play();
                }
                if (name.equals("Right") && isRunning == true){
                    runFactor = 0.05f;
                    isWalking = true;
+                   if(audioManager.audio_foodsteps!= null) // Für das Tutorium
                    audioManager.audio_foodsteps.play();
                } 
                if (name.equals("Run") && isRunning == true){
@@ -432,11 +434,13 @@ public class Main extends SimpleApplication{
                         isWalkingFast = true; // Set running
                         audioManager.audio_breathing.stop();
                         audioManager.audio_fast_breathing.play();
-
+                        
+                        if(audioManager.audio_foodsteps!= null){ // Für das Tutorium
                         audioManager.audio_foodsteps.setPitch(2.0f);
                         audioManager.audio_foodsteps.setReverbEnabled(true);
                         audioManager.audio_foodsteps.play(); 
-
+                        }
+                        
                         // Auf und Ab Bewegung doppelt so schnell!
                         double sinusOldValue = (walkingAnimPos) * 2*Math.PI;
                         walkingAnimPos = (walkingAnimPos+tpf);
@@ -464,11 +468,13 @@ public class Main extends SimpleApplication{
             
             if(name.equals("Move") && isPressed == false){
                 audioManager.audio_fast_breathing.stop();
+                if(audioManager.audio_foodsteps!= null) // Für das Tutorium
                 audioManager.audio_foodsteps.stop();
                 audioManager.audio_breathing.stop();
             } 
             if(name.equals("Jump") && isPressed == true){
                 audioManager.audio_fast_breathing.stop();
+                if(audioManager.audio_foodsteps!= null) // Für das Tutorium
                 audioManager.audio_foodsteps.stop();
                 audioManager.audio_breathing.stop();
                 
@@ -540,6 +546,7 @@ public class Main extends SimpleApplication{
    
     public void foodstepsCheck(){
         if (isWalking == false){
+            if(audioManager.audio_foodsteps!=null)
             audioManager.audio_foodsteps.stop();
         }  
         if (isWalkingFast == false){

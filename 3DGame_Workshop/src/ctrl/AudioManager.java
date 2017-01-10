@@ -55,15 +55,9 @@ public class AudioManager {
        rootNode.attachChild(audio_theme);
        audio_theme.play();
        
-       //TODO: 3.1 Erstelle den Sound audio_nature und spiele ihn ab
+       //TODO: 3.1 Hier bitte eine AudioNode für das Gewitter erzeugen, welche nach den in der Aufgabe
+       // beschriebenen Eigenschaften aufgebaut sein soll
       
-       
-       
-       
-       
-       
-       
-       
        
        
        audio_breathing = new AudioNode(assetManager, "Sounds/soundFX/breathing.wav", false);
@@ -98,9 +92,8 @@ public class AudioManager {
        rootNode.attachChild(audio_flash_off);
        
        //TODO: 3.2.1 und 3.2.2 Erstelle den foodsteps Sound
-       
-       
-       
+              
+            
        
        
        

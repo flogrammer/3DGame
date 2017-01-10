@@ -64,10 +64,8 @@ public class Forest {
         
         
         
-        
         makeLoDLevel(tree);
         //TODO: 1.2 Skaliere den Baum um 2 Einheiten in x, 4 Einheiten in y- und 2 Einheiten in z-Richtung
-        
         
         
         
@@ -105,7 +103,6 @@ public class Forest {
         
         
         
-        
         //Add Collision and attachChild to rootNode
         for( int i = 0; i < trees.length; i++)
         {
@@ -119,10 +116,9 @@ public class Forest {
                     trees[i][j].setLocalRotation(new Quaternion(new float [] {0,(float)tree_rotation,0}));
                     
                     
-                    //TODO: 1.4-1.6 füge den Baum der rootNode hinzu, erzeuge eine neue RigidBodyControl und füge die Control dem Baum hinzu
-                    
-                    
-                    
+                    //TODO: 1.4-1.6 füge den Baum der rootNode hinzu, erzeuge einen neuen RigidBodyControl und füge den Control dem Baum hinzu
+                    //Wichtig: Es muss jeder Baum der doppelten Schleife eine Kollisionsform erhalten, sowie hinzugefügt werden
+
                     
                     
                     

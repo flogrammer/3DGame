@@ -47,7 +47,27 @@ public class AudioManager {
     }
     
     public void initAudio(){
-       // Background audio
+       
+        
+       //TODO: 3.1: Hier bitte eine AudioNode für das Gewitter erzeugen, welche nach den in der Aufgabe
+       // beschriebenen Eigenschaften aufgebaut sein soll
+        
+       AudioNode audio_thunder = new AudioNode(assetManager, "Sounds/soundFX/thunder2.wav");
+       audio_thunder.setPositional(false);
+       audio_thunder.setLooping(true);
+       audio_thunder.setVolume(0.06f);
+       rootNode.attachChild(audio_thunder);
+       audio_thunder.play();
+       
+       //TODO: 3.2: Hier bitte die AudioNode für den Fußstapfen-Sound erzeugen
+       
+       audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
+       audio_foodsteps.setPositional(false);
+       audio_foodsteps.setLooping(true);
+       audio_foodsteps.setVolume(0.4f);
+       rootNode.attachChild(audio_foodsteps);
+       
+       // Background audio       
        audio_theme = new AudioNode(assetManager, "Sounds/horror_theme_01.wav", true); 
        audio_theme.setPositional(false);
        audio_theme.setLooping(false);
@@ -56,12 +76,7 @@ public class AudioManager {
        audio_theme.play();
        
        // Sound FX  
-       audio_foodsteps = new AudioNode(assetManager, "Sounds/sound_fx_foodsteps1.wav", false);
-       audio_foodsteps.setPositional(false);
-       audio_foodsteps.setLooping(true);
-       audio_foodsteps.setVolume(0.4f);
-       rootNode.attachChild(audio_foodsteps);
-       
+             
        audio_breathing = new AudioNode(assetManager, "Sounds/soundFX/breathing.wav", false);
        audio_breathing.setPositional(false);
        audio_breathing.setLooping(true);
@@ -92,13 +107,6 @@ public class AudioManager {
        audio_flash_off.setLooping(false);
        audio_flash_off.setVolume(0.2f);
        rootNode.attachChild(audio_flash_off);
-       
-       audio_nature = new AudioNode(assetManager, "Sounds/soundFX/thunder2.wav", false);
-       audio_nature.setPositional(false);
-       audio_nature.setLooping(true);
-       audio_nature.setVolume(0.06f);
-       rootNode.attachChild(audio_nature);
-       audio_nature.play();
        
        audio_flash_empty = new AudioNode(assetManager, "Sounds/soundFX/flashEmpty.wav", false);
        audio_flash_empty.setPositional(false);
