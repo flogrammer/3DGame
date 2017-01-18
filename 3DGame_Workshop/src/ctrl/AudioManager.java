@@ -60,6 +60,15 @@ public class AudioManager {
       
        
        
+       //TODO: 3.2.1 und 3.2.2 Erstelle den audio_foodsteps Sound
+       
+       
+       
+       
+       
+       
+       
+       
        audio_breathing = new AudioNode(assetManager, "Sounds/soundFX/breathing.wav", false);
        audio_breathing.setPositional(false);
        audio_breathing.setLooping(true);
@@ -90,14 +99,6 @@ public class AudioManager {
        audio_flash_off.setLooping(false);
        audio_flash_off.setVolume(0.2f);
        rootNode.attachChild(audio_flash_off);
-       
-       //TODO: 3.2.1 und 3.2.2 Erstelle den foodsteps Sound
-              
-            
-       
-       
-       
-       
        
        audio_flash_empty = new AudioNode(assetManager, "Sounds/soundFX/flashEmpty.wav", false);
        audio_flash_empty.setPositional(false);

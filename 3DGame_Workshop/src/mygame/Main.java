@@ -303,11 +303,7 @@ public class Main extends SimpleApplication{
      */
     public void updateItemCollision(float tpf){
         //TODO 4.1 Implementiere die Logik
-        bookManager.findNextBook(position);
-        if (bookManager.minItemDistance < 3){
-                showHUD("Du hast ein Buch über " + bookManager.books[bookManager.minItemIndex].name + " gefunden. " +
-                        "Drücke B um es aufzunehmen.");
-                }
+        
         
     }
     

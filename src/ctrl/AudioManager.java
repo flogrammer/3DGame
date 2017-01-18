@@ -52,12 +52,12 @@ public class AudioManager {
        //TODO: 3.1: Hier bitte eine AudioNode für das Gewitter erzeugen, welche nach den in der Aufgabe
        // beschriebenen Eigenschaften aufgebaut sein soll
         
-       AudioNode audio_thunder = new AudioNode(assetManager, "Sounds/soundFX/thunder2.wav");
-       audio_thunder.setPositional(false);
-       audio_thunder.setLooping(true);
-       audio_thunder.setVolume(0.06f);
-       rootNode.attachChild(audio_thunder);
-       audio_thunder.play();
+       audio_nature = new AudioNode(assetManager, "Sounds/soundFX/thunder2.wav");
+       audio_nature.setPositional(false);
+       audio_nature.setLooping(true);
+       audio_nature.setVolume(0.06f);
+       rootNode.attachChild(audio_nature);
+       audio_nature.play();
        
        //TODO: 3.2: Hier bitte die AudioNode für den Fußstapfen-Sound erzeugen
        

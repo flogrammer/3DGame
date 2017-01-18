@@ -267,7 +267,7 @@ public class Progman {
     
     public void checkShocking(Vector3f position, float fps)
     {
-        int time = (int)(7*40*fps);
+        int time = (int)(10*40*fps);
         if(++averageCounter > time)
         {
             averageCounter = 0;
@@ -309,7 +309,7 @@ public class Progman {
                 
                 float dist = progman_pos.distance(position);
                 
-                if(distance < 2.5 && dist > SHOCKING_DISTANCE)
+                if(distance < 3.0 && dist > SHOCKING_DISTANCE)
                 {
                     shocking = true;
                     shock_enabled = false;
