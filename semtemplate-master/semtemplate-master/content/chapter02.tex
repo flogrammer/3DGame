@@ -44,7 +44,7 @@ Im folgenden eine Übersicht einiger Engines:
 	\myfloatalign
 	\begin{tabularx}{\textwidth}{Xll} \toprule
 		\tableheadline{GameEngine} & \tableheadline{Vorteile} & \tableheadline{Nachteile} \\ \midrule 
-		Unity & Viele Benutzer, beliebt &  zu oberflächlich, kein Java \\
+		Unity & Viele Benutzer, beliebt &  Zu oberflächlich, kein Java \\
 		jMonkeyEngine & Sehr entwicklungsnahe, Java & Schlechte Dokumentation \\
 		Wurfel Engine & Benutzerfreundlich & Keine Physikunterstützung \\
 		Cry Engine & Sehr schöne Grafik & Kein Java \\
@@ -91,14 +91,14 @@ Allerdings ist es empfehlenswert eine geeignete Baumstruktur zu erstellen um so 
 Node myNode = new Node();
 myNode.doSomething();
 \end{lstlisting}
-Wird nun beispielsweise die folgende Funktion auf dem Konten ausgeführt, so wird diese auch für sämtliche Kinder des Knotens ausgeführt.
+Wird nun beispielsweise die Funktion \emph{doSomething()} auf dem Konten ausgeführt, so wird diese auch für sämtliche Kinder des Knotens ausgeführt.
 
 
 
 
 
 \subsection{Modelle und Assets}
-Sämtliche externe Gegenstände des Spiels werden im \emph{assets}-Ordner im jME3 Projekt gesammelt. Dies sind multi-media Dateien wie 3D-Modelle, Soundfiles, Texturen, Shader und was sonst noch benötigt wird.
+Alle externen Gegenstände des Spiels werden im \emph{assets}-Ordner im jME3 Projekt gesammelt. Dies sind multi-media Dateien wie 3D-Modelle, Soundfiles, Texturen, Shader und was sonst noch benötigt wird.
 Um diese aus dem Ordner ins Spiel zu laden wird der sogenannte \emph{AssetManager} benötigt, welcher einfach eine Instanz der Klasse mit entsprechenden Funktionalitäten ist. \\Modelle sind dreidimensionale Gebilde welche verschiedenste Elemente in einem Spiel sein können. Hierbei verwendet jME3 die Klasse Spatial (engl. für "räumlich"). \\Zum Laden eines Objektes wird die entsprechende Funktion \emph{loadTexture(String path)} bzw. \emph{loadModel(String path)} aufgerufen und der entsprechende Pfad zum Modell übergeben:
 \begin{center}
 \fcolorbox{grau}{white}
@@ -119,7 +119,7 @@ Neben dieser und dem Material (vgl. \emph{Materialien}) gibt es noch das Skelett
 Das Skelett ist notwendig für Animationen von Modellen wie beispielsweise Gehen, Springen oder Ähnlichem.\\
 In unserem Progman-Spiel haben wir uns für eine First-Person Perspektive entschieden, wodurch keine Animationen für den Spieler notwendig waren. Darüber hinaus haben wir uns auf Grund des Zeitaufwandes gegen eine Implementierung eines Skeletts beim Progman entschieden. Dieser ist daher nur eine starre Figur.
 
-
+\pagebreak
 
 \subsection{Materialien}
 Da in Modell-Software vorerst nur die Form von Figuren bestimmt wird, muss anschließend noch die Farbe, die Oberflächenstruktur und das Lichtverhalten bestimmt werden. Dies funktioniert über sogenannte \emph{'materials'}.\\
@@ -131,10 +131,10 @@ Die Datei für das Material kann in jme3 mit der Endung .mtl identifiziert werde
 	\myfloatalign
 	\subfloat[Modell ohne Material]
 	{
-	\includegraphics[width=.3\linewidth, height = 70pt]{images/modelmat}} \quad
+	\includegraphics[width=.4\linewidth, height = 100pt]{images/modelmat}} \quad
 	\subfloat[Modell mit Material]
 	{\label{fig:example-b}%
-	\includegraphics[width=.3\linewidth, height = 70pt]{images/modelmat2}} \\
+	\includegraphics[width=.4\linewidth, height = 100pt]{images/modelmat2}} \\
 	\caption[Materials auf Modellen]{Modell mit und ohne Material \cite{Fig1}}\label{fig:example}
 	
 \end{figure}
@@ -159,7 +159,7 @@ Bezogen auf unser Spiel wurden folgende Aktionen durch Listener abgefangen:
 \end{enumerate} Zur Realisierung stehen in jme3 zwei wichtige Listener-Klassen zur Verfügung: Der \emph{ActionListener} und der \emph{AnalogListener}.
 Ersterer sollte verwendet werden, wenn einzelne Aktionen erfolgen wie z.B. einmaliges Drücken der Taste B, zum Aufsammeln eines Buches.\\
 Die zweite Klasse widerum, falls dauerhafte Events wie Gedrückthalten von W zur Vorwärtsbewegung abgefangen werden sollen. \\
-Im Programmcode müssen dann entsprechende Aktionen erfolgen, damit der Input auch eine Auswirkung auf das Spiel hat. Beim Drücken von W müsste etwa der Richtungsvektor sowie die aktuelle Position abgefangen werden um eine Vorwärtsbewegung um x = walkingSpeed Richtungseinheiten zu erzeugen.
+Im Programmcode müssen dann entsprechende Aktionen erfolgen, damit der Input auch eine Auswirkung auf das Spiel hat. Beim Drücken von W müsste etwa der Richtungsvektor sowie die aktuelle Position abgefangen werden um eine Vorwärtsbewegung um \emph{x = walkingSpeed} Richtungseinheiten zu erzeugen.
 
 \subsection{Kollisionserkennung}
 Damit man als Charakter nicht durch die gesamte Spielwelt gehen kann, müssen entsprechende Kollisionserkennungen eingebaut werden. So sollte der Spieler beispielsweise stoppen, wenn er sich in einen Baum hinein bewegen würde. Dazu kann in der Engine der folgende Code realisiert werden:
@@ -176,17 +176,15 @@ Bei Erzeugung einer Spielumgebung im \emph{SceneComposer} werden die physikalisc
 
 
 \subsection{Erzeugung einer Spielumgebung}
-Um die Welt in der wir uns im Spiel befinden vorher genau zu definieren, kann man in der jMonkey SDK eine eigene Scene erstellen. Hat man eine neue \enquote{Empty jME3 Scene} erstellt, so erscheint der SceneComposer, in welchem man die Scene betrachten kann. Nun sollte man der Scene vorerst ein Terrain hinzufügen. Ein Terrain ist ein Gelände, welches man nach seinen Vorzügen gestalten kann. Somit sind Gebirge und Hügel vorstellbar. Man kann dieses Terrain in dem Terrain Editor bearbeiten und nach seinen Wünschen anpassen. 
-\begin{figure}[h!]
+Um die Welt in der wir uns im Spiel befinden vorher genau zu definieren, kann man in der jMonkey SDK eine eigene Scene erstellen. Hat man eine neue \enquote{Empty jME3 Scene} erstellt, so erscheint der SceneComposer, in welchem man die Scene betrachten kann.
+Nun sollte man der Scene vorerst ein Terrain hinzufügen. Ein Terrain ist ein Gelände, welches man nach seinen Vorzügen gestalten kann. Somit sind Gebirge und Hügel vorstellbar. Man kann dieses Terrain im sogenannten \emph{Terrain Editor} bearbeiten und nach seinen Wünschen anpassen.\begin{figure}[H]
 	
 	\caption{New Empty jME3 Scene mit erstelltem Terrain}
 	
-	\centering\includegraphics[width=.8\linewidth]{images/EmptySceneWithTerrain} 
+	\centering\includegraphics[width=.45\textwidth]{images/EmptySceneWithTerrain} 
 	
-\end{figure}
-Nun kann man der Spielumgebung noch einige Modelle hinzufügen, sodass eine Welt entsteht, in der man sich während des Spiels bewegen kann. Modelle bekommt man relativ schnell und einfach über das Internet, wobei diese meistens nicht für die jMonkeyEngine konstruiert sind, sodass man diese noch konvertieren muss. Man kann diese 3D-Modelle in einem 3D-Tool wie Blender importieren und für die jMonkeyEngine exportieren. Dies ist jedoch leichter gesagt als getan, denn viele Modelle verwenden Features, die nicht mit der jMonkeyEngine kompatibel sind. So benutzen viele Designer statt einer Lamp eine Sun als Lichtquelle, oder Modifiers, welche das Modell leicht verändern. Es war nicht immer einfach gute Modelle zu finden, die man in der jMonkeyEngine ohne viel Aufwand benutzen kann. Um ein eigenes Spiel wirklich komplett zu programmieren, empfiehlt es sich daher, dass man sich mit dem Design von 3D-Modellen auseinander setzt, wodurch man diese Mechanismen des Imports besser verstehen kann. Auf dieser Basis kann man sich zusätzlich eigene Modelle erstellen, welche perfekt zu dem eigenen Spiel passen. 
-
-Möchte man der Welt neben ein paar Modellen außerdem eine realistische Umgebung geben, so darf man den Himmel und den Horizont nicht vergessen. Auch hier hat die jMonkeyEngine vorgefertigte Libraries und in dem SceneComposer ist es relativ einfach, einen geeigneten Himmel hinzuzufügen. Nach einer kleinen Suche im Internet findet man schnell einen passenden Himmel, welchen man gegebenenfalls aber auch selbst erstellen kann. Ein Himmel, auch Skybox genannt, besteht entweder immer aus sechs verschiedenen Bildern, welche die einzelnen Richtungen (Norden, Süden, Osten, Westen, Oben, Unten) ausmachen, oder aus einem einzelnen, der diese verschiedenen Bilder zusammenfasst. Hier ein Beispiel wie eine Skybox im SceneComposer mit unserem Terrain aussieht:
+\end{figure}\pagebreak
+Nun kann man der Spielumgebung noch einige Modelle hinzufügen, sodass eine Welt entsteht, in der man sich während des Spiels bewegen kann. Modelle bekommt man relativ schnell und einfach über das Internet, wobei diese meistens nicht für die jMonkeyEngine konstruiert sind, sodass man diese noch konvertieren muss. Man kann diese 3D-Modelle in einem 3D-Tool wie Blender importieren und für die jMonkeyEngine exportieren. Dies ist jedoch leichter gesagt als getan, denn viele Modelle verwenden Features, die nicht mit der jMonkeyEngine kompatibel sind. So benutzen viele Designer statt einer Lamp eine Sun als Lichtquelle, oder Modifiers, welche das Modell leicht verändern.\newline Es war sehr viel Arbeit gute Modelle zu finden, die man in der jMonkeyEngine ohne viel Aufwand benutzen kann. Um ein eigenes Spiel wirklich komplett zu programmieren, empfiehlt es sich daher, dass man sich mit dem Design von 3D-Modellen auseinander setzt, wodurch man diese Mechanismen des Imports besser verstehen kann. Auf dieser Basis kann man sich zusätzlich eigene Modelle erstellen, welche perfekt zu dem eigenen Spiel passen.\newline Möchte man der Welt neben ein paar Modellen außerdem eine realistische Umgebung geben, so darf man den Himmel und den Horizont nicht vergessen. Auch hier hat die jMonkeyEngine vorgefertigte Libraries und im SceneComposer ist es relativ einfach, einen geeigneten Himmel hinzuzufügen. Nach einer kleinen Suche im Internet findet man schnell passende Texturen, welche gegebenenfalls aber auch selbst erstellt werden können. Ein Himmel, auch \emph{Skybox} genannt, besteht entweder aus sechs verschiedenen Bildern, welche die einzelnen Richtungen (Norden, Süden, Osten, Westen, Oben, Unten) ausmachen, oder aus einem einzelnen, welches diese verschiedenen Bilder zusammenfasst. Hier ein Beispiel wie eine Skybox im SceneComposer mit unserem Terrain aussieht:
 
 \begin{figure}[h!]
 		\caption{Terrain mit Skybox}
@@ -199,14 +197,13 @@ Möchte man der Welt neben ein paar Modellen außerdem eine realistische Umgebun
 
 %Quelle: https://docs.jmonkeyengine.org/advanced/light_and_shadow.html
 
-Um jedoch in der Scene beim Spielen die geeignete Atmosphäre zu erstellen, ist die Benutzung von Licht unbedingt notwendig. Verzichtet man darauf, kann man nur wenig erkennen. Es gibt dazu in dem com.jme3.light Paket verschiedene Lichttypen, die man verwenden kann:
+Um in der Scene beim Spielen die geeignete Atmosphäre zu erstellen, ist die Verwendung von Licht unbedingt notwendig. Verzichtet man darauf, kann man nur wenig erkennen. Es gibt dazu im \emph{com.jme3.light} Paket verschiedene Lichttypen, die man verwenden kann:
 \begin{itemize}
 	\item PointLight
 	\item DirectionalLight
 	\item AmbientLight
 	\item SpotLight
 \end{itemize}
-
 Grundsätzlich kann man jedem Licht eine Farbe zuweisen, um der Welt eine bestimmte Atmosphäre zu verleihen. Nachdem man das Licht nach seinen Wünschen erstellt hat, muss es nun der rootNode mit der addLight Methode bekannt gemacht werden. Ein PointLight scheint von einem Punkt aus in alle Richtungen, und nimmt mit der Entfernung zu dem Lichtpunkt an Intensität ab, hier ein kleines Beispiel:
 \begin{lstlisting}
 PointLight p = new PointLight();
@@ -224,8 +221,7 @@ rootNode.addLight(p);
 	\centering\includegraphics[width=.5\linewidth]{images/pointlight} 
 	
 \end{figure}
-
-Das PointLight kann sehr gut bei Lampen oder sonstigen Lichtquellen verwendet werden, bei denen ein Licht in alle Richtungen ausstrahlt. Im Gegensatz dazu gibt es das DirectionalLight, welches nur in eine Richtung ein Licht ausstrahlt. Das DirectionalLight wird in der Regel nur einmal in einer Scene verwendet, da es keinen Radius und keine Position hat, es scheint überall in eine Richtung. Hier ein kleines Codebeispiel:
+Das PointLight kann sehr gut für Lampen oder sonstigen Lichtquellen verwendet werden, bei denen ein Licht in alle Richtungen ausstrahlt. Im Gegensatz dazu gibt es das DirectionalLight, welches nur in eine Richtung ein Licht ausstrahlt. Das DirectionalLight wird in der Regel nur einmal in einer Scene verwendet, da es keinen Radius und keine Position hat, es scheint überall in eine Richtung. Hier ein kleines Codebeispiel:
 \begin{lstlisting}
 DirectionalLight d = new DirectionalLight();
 d.setColor(ColorRGBA.White);
