@@ -223,7 +223,7 @@ rootNode.addLight(p);
 	\caption{PointLight}\cite{Abb567}
 	
 \end{figure}
-Das PointLight kann sehr gut für Lampen oder sonstigen Lichtquellen verwendet werden, bei denen ein Licht in alle Richtungen ausstrahlt. Im Gegensatz dazu gibt es das DirectionalLight, welches nur in eine Richtung ein Licht ausstrahlt. Dieses wird in der Regel nur einmal in einer Scene verwendet, da es keinen Radius und keine Position hat, es scheint überall in eine Richtung. Hier ein kleines Codebeispiel:
+Das PointLight kann sehr gut für Lampen oder sonstige Lichtquellen verwendet werden, bei denen ein Licht in alle Richtungen ausstrahlt. Im Gegensatz dazu gibt es das DirectionalLight, welches nur in eine Richtung ein Licht ausstrahlt. Dieses wird in der Regel nur einmal in einer Scene verwendet, da es keinen Radius und keine Position hat, es scheint überall in eine Richtung. Hier ein kleines Codebeispiel:
 \begin{lstlisting}
 DirectionalLight d = new DirectionalLight();
 d.setColor(ColorRGBA.White);
@@ -309,11 +309,11 @@ audio_nature.play(); // Abspielen des Sounds
 
 
 \subsection{Physikalische Modellierung}
-Die jMonkey Engine erlaubt durch ihre Physik-Engine Objekten verschiedenes physikalisches Verhalten zuzuordnen. Die Kräfte, welche wirken sind dann je nach Masse verschieden.\\
+Die jMonkey Engine erlaubt durch ihre Physik-Engine Objekten, verschiedenes physikalisches Verhalten zuzuordnen. Die Kräfte welche wirken, sind dann je nach Masse verschieden.\\
 In unserem Spiel haben wir hauptsächlich von der Schwerkraft Gebrauch gemacht, welche sich durch den Befehl\emph{ setGravity()} auf Spatials anwenden lässt.
 
 \subsection{Effekte und Details}
-Um dem Spiel mehr Leben einzuhauchen können verschiedenste Spezialeffekte erstellt werden. Im Folgenden wird auf zwei wichtige Beispiele eingegangen und wie diese in der jMonkeyEngine umgesetzt werden können.
+Um dem Spiel mehr Leben einzuhauchen, können verschiedenste Spezialeffekte erstellt werden. Im Folgenden wird auf zwei wichtige Beispiele eingegangen und wie diese in der jMonkeyEngine umgesetzt werden können.
 
 \subsubsection{Nebel}
 In unserem Wald haben wir zur besseren Atmosphäre einen Nebeleffekt hinzugefügt. Genaugenommen ist dies lediglich eine Erhellung der Pixel in Abhängigkeit des Abstandes vom Spieler. Es gibt zwei Möglichkeiten im Code Nebel zu erzeugen:
