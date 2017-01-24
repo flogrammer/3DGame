@@ -4,6 +4,8 @@
 
 \section{Allgemeiner Aufbau von 3D Spielen}\label{sec:aufbau}
 
+\nocite{*}
+
 Bei 3-dimensionalen Spielen wird das Spielgeschehen in einen Raum transferiert und dem Spieler die Möglichkeit gegeben, sich dort frei bewegen zu können. \newline
 Im Gegensatz zu 2-dimensionalen Spielen sind hier deutlich mehr Berechnungen auf vektorieller Ebene notwendig, was sich auf die Laufzeit niederschlägt. Daher ist es besonders wichtig, ein effizientes Programm zu generieren.
 Diesbezüglich ist Java nicht die optimale Programmiersprache, da durch den Interpreter viel Zeit verloren geht. \newline
@@ -189,7 +191,7 @@ Nun kann man der Spielumgebung noch einige Modelle hinzufügen, sodass eine Welt
 \begin{figure}[h!]
 		
 		\centering\includegraphics[width=.8\linewidth]{images/Skybox}
-		\caption{Terrain mit Skybox} 
+		\caption{Terrain mit Skybox} \cite{Abb4}
 		
 \end{figure} 
 \newpage
@@ -218,7 +220,7 @@ rootNode.addLight(p);
 	
 	
 	\centering\includegraphics[width=.5\linewidth]{images/pointlight} 
-	\caption{PointLight}
+	\caption{PointLight}\cite{Abb567}
 	
 \end{figure}
 Das PointLight kann sehr gut für Lampen oder sonstigen Lichtquellen verwendet werden, bei denen ein Licht in alle Richtungen ausstrahlt. Im Gegensatz dazu gibt es das DirectionalLight, welches nur in eine Richtung ein Licht ausstrahlt. Dieses wird in der Regel nur einmal in einer Scene verwendet, da es keinen Radius und keine Position hat, es scheint überall in eine Richtung. Hier ein kleines Codebeispiel:
@@ -234,7 +236,7 @@ rootNode.addLight(d);
 	
 	
 	\centering\includegraphics[width=.4\linewidth]{images/directionallight} 
-	\caption{DirectionalLight}
+	\caption[DirectionalLight]{DirectionalLight\cite{Abb567}}
 	
 \end{figure}
 
@@ -266,6 +268,7 @@ rootNode.addLight(s);
 	
 	\centering\includegraphics[width=.4\linewidth]{images/spotlight} 
 	\caption{SpotLight}
+	\cite{Abb567}
 	
 \end{figure}
 In diesem Codebeispiel zeigt das SpotLight von der Kameraposition in die Blickrichtung der Kamera. Hier ist eine Taschenlampe, die der Spieler in der Hand hält gut vorstellbar. Daher scheint es sinnvoll, diese Position während des Spiels zu aktualisieren (zum Beispiel in der simpleUpdate Methode), sodass die Taschenlampe sich mit dem Spieler bewegt, als hätte er sie in der Hand. Alternativ dazu kann man einen \emph{LightControl} verwenden, der dafür sorgt, dass ein SpotLight oder PointLight einem Spatial zugehörig ist, sodass es der Position des Spatials folgt.
@@ -366,7 +369,7 @@ Wenn wie oben beschrieben einige Modelle und Effekte in die Spielumgebung eingeb
 In unserem Spiel gibt es zum Beispiel knapp 2000 Bäume, welche alle gerendert werden müssen: Vereinfacht man dort das Modell des Baumes, hat dies viel Potenzial, das gesamte Spiel zu beschleunigen. Mit Hilfe von \emph{F5} kann man in jMonkey während des Spiels anzeigen lassen, wie viele Triangles und Vertexes gerade zu rendern sind. Es versteht sich von selbst, dass ein Spiel mit einigen Millionen Vertexes viel zu aufwendig wird, weshalb die Framerate meist auf nahezu null sinkt. Um dies zu verhindern, muss man also die Gesamtanzahl an Triangles und Vertexes verringern. Dies ist grundsätzlich durch die Minimierung der Anzahl von Modellen oder durch die Minimierung der Anzahl an Triangles und Vertexes innerhalb eines Modells möglich. \\
 Diese haben dafür oft ein sogenanntes \emph{Level Of Detail} (kurz LOD), welches je nach Level ein Modell genauer zeichnet. Hier könnte man implementieren, dass das Modell genauer gezeichnet wird, wenn die Distanz zu dem Modell klein ist, sodass die naheliegenden Modelle detalliert, die weit entfernten Modelle jedoch nur grob gezeichnet werden.
 
-Interessanterweise fiel uns auf, dass das Terrain selbst (also der Untergrund des Spielers) sehr viele Triangles besitzt. Das liegt daran, dass das Terrain dafür ausgelegt ist, aufwendige Umgebungen darzustellen (sog. \emph{heightmaps}). So können Gebirge oder sonstige Unebenheiten sehr fein erstellt werden. Der Nachteil dabei ist jedoch, dass es sehr aufwendig wird, das Terrain selbst ohne Modelle zu rendern, obwohl dieses wie in unserem Spiel einfach nur eben sein kann. Es ist möglich die Feinheit des Terrains anzupassen, wordurch schnell viele tausend Dreiecke gespart werden können. Deshalb ist es unbedingt notwendig bei der Programmierung eines 3D-Spiels auf die Framerate und Komplexität der Welt zu achten, um das Spiel flüssig zu gestalten.
+Interessanterweise fiel uns auf, dass das Terrain selbst (also der Untergrund des Spielers) sehr viele Triangles besitzt. Das liegt daran, dass das Terrain dafür ausgelegt ist, aufwendige Umgebungen darzustellen (sog. \emph{heightmaps}). So können Gebirge oder sonstige Unebenheiten sehr fein erstellt werden. Der Nachteil dabei ist jedoch, dass es sehr aufwendig wird, das Terrain selbst ohne Modelle zu rendern, obwohl dieses wie in unserem Spiel einfach nur eben sein kann. Es ist möglich die Feinheit des Terrains anzupassen, wordurch schnell viele tausend Dreiecke gespart werden können. Deshalb ist es unbedingt notwendig bei der Programmierung eines 3D-Spiels auf die Framerate und Komplexität der Welt zu achten, um das Spiel flüssig zu gestalten. Die Erläuterungen dieses Kapitels orientieren sich an der jMonkey Documentation \cite{BG1}.
 
 
 
@@ -387,7 +390,7 @@ Somit muss in unserem Beispiel nicht jeder der fast 2000 Bäume gerendert werden
 	
 	
 	\centering\includegraphics[width=\linewidth]{images/LOD.jpeg}
-	\caption{Die jMonkey Figur in verschiedenen LODs}
+	\caption{Die jMonkey Figur in verschiedenen LODs}\cite{Abb10}
 	
 \end{figure}  
 In der jMonkeyEngine ist es grundsätzlich vorgesehen, seinen Modellen eigene LODs zu geben. Damit kann man anhand dieser LODs die Komplexität des Modells im Laufe des Spiels bzw. vor dem Spiel verändern, indem man die entsprechenden Werte der Level anpasst. Dabei gilt es noch zu beachten, dass die Modelle selbst keine LODs haben, sondern nur die Geometries, welchen sie zugrunde liegen. Innerhalb des SceneExplorers ist es möglich, die einzelnen Geometries in den Modellen auswählen, und so eigene LODs zu generieren.\\
